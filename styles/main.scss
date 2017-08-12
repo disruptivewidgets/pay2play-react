@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+/*
+  greenery 88b04b
+  online lime 548a4d
+  true blue 395181
+  directoire blue 046aaa
+  viridian green 00979c
+  blue radiance 62cbd5
+  goblin blue 5f7278
+  silver blue 8a9a9a
+  kalamata 5f5b4c
+  silt green a9bdb1
+  willow bough 59754d
+  calypso coral ec5d73
+*/
+
+body {
+  background-color: #ffffff;
+  color: #8a9a9a;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif !important;
+  text-align: center;
+}
+p.highlighted {
+  background: #8a9a9a;
+  color: #ffffff;
+}
+
+.logo {
+    width: 512px;
+}
