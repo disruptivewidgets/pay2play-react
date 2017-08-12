@@ -1,6 +1,9 @@
 import React from 'react';
 import WagerStore from '../stores/WagerStore';
 import Web3Actions from '../actions/Web3Actions';
+import SwarmApi from '../utils/SwarmApi.js';
+
+import GameSelector from '../components/GameSelector';
 
 import {
   Link,
@@ -14,14 +17,16 @@ var Loader = require('react-loader');
 
 var Start = React.createClass({
   getInitialState: function() {
-    console.log(this.props.match.params);
-    return {};
+    return {
+      loaded: true
+    };
   },
   componentWillMount: function() {
     this.setState({
       loaded: true
     });
     // this.setState(CheckoutStore.getDataStore());
+    // SwarmApi.getGames();
   },
   componentDidMount: function() {
     // CheckoutStore.addChangeListener(this._onChange);
@@ -111,6 +116,8 @@ var Start = React.createClass({
 
     return (
       <div>
+        <GameSelector />
+
         <p className="highlighted">Payment</p>
 
         <Loader loaded={this.state.loaded} options={options} parentClassName="orderFormLoader">
