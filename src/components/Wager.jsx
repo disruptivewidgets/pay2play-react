@@ -12,8 +12,6 @@ import {
 
 var Wager = React.createClass({
   getInitialState: function() {
-    console.log(this.props.match.params.id);
-
     return WagerStore.get();
   },
   componentWillMount: function() {

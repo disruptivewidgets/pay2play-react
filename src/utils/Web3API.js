@@ -12,8 +12,6 @@ function retrieveWager(index, callback) {
   contract.options.address = registrarAddress; // Ropsen Pay2Play
 
   contract.methods.getWager(index.toString()).call({}, function(error, result) {
-    console.log(result);
-
     var state = "open";
 
     var date = new Date(result[1] * 1000);

@@ -5,15 +5,7 @@ import SwarmApi from '../utils/SwarmApi.js';
 
 import GameSelector from '../components/GameSelector';
 
-import {
-  Link,
-  Route,
-  HashRouter as Router,
-} from 'react-router-dom'
-
 import Helpers from "../helpers/TransactionUtils.js";
-
-var Loader = require('react-loader');
 
 var Start = React.createClass({
   getInitialState: function() {
@@ -25,6 +17,7 @@ var Start = React.createClass({
     this.setState({
       loaded: true
     });
+
     // this.setState(CheckoutStore.getDataStore());
     // SwarmApi.getGames();
   },
@@ -41,32 +34,6 @@ var Start = React.createClass({
     // this.setState(CheckoutStore.getDataStore());
   },
   render() {
-    var options = {
-        lines: 12,
-        length: 5,
-        width: 3,
-        radius: 8,
-        scale: 1.00,
-        corners: 1,
-        color: '#000',
-        opacity: 0.25,
-        rotate: 0,
-        direction: 1,
-        speed: 1,
-        trail: 60,
-        fps: 20,
-        zIndex: 2e9,
-        top: '50%',
-        left: '50%',
-        shadow: false,
-        hwaccel: false,
-        position: 'relative'
-    };
-
-    // const onChange = (event) => {
-    //     this.setState({value: event.target.value});
-    // };
-
     const onSubmit = (event) => {
 
       event.preventDefault();
@@ -117,20 +84,16 @@ var Start = React.createClass({
     return (
       <div>
         <GameSelector />
-
-        <p className="highlighted">Payment</p>
-
-        <Loader loaded={this.state.loaded} options={options} parentClassName="orderFormLoader">
-          <form onSubmit={onSubmit}>
-            <label>
-              <input type="text" placeholder="Enter Amount" value={this.state.hash} />
-            </label>
-            <br />
-            <br />
-            <input type="submit" value="Start Wager" />
-          </form>
-        </Loader>
-    </div>
+        <form onSubmit={onSubmit}>
+          <label>
+            <input type="text" placeholder="Enter Amount" value={this.state.hash} />
+          </label>
+          <br />
+          <br />
+          <input type="submit" value="Start Wager" />
+        </form>
+        <br />
+      </div>
     );
   }
 });

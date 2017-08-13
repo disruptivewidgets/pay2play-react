@@ -11,6 +11,9 @@ var EventEmitter = require('events').EventEmitter;
 
 var CHANGE_EVENT = 'change';
 
+import * as moment from 'moment';
+import 'moment-duration-format';
+
 var _store = {
   list: []
 };
@@ -43,11 +46,14 @@ AppDispatcher.register(function(payload) {
 
           const id = GameCounter.increment();
 
+          var timeframe = moment.duration(game.rules.duration, "seconds").format("y [years], M [months], d [days], h [hours], m [minutes], s [seconds]");
+
           return new Game({
             id,
             index: game.id,
             referenceHash: game.hash,
             duration: game.rules.duration,
+            timeframe: timeframe,
             title: game.rules.title,
           })
         });

@@ -15,6 +15,27 @@ loaders.push({
   exclude: ['node_modules']
 });
 
+
+loaders.push({
+  test: /\.(woff|woff2)$/,
+  use: {
+    loader: 'url-loader',
+    options: {
+      name: 'fonts/[hash].[ext]',
+      limit: 5000,
+      mimetype: 'application/font-woff'
+    }
+  }
+});
+loaders.push({
+  test: /\.(ttf|eot|svg)$/,
+  use: {
+    loader: 'file-loader',
+    options: {
+      name: 'fonts/[hash].[ext]'
+    }
+  }
+});
 // loaders.push({
 //   test: /\.(jpe?g|png|gif|svg)$/i,
 //   loader: "file-loader?name=/images/[name].[ext]"

@@ -39,8 +39,6 @@ AppDispatcher.register(function(payload) {
 
         const id = WagerCounter.increment();
 
-        console.log(action.response);
-
         var wager = new Wager({
           id,
           index: action.response.index,

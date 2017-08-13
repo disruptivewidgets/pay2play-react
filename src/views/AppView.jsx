@@ -56,10 +56,17 @@ const AppView = () => (
   </Router>
 )
 
+// {this.state.list.map(item => (
+//   <GameItem
+//     key={item.id}
+//     item={item}
+//   />
+// ))}
 
 const Home = () => (
   <div>
     <StartButton to="/start" label="Start Wager" />
+    <br />
   </div>
 )
 
