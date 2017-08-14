@@ -50,7 +50,6 @@ var GameSelector = React.createClass({
 
     console.log("HERE");
 
-
     var selected = _.find(dataStore.list, function(game) {
       console.log(game.referenceHash, games[0].value);
       return game.referenceHash == games[0].value;
@@ -65,12 +64,13 @@ var GameSelector = React.createClass({
         selected: selected
     });
 
+    this.props.onSelect(games[0]);
+
     this.setState(GameStore.getDataStore());
   },
   render: function() {
     const onChange = (value) => {
       console.log("Selected: " + JSON.stringify(value));
-
 
       var selected = _.find(this.state.list, function(game) {
         return game.referenceHash == value.value;
@@ -80,6 +80,8 @@ var GameSelector = React.createClass({
           selected: selected,
           value: value
       });
+
+      this.props.onSelect(value);
     };
 
     const loaded = this.state.loaded;

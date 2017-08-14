@@ -15,8 +15,11 @@ import * as moment from 'moment';
 import 'moment-duration-format';
 
 var _store = {
-  list: []
+  list: [],
+  game: {}
 };
+
+var _game = {};
 
 var GameStore = ObjectAssign({}, EventEmitter.prototype, {
 

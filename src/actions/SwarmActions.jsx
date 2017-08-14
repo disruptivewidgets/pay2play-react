@@ -9,5 +9,8 @@ module.exports = {
     });
 
     SwarmApi.getGames();
+  },
+  retrieveRules(hash, wagerStartTimestamp) {
+    SwarmApi.getGameRules(hash, wagerStartTimestamp);
   }
 };

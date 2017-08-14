@@ -10,7 +10,8 @@ import Helpers from "../helpers/TransactionUtils.js";
 var Start = React.createClass({
   getInitialState: function() {
     return {
-      loaded: true
+      loaded: true,
+      amount: ''
     };
   },
   componentWillMount: function() {
@@ -33,10 +34,29 @@ var Start = React.createClass({
 
     // this.setState(CheckoutStore.getDataStore());
   },
+  handleSelect(game) {
+    console.log("select");
+    console.log(game);
+
+    this.setState({
+      referenceHash: game.value
+    });
+  },
   render() {
+    const onChange = (event) => {
+      console.log(event.target.value);
+
+      this.setState({
+        amount: event.target.value
+      });
+    }
     const onSubmit = (event) => {
 
       event.preventDefault();
+
+      console.log(this.state.amount);
+      console.log(this.state.referenceHash);
+
       console.log(window.web3.version);
 
       const amount = window.web3.utils.toWei(0.01, 'ether');
@@ -49,6 +69,7 @@ var Start = React.createClass({
         gas: gas,
         gasPrice: gasPrice
       };
+
       console.log(params);
 
       // var hash = this.state.hash;
@@ -58,7 +79,7 @@ var Start = React.createClass({
       //
       // hash = 'd3ba5f21813ef1002930ba5c0c01f2f54236717e1f7a254354ac81a7d0bbfd53';
 
-      window.contract.methods.createWagerAndDeposit(this.state.hash).send(params, Helpers.getTxHandler({
+      window.contract.methods.createWagerAndDeposit(this.state.referenceHash).send(params, Helpers.getTxHandler({
           onDone: () => {
             console.log("onDone");
           },
@@ -83,10 +104,11 @@ var Start = React.createClass({
 
     return (
       <div>
-        <GameSelector />
         <form onSubmit={onSubmit}>
+          <GameSelector onSelect={this.handleSelect} />
+
           <label>
-            <input type="text" placeholder="Enter Amount" value={this.state.hash} />
+            <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
           </label>
           <br />
           <br />

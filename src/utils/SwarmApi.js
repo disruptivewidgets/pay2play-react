@@ -3,6 +3,9 @@ var SwarmServerActions = require('../actions/SwarmServerActions');
 var request = require('superagent');
 import _ from 'lodash';
 
+import * as moment from 'moment';
+import 'moment-duration-format';
+
 function fetch(game, callback) {
   // console.log(game);
 
@@ -110,6 +113,42 @@ module.exports = {
         eachAsync(games, fetch, display);
       };
       // SearchServerActions.receiveSearchResults(response.body);
+    });
+  },
+  getGameRules: function(hash, wagerStartTimestamp) {
+    var url = '';
+    url = "http://swrm.io/bzzr:/" + hash;
+    url = "http://swarm-gateways.net/bzzr:/" + hash;
+
+    console.log(url);
+
+    request.get(url)
+    .set('Accept', 'application/json')
+    .end(function(error, response) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        var result = JSON.parse(response.text);
+
+        console.log(result);
+
+        window.web3.eth.getBlock('latest', function(err, block) {
+          console.log(block);
+
+          console.log(result.duration, block.timestamp, wagerStartTimestamp);
+          
+          var timeUntilEnd = result.duration - (block.timestamp - wagerStartTimestamp);
+
+          var timeUntilEndString = moment.duration(timeUntilEnd, "seconds").format("y [years], M [months], d [days], h [hours], m [minutes], s [seconds]");
+
+          result['timeUntilEndString'] = timeUntilEndString;
+
+          SwarmServerActions.receivedGameRules(result);
+        });
+      }
     });
   }
 };

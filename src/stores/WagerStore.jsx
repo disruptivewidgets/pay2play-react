@@ -39,12 +39,16 @@ AppDispatcher.register(function(payload) {
 
         const id = WagerCounter.increment();
 
+        console.log(action.response);
+
         var wager = new Wager({
           id,
           index: action.response.index,
           state: action.response.state,
           date: action.response.date.toString(),
+          startTimestamp: action.response.startTimestamp,
           amount: action.response.amount,
+          referenceHash: action.response.referenceHash
         })
 
         _store.wager = wager;

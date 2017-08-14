@@ -5,7 +5,9 @@ const Wager = Immutable.Record({
   index: '',
   state: '',
   date: '',
-  amount: 0
+  startTimestamp: 0,
+  amount: 0,
+  referenceHash: ''
 });
 
 export default Wager;

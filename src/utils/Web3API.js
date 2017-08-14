@@ -1,6 +1,9 @@
 var Web3ServerActions = require('../actions/Web3ServerActions');
 var request = require('superagent');
 
+// import * as moment from 'moment';
+// import 'moment-duration-format';
+
 import interfaces from "../smart-contract/interfaces.js";
 
 var registrarAddress = "0xdccd2a82cea71049b76c3824338f9af65f6515db";
@@ -28,11 +31,15 @@ function retrieveWager(index, callback) {
         break;
     }
 
+    console.log(result);
+
     var wager = {
       index: index,
       state: state,
       date: date,
+      startTimestamp: result[1],
       amount: result[2].toString(),
+      referenceHash: result[5].substring(2)
     };
 
     callback(wager);
@@ -82,11 +89,5 @@ module.exports = {
     }
 
     retrieveWager(id, parse);
-    // var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    // contract.options.address = registrarAddress;
-    //
-    // contract.methods.getWager(id).call({}, function(error, result) {
-    //   Web3ServerActions.receivedWager(result);
-    // });
-  },
+  }
 };

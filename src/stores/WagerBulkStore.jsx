@@ -46,7 +46,9 @@ AppDispatcher.register(function(payload) {
             index: wager.index,
             state: wager.state,
             date: wager.date.toString(),
+            startTimestamp: wager.startTimestamp,
             amount: wager.amount,
+            referenceHash: wager.referenceHash
           })
         });
 

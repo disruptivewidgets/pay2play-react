@@ -2,11 +2,15 @@ import React from 'react';
 import WagerStore from '../stores/WagerStore';
 import Web3Actions from '../actions/Web3Actions';
 import Invite from '../components/Invite';
+import Rules from '../components/Rules';
+import EventLogs from '../components/EventLogs';
+
+import { Intent, Spinner } from "@blueprintjs/core";
+
+import "@blueprintjs/core/dist/blueprint.css";
 
 import {
   Link,
-  Route,
-  HashRouter as Router,
   withRouter
 } from 'react-router-dom'
 
@@ -29,19 +33,27 @@ var Wager = React.createClass({
     this.setState(WagerStore.get());
   },
   render: function() {
+    const referenceHash = this.state.wager.referenceHash;
+    const startTimestamp = this.state.wager.startTimestamp;
+
     return (
         <div>
           <h1>Wager Ticket</h1>
           <div>Wager Id: {this.state.wager.index}</div>
           <div>Start Time: {this.state.wager.date}</div>
           <div>{this.state.wager.state}</div>
-          <div>Amount: {this.state.wageramount}</div>
-          <h1>Rules</h1>
-          <div>Swarm Hash: </div>
-          <div className="highlighted">Game ends within</div>
+          <div>Amount: {this.state.wager.amount}</div>
+
+          { referenceHash ? (
+            <Rules referenceHash={referenceHash} startTimestamp={startTimestamp} />
+          ) : (
+            <Spinner intent={Intent.PRIMARY} />
+          )}
+
           <h1>Related</h1>
           <div>Invite Id: <Link to={`/invites/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
-          <h1>Event Logs</h1>
+          <EventLogs index={this.props.match.params.id} />
+
           <HomeButton to="/" label="Start Over" />
         </div>
     );
