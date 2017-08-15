@@ -72,13 +72,6 @@ var Start = React.createClass({
 
       console.log(params);
 
-      // var hash = this.state.hash;
-      //
-      // console.log("hash", hash);
-      // console.log(typeof(this.state.hash));
-      //
-      // hash = 'd3ba5f21813ef1002930ba5c0c01f2f54236717e1f7a254354ac81a7d0bbfd53';
-
       window.contract.methods.createWagerAndDeposit(this.state.referenceHash).send(params, Helpers.getTxHandler({
           onDone: () => {
             console.log("onDone");

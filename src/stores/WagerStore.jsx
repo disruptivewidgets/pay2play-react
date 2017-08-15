@@ -48,7 +48,9 @@ AppDispatcher.register(function(payload) {
           date: action.response.date.toString(),
           startTimestamp: action.response.startTimestamp,
           amount: action.response.amount,
-          referenceHash: action.response.referenceHash
+          referenceHash: action.response.referenceHash,
+          winner: action.response.winner,
+          players: action.response.players
         })
 
         _store.wager = wager;

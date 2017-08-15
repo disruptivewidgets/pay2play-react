@@ -8,8 +8,10 @@ import {
 import Rules from '../components/Rules';
 import EventLogs from '../components/EventLogs';
 import WagerStore from '../stores/WagerStore';
+import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
 import SwarmActions from '../actions/SwarmActions';
+import Web3API from '../utils/Web3API';
 
 import Helpers from "../helpers/TransactionUtils.js";
 
@@ -23,8 +25,11 @@ var Invite = React.createClass({
   },
   componentWillMount: function() {
     this.setState(WagerStore.get());
+    this.setState(Web3Store.getStore());
 
     Web3Actions.retrieveWager(this.props.match.params.id);
+    Web3Actions.getAccounts();
+
   },
   componentDidMount: function() {
     WagerStore.addChangeListener(this._onChange);
@@ -34,13 +39,17 @@ var Invite = React.createClass({
   },
   _onChange: function() {
     this.setState(WagerStore.get());
+    this.setState(Web3Store.getStore());
+
+    this.setState({
+      players: this.state.wager.players
+    });
   },
   render: function() {
     const referenceHash = this.state.wager.referenceHash;
     const startTimestamp = this.state.wager.startTimestamp;
     const isWagerOpen = (this.state.wager.state === 'open') ;
-
-    console.log(this.state.wager.state);
+    const hasPlayers = (this.state.wager.players !== undefined);
 
     const onSubmit = (event) => {
 
@@ -107,14 +116,28 @@ var Invite = React.createClass({
           <Spinner intent={Intent.PRIMARY} />
         )}
 
-        <h1>Players</h1>
+        { hasPlayers ? (
+          <div>
+            <h1>Players</h1>
+            {this.state.wager.players.map(address => (
+              <Player
+                key={address}
+                player={address}
+                winner={this.state.wager.winner}
+                accounts={this.state.accounts}
+              />
+            ))}
+          </div>
+        ) : (
+          <Spinner intent={Intent.PRIMARY} />
+        )}
+
         <div className="highlighted">Share this invite with your opponent or wait for someone to counter.</div>
 
         { isWagerOpen &&
           <div>
             <form onSubmit={onSubmit}>
               <input type="submit" value="Fund Wager" />
-
             </form>
             <br />
           </div>
@@ -127,6 +150,29 @@ var Invite = React.createClass({
     );
   }
 });
+
+function Player(props) {
+
+  const player = props.player;
+  const winner = props.winner;
+  const accounts = props.accounts;
+
+  console.log(accounts);
+
+  var element = <div>{player}</div>;
+
+  if (accounts.length > 0) {
+    if (accounts[0] == player) {
+      element = <div>{player} (You)</div>
+    }
+  };
+
+  return (
+    <div>
+      {element}
+    </div>
+  );
+}
 
 const HomeButton = withRouter(({ history, label, to }) => (
   <div>

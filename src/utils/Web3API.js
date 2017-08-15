@@ -39,6 +39,8 @@ function retrieveWager(index, callback) {
       date: date,
       startTimestamp: result[1],
       amount: result[2].toString(),
+      winner: result[3],
+      players: result[4],
       referenceHash: result[5].substring(2)
     };
 
@@ -89,5 +91,10 @@ module.exports = {
     }
 
     retrieveWager(id, parse);
+  },
+  getAccounts: function() {
+    window.web3.eth.getAccounts((error, accounts) => {
+      Web3ServerActions.retrieveAccounts(accounts);
+    });
   }
 };

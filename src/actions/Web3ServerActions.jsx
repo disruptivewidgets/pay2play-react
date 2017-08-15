@@ -14,4 +14,10 @@ module.exports = {
       response: response
     });
   },
+  retrieveAccounts(response) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.RETRIEVE_ACCOUNTS_RESPONSE,
+      response: response
+    });
+  },
 };

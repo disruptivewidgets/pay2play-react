@@ -16,6 +16,13 @@ const Actions = {
     });
 
     Web3API.retrieveWager(id);
+  },
+  getAccounts() {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.RETRIEVE_ACCOUNTS,
+    });
+
+    Web3API.getAccounts();
   }
 }
 
