@@ -42,8 +42,17 @@ var EventLogs = React.createClass({
         <div className="highlighted">Event Logs</div>
         <br />
 
-        { hasWagerStarted &&
-          this.state.WagerStarted.map(item => (
+        { hasWagerWinnerUpdated &&
+          this.state.WagerWinnerUpdated.map(item => (
+            <EventLogItem
+              key={item.id}
+              item={item}
+            />
+          ))
+        }
+
+        { hasWinningsWithdrawn &&
+          this.state.WinningsWithdrawn.map(item => (
             <EventLogItem
               key={item.id}
               item={item}
@@ -60,17 +69,8 @@ var EventLogs = React.createClass({
           ))
         }
 
-        { hasWagerWinnerUpdated &&
-          this.state.WagerWinnerUpdated.map(item => (
-            <EventLogItem
-              key={item.id}
-              item={item}
-            />
-          ))
-        }
-
-        { hasWinningsWithdrawn &&
-          this.state.WinningsWithdrawn.map(item => (
+        { hasWagerStarted &&
+          this.state.WagerStarted.map(item => (
             <EventLogItem
               key={item.id}
               item={item}

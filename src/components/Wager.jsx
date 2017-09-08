@@ -50,6 +50,19 @@ var Wager = React.createClass({
       isWinner = (this.state.wager.winner === window.authorizedAccount);
     }
 
+    var isLoser = false;
+
+    if (hasPlayers) {
+      if (!isWinner && this.state.wager.players.indexOf(window.authorizedAccount) != -1) {
+        isLoser = true;
+      }
+    }
+
+    if (!isWagerFinished) {
+      isLoser = false;
+      isWinner = false;
+    }
+
     var loaded = this.state.loaded;
 
     const onSubmit = (event) => {
@@ -220,6 +233,12 @@ var Wager = React.createClass({
                       <br />
                     </div>
                   )}
+                </div>
+              }
+              { isLoser &&
+                <div>
+                  <div className="highlighted-red">Sorry, you lost. Better luck next time!</div>
+                  <br />
                 </div>
               }
               <HomeButton to="/" label="Start Over" />
