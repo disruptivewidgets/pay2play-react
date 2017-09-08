@@ -180,7 +180,7 @@ var Wager = React.createClass({
           { isModerator ? (
             <div>
               <br />
-              <div className="highlighted-green">Moderator Tools</div>
+              <div className="highlighted">Moderator Tools</div>
 
               { loaded ? (
                 <div>
@@ -237,7 +237,8 @@ var Wager = React.createClass({
               }
               { isLoser &&
                 <div>
-                  <div className="highlighted-red">Sorry, you lost. Better luck next time!</div>
+                  <div className="highlighted-red">Sorry, you lost.</div>
+                  <div>Wager Winner: {this.state.wager.winner}</div>
                   <br />
                 </div>
               }
