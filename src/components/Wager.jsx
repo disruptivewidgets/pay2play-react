@@ -53,63 +53,89 @@ var Wager = React.createClass({
     var loaded = this.state.loaded;
 
     const onSubmit = (event) => {
-      console.log(event.target.winner.value);
-
       event.preventDefault();
 
-      this.setState({
-        loaded: false
-      });
+      console.log(event.target.name);
 
-      const winner = event.target.winner.value;
-      const amount = window.web3.utils.toWei(0.01, 'ether');
       const gas = 650000;
       // const gasPrice = window.web3.utils.toWei(20, 'shannon');
 
-      var params = {
-        from: window.authorizedAccount,
-        gas: gas
-      };
+      switch(event.target.name) {
+        case 'windraw-winnings-form':
 
-      console.log(params);
+          this.setState({
+            loaded: false
+          });
 
-      window.contract.methods.setWagerWinner(this.props.match.params.id, winner).send(params, Helpers.getTxHandler({
-          onDone: () => {
-            console.log("onDone");
-          },
-          onSuccess: (txid, receipt) => {
-            console.log("onSuccess");
-            console.log(txid, receipt);
+          var params = {
+            from: window.authorizedAccount,
+            gas: gas
+          };
 
-            this.setState({
-              loaded: true
-            });
-          },
-          onError: (error) => {
-            console.log("onError");
+          console.log(params);
 
-            this.setState({
-              loaded: true
-            });
-          }
-        })
-      );
-    };
+          window.contract.methods.withdrawWinnings(this.props.match.params.id).send(params, Helpers.getTxHandler({
+              onDone: () => {
+                console.log("onDone");
+              },
+              onSuccess: (txid, receipt) => {
+                console.log("onSuccess");
+                console.log(txid, receipt);
 
-    const withdrawWinnings = function(event) {
-      console.log("withdrawWinnings");
+                this.setState({
+                  loaded: true
+                });
+              },
+              onError: (error) => {
+                console.log("onError");
 
-      event.preventDefault();
+                this.setState({
+                  loaded: true
+                });
+              }
+            })
+          );
+          break;
+        case 'set-winner-form':
+          console.log(event.target.winner.value);
 
-    };
+          this.setState({
+            loaded: false
+          });
 
-    const onChange = (event) => {
-      console.log(event.target.value);
+          const winner = event.target.winner.value;
+          const amount = window.web3.utils.toWei(0.01, 'ether');
 
-      // this.setState({
-      //   amount: event.target.value,
-      //   error: ''
-      // });
+          var params = {
+            from: window.authorizedAccount,
+            gas: gas
+          };
+
+          console.log(params);
+
+          window.contract.methods.setWagerWinner(this.props.match.params.id, winner).send(params, Helpers.getTxHandler({
+              onDone: () => {
+                console.log("onDone");
+              },
+              onSuccess: (txid, receipt) => {
+                console.log("onSuccess");
+                console.log(txid, receipt);
+
+                this.setState({
+                  loaded: true
+                });
+              },
+              onError: (error) => {
+                console.log("onError");
+
+                this.setState({
+                  loaded: true
+                });
+              }
+            })
+          );
+          break;
+      }
     };
 
     const referenceHash = this.state.wager.referenceHash;
@@ -153,7 +179,7 @@ var Wager = React.createClass({
                     ) : (
                       <div>
                         <br />
-                        <form onSubmit={onSubmit}>
+                        <form name="set-winner-form" onSubmit={onSubmit}>
                           <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
                           <div><input type="submit" value="Set Winner" /></div>
                         </form>
@@ -173,16 +199,28 @@ var Wager = React.createClass({
             <div>
               <br />
               { isWinner &&
-                  <form>
-                    <div className="highlighted-green">Congratulations! You are the winner!</div>
-                    <br />
+                <div>
+                  { loaded ? (
+                    <form>
+                      <div className="highlighted-green">Congratulations! You are the winner!</div>
+                      <br />
 
-                    <form onSubmit={withdrawWinnings}>
-                      <div><input type="submit" value="Withdraw Winnings" /></div>
+                      <form name="windraw-winnings-form" onSubmit={onSubmit}>
+                        <div><input type="submit" value="Withdraw Winnings" /></div>
+                      </form>
+
+                      <br />
                     </form>
-
-                    <br />
-                  </form>
+                  ) : (
+                    <div>
+                      <br />
+                      <div>
+                        <Spinner intent={Intent.PRIMARY} />
+                      </div>
+                      <br />
+                    </div>
+                  )}
+                </div>
               }
               <HomeButton to="/" label="Start Over" />
             </div>
