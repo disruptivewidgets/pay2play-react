@@ -47,7 +47,13 @@ module.exports = {
 
         console.log(result);
 
-        EventLogServerActions.receivedLogs(result);
+        console.log("YO YO YO");
+
+        var data = {
+          transactions: result,
+          topic: key
+        }
+        EventLogServerActions.receivedLogs(data);
       }
     });
   }

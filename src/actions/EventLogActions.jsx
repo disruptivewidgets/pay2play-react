@@ -5,7 +5,7 @@ import EtherScanApi from '../utils/EtherScanApi';
 module.exports = {
   pullEventLogs(key, index) {
     AppDispatcher.handleViewAction({
-      actionType: EventLogActionTypes.RETRIEVE_GAMES,
+      actionType: EventLogActionTypes.PULL_EVENT_LOGS,
     });
 
     EtherScanApi.pullEventLogs(key, index);

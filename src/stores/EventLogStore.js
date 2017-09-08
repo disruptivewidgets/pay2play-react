@@ -12,7 +12,8 @@ var EventEmitter = require('events').EventEmitter;
 var CHANGE_EVENT = 'change';
 
 var _store = {
-  list: []
+  list: [],
+  data: {}
 };
 
 var EventLogStore = ObjectAssign({}, EventEmitter.prototype, {
@@ -27,6 +28,10 @@ var EventLogStore = ObjectAssign({}, EventEmitter.prototype, {
 
   getDataStore: function() {
     return _store;
+  },
+
+  getData: function() {
+    return _store.data
   }
 });
 
@@ -39,17 +44,22 @@ AppDispatcher.register(function(payload) {
 
         console.log(action.response);
 
-        var eventLogs = _.map(action.response, function(eventLog) {
+        var transactions = action.response.transactions;
+        var topic = action.response.topic;
+
+        var eventLogs = _.map(transactions, function(transaction) {
 
           const id = EventLogCounter.increment();
 
           return new EventLog({
             id,
-            transactionHash: eventLog.transactionHash
+            topic: topic,
+            transactionHash: transaction.transactionHash
           })
         });
 
         _store.list = eventLogs;
+        _store.data[topic] = eventLogs;
 
         EventLogStore.emit(CHANGE_EVENT);
         break;
