@@ -89,7 +89,7 @@ var Start = React.createClass({
 
         this.setState({
           loaded: true,
-          error: 'Please bet more than or equalt to 0.01.'
+          error: 'Please bet more than or equal to 0.01.'
         });
 
         return;
