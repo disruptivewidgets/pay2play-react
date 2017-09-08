@@ -73,6 +73,16 @@ To run linting, run:
 npm run lint
 ```
 
+### S3 Hosting Example
+
+```
+sudo pip install aws-cli
+rm -r public && mkdir public
+aws s3 sync public s3://pay2play/public --acl public-read
+http://s3-us-west-2.amazonaws.com/pay2play/public/index.html
+```
+
+
 ### Notes on importing css styles
 * styles having /src/ in their absolute path considered part of the application and exported as local css modules.
 * other styles considered global styles used by components and included in the css bundle directly.
