@@ -25,7 +25,18 @@ p.highlighted {
   background: #8a9a9a;
   color: #ffffff;
 }
-
+div.highlighted {
+  background: #8a9a9a;
+  color: #ffffff;
+}
+div.highlighted-green {
+  background: #88b04b;
+  color: #ffffff;
+}
 .logo {
     width: 512px;
+}
+div.error {
+  background-color: red;
+  color: white;
 }

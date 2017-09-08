@@ -30,10 +30,11 @@ var Rules = React.createClass({
   render: function() {
     return (
       <div>
-        <h1>Rules</h1>
+        <div className="highlighted">Rules</div>
+        <br />
         <div>Swarm Hash: {this.props.referenceHash}</div>
         <div>Title: {this.state.rules.title}</div>
-        <div>Rule: {this.state.rules.timeUntilEndString}</div>
+        <div>Time Window: {this.state.rules.timeUntilEndString}</div>
       </div>
     );
   }

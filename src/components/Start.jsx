@@ -7,32 +7,32 @@ import GameSelector from '../components/GameSelector';
 
 import Helpers from "../helpers/TransactionUtils.js";
 
+import { Intent, Spinner } from "@blueprintjs/core";
+
+import "@blueprintjs/core/dist/blueprint.css";
+
+var validator = require('validator');
+
 var Start = React.createClass({
   getInitialState: function() {
     return {
       loaded: true,
+      error: '',
       amount: ''
     };
   },
   componentWillMount: function() {
-    this.setState({
-      loaded: true
-    });
-
-    // this.setState(CheckoutStore.getDataStore());
-    // SwarmApi.getGames();
   },
   componentDidMount: function() {
-    // CheckoutStore.addChangeListener(this._onChange);
+    this.setState({
+      loaded: true,
+      error: '',
+      amount: ''
+    });
   },
   componentWillUnmount: function() {
-    // CheckoutStore.removeChangeListener(this._onChange);
   },
   _onChange: function() {
-
-    // console.log(CheckoutStore.getDataStore());
-
-    // this.setState(CheckoutStore.getDataStore());
   },
   handleSelect(game) {
     console.log("select");
@@ -47,9 +47,14 @@ var Start = React.createClass({
       console.log(event.target.value);
 
       this.setState({
-        amount: event.target.value
+        amount: event.target.value,
+        error: ''
       });
-    }
+    };
+
+    var loaded = this.state.loaded;
+    var error = this.state.error;
+
     const onSubmit = (event) => {
 
       event.preventDefault();
@@ -59,7 +64,38 @@ var Start = React.createClass({
 
       console.log(window.web3.version);
 
-      const amount = window.web3.utils.toWei(0.01, 'ether');
+      this.setState({
+        loaded: false,
+        error: ''
+      });
+
+      var amount = this.state.amount;
+
+      if (!validator.isDecimal(amount)) {
+        console.log("Incorrect amount");
+
+        this.setState({
+          loaded: true,
+          error: 'Please enter correct amount.'
+        });
+
+        return;
+      }
+
+      amount = Number(amount);
+
+      if (amount < 0.01) {
+        console.log("Minimum bet is 0.01");
+
+        this.setState({
+          loaded: true,
+          error: 'Please bet more than or equalt to 0.01.'
+        });
+
+        return;
+      }
+
+      amount = window.web3.utils.toWei(0.01, 'ether');
       const gas = 650000;
       const gasPrice = window.web3.utils.toWei(20, 'shannon');
 
@@ -79,7 +115,6 @@ var Start = React.createClass({
           onSuccess: (txid, receipt) => {
             console.log("onSuccess");
             console.log(txid, receipt);
-
             this.setState({
               loaded: true
             });
@@ -97,17 +132,36 @@ var Start = React.createClass({
 
     return (
       <div>
-        <form onSubmit={onSubmit}>
-          <GameSelector onSelect={this.handleSelect} />
+        { loaded ? (
+          <form onSubmit={onSubmit}>
+            <GameSelector onSelect={this.handleSelect} />
 
-          <label>
-            <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
-          </label>
-          <br />
-          <br />
-          <input type="submit" value="Start Wager" />
-        </form>
-        <br />
+            <label>
+              <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+            </label>
+            <br />
+            <br />
+
+            { error ? (
+              <div>
+                <div><input type="submit" value="Start Wager" /></div>
+                <br />
+                <div className="error">{this.state.error}</div>
+              </div>
+            ) : (
+              <div><input type="submit" value="Start Wager" /></div>
+            ) }
+
+            <br />
+          </form>
+
+        ) : (
+          <div>
+            <Spinner intent={Intent.PRIMARY} />
+            <br />
+            <br />
+          </div>
+        ) }
       </div>
     );
   }

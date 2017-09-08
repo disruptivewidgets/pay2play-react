@@ -25,13 +25,15 @@ var EventLogs = React.createClass({
   render: function() {
     return (
       <div>
-        <h1>Event Logs</h1>
+        <div className="highlighted">Event Logs</div>
+        <br />
         {this.state.list.map(item => (
           <EventLogItem
             key={item.id}
             item={item}
           />
         ))}
+        <br />
       </div>
     );
   }

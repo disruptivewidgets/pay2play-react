@@ -13,6 +13,8 @@ import Web3Actions from '../actions/Web3Actions';
 import SwarmActions from '../actions/SwarmActions';
 import Web3API from '../utils/Web3API';
 
+import _ from 'lodash';
+
 import Helpers from "../helpers/TransactionUtils.js";
 
 import { Intent, Spinner } from "@blueprintjs/core";
@@ -29,9 +31,12 @@ var Invite = React.createClass({
 
     Web3Actions.retrieveWager(this.props.match.params.id);
     Web3Actions.getAccounts();
-
   },
   componentDidMount: function() {
+    this.setState({
+      loaded: true
+    });
+
     WagerStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
@@ -51,14 +56,29 @@ var Invite = React.createClass({
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const hasPlayers = (this.state.wager.players !== undefined);
 
+    var isOwnerLoggedIn = false;
+
+    var showCallToAction = false;
+
+    if (hasPlayers) {
+      isOwnerLoggedIn = (this.state.wager.players[0] === window.authorizedAccount);
+    }
+
+    if (isOwnerLoggedIn) {
+      showCallToAction = true;
+    }
+
+    var loaded = this.state.loaded;
+
     const onSubmit = (event) => {
 
       event.preventDefault();
 
-      console.log(this.state.amount);
-      console.log(this.state.referenceHash);
-
       console.log(window.web3.version);
+
+      this.setState({
+        loaded: false
+      });
 
       const amount = window.web3.utils.toWei(0.01, 'ether');
       const gas = 650000;
@@ -105,46 +125,68 @@ var Invite = React.createClass({
 
     return (
       <div>
-        <h1>Wager Invite</h1>
-        <div>Wager Id: <Link to={`/wagers/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
-        <div>Start Time: {this.state.wager.date}</div>
-        <div>Amount: {this.state.wager.amount}</div>
-
-        { referenceHash ? (
-          <Rules referenceHash={referenceHash} startTimestamp={startTimestamp} />
-        ) : (
-          <Spinner intent={Intent.PRIMARY} />
-        )}
-
-        { hasPlayers ? (
+        { loaded ? (
           <div>
-            <h1>Players</h1>
-            {this.state.wager.players.map(address => (
-              <Player
-                key={address}
-                player={address}
-                winner={this.state.wager.winner}
-                accounts={this.state.accounts}
-              />
-            ))}
+            <div className="highlighted">Wager Invite</div>
+            <br />
+            <div>Wager Id: <Link to={`/wagers/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
+            <div>Start Time: {this.state.wager.date}</div>
+            <div>Amount: {this.state.wager.amount}</div>
+
+            <br />
+            { referenceHash ? (
+              <Rules referenceHash={referenceHash} startTimestamp={startTimestamp} />
+            ) : (
+              <Spinner intent={Intent.PRIMARY} />
+            )}
+
+            <br />
+            { hasPlayers ? (
+              <div>
+                <div className="highlighted">Players</div>
+                <br />
+
+                {this.state.wager.players.map(address => (
+                  <Player
+                    key={address}
+                    player={address}
+                    winner={this.state.wager.winner}
+                    accounts={this.state.accounts}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Spinner intent={Intent.PRIMARY} />
+            )}
+
+            { showCallToAction && isWagerOpen &&
+              <div>
+                <br />
+                <div className="highlighted-green">Share this invite with your opponent or wait for someone to counter.</div>
+              </div>
+            }
+
+            <br />
+            { isWagerOpen && !isOwnerLoggedIn &&
+              <div>
+                <form onSubmit={onSubmit}>
+                  <div><input type="submit" value="Fund Wager" /></div>
+                </form>
+                <br />
+              </div>
+            }
+
+            <HomeButton to="/" label="Start Over" />
           </div>
         ) : (
-          <Spinner intent={Intent.PRIMARY} />
-        )}
-
-        <div className="highlighted">Share this invite with your opponent or wait for someone to counter.</div>
-
-        { isWagerOpen &&
           <div>
-            <form onSubmit={onSubmit}>
-              <input type="submit" value="Fund Wager" />
-            </form>
+            <Spinner intent={Intent.PRIMARY} />
+            <br />
             <br />
           </div>
-        }
+        ) }
 
-        <HomeButton to="/" label="Start Over" />
-
+        <br />
         <EventLogs index={this.props.match.params.id} />
       </div>
     );

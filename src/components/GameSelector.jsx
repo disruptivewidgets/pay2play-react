@@ -88,35 +88,35 @@ var GameSelector = React.createClass({
 
     return (
       <div>
-      {loaded ? (
-        <div>
-          <p className="highlighted">Select your wager</p>
+        { loaded ? (
+          <div>
+            <p className="highlighted">Select your wager</p>
 
-          <Select
-            addLabelText='Select One'
-            name="form-field-name"
-            options={this.state.games}
-            onChange={onChange}
-            value={this.state.value}
-            clearable={false}
-            cache={false}
-            searchable={false}
-          />
+            <Select
+              addLabelText='Select One'
+              name="form-field-name"
+              options={this.state.games}
+              onChange={onChange}
+              value={this.state.value}
+              clearable={false}
+              cache={false}
+              searchable={false}
+            />
 
-          <br />
-          <GameItem
-            key={this.state.selected.id}
-            item={this.state.selected}
-          />
-          <br />
-        </div>
-      ) : (
-        <div>
-          <Spinner intent={Intent.PRIMARY} />
-          <br />
-          <br />
-        </div>
-      ) }
+            <br />
+            <GameItem
+              key={this.state.selected.id}
+              item={this.state.selected}
+            />
+            <br />
+          </div>
+        ) : (
+          <div>
+            <Spinner intent={Intent.PRIMARY} />
+            <br />
+            <br />
+          </div>
+        ) }
       </div>
     );
   }

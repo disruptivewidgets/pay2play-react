@@ -89,7 +89,15 @@ export default class Web3Shim extends React.Component {
     contract.options.address = "0xdccd2a82cea71049b76c3824338f9af65f6515db"; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
+      console.log("registrarStartDate");
       console.log(error, result);
+    });
+
+    window.contract.methods.node().call({}, function(error, result) {
+      console.log("node");
+      console.log(error, result);
+
+      window.hostNode = result;
     });
 
     console.log("connect contract END");
