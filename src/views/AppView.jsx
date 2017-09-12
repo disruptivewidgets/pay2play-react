@@ -42,26 +42,70 @@ const AppView = () => (
       <div>Smart Wagers with Ethereum Blockchain</div>
       <br />
 
-      <Route exact path="/" component={Home}/>
-      <Route exact path="/start" component={Start}/>
-
-      <Route exact path={`/invites/:id`} component={Invite}/>
-
-      <Route exact path={`/wagers/:id`} component={Wager}/>
-
-      <Web3Shim />
-      <Wagers />
+      <MistSite />
 
     </div>
   </Router>
 )
 
-// {this.state.list.map(item => (
-//   <GameItem
-//     key={item.id}
-//     item={item}
-//   />
-// ))}
+// const MistSite = () => (
+//   <div>
+//     <StartButton to="/start" label="Start Wager" />
+//     <br />
+//   </div>
+// )
+
+class MistSite extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  componentWillMount() {
+    if (typeof(mist) !== "undefined") {
+      console.log("Mist browser detected");
+      this.setState({
+        hasMist: true
+      });
+    } else {
+      console.log("Mist browser not detected");
+      this.setState({
+        hasMist: false
+      });
+    }
+  }
+  componentDidMount() {
+  }
+  render() {
+
+    const hasMistBrowser = this.state.hasMist;
+
+    return (
+      <div>
+        { hasMistBrowser ? (
+          <div>
+            <Route exact path="/" component={Home}/>
+            <Route exact path="/start" component={Start}/>
+
+            <Route exact path={`/invites/:id`} component={Invite}/>
+
+            <Route exact path={`/wagers/:id`} component={Wager}/>
+
+            <Web3Shim />
+            <Wagers />
+            
+            <br />
+          </div>
+        ) : (
+          <div>
+            <div className="highlighted-red">Pay2Play requires Mist browser to work.</div>
+            <div>Please <a href="https://github.com/ethereum/mist/releases">download</a> Mist browser and all the blocks before using Pay2Play</div>
+            <div>MetaMask and Parity support comming soon.</div>
+            <br />
+          </div>
+        )}
+      </div>
+    );
+  }
+}
 
 const Home = () => (
   <div>
