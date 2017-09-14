@@ -42,6 +42,8 @@ var Wager = React.createClass({
   },
   render: function() {
     const isWagerFinished = (this.state.wager.state === 'finished') ;
+    const isWagerSettled = (this.state.wager.state === 'settled');
+
     const hasPlayers = (this.state.wager.players !== undefined);
 
     var isWinner = false;
@@ -58,7 +60,7 @@ var Wager = React.createClass({
       }
     }
 
-    if (!isWagerFinished) {
+    if (!isWagerFinished && !isWagerSettled) {
       isLoser = false;
       isWinner = false;
     }
@@ -204,6 +206,7 @@ var Wager = React.createClass({
                   <br />
                   <div>
                     <Spinner intent={Intent.PRIMARY} />
+                    <div>Please wait...</div>
                   </div>
                 </div>
               )}
@@ -214,21 +217,23 @@ var Wager = React.createClass({
               { isWinner &&
                 <div>
                   { loaded ? (
-                    <form>
+                    <div>
                       <div className="highlighted-green">Congratulations! You are the winner!</div>
                       <br />
 
-                      <form name="windraw-winnings-form" onSubmit={onSubmit}>
-                        <div><input type="submit" value="Withdraw Winnings" /></div>
-                      </form>
-
-                      <br />
-                    </form>
+                      { !isWagerSettled &&
+                        <form name="windraw-winnings-form" onSubmit={onSubmit}>
+                          <div><input type="submit" value="Withdraw Winnings" /></div>
+                          <br />
+                        </form>
+                      }
+                    </div>
                   ) : (
                     <div>
                       <br />
                       <div>
                         <Spinner intent={Intent.PRIMARY} />
+                        <div>Please wait...</div>
                       </div>
                       <br />
                     </div>

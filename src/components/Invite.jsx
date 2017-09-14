@@ -34,7 +34,8 @@ var Invite = React.createClass({
   },
   componentDidMount: function() {
     this.setState({
-      loaded: true
+      loaded: true,
+      error: ''
     });
 
     WagerStore.addChangeListener(this._onChange);
@@ -69,6 +70,7 @@ var Invite = React.createClass({
     }
 
     var loaded = this.state.loaded;
+    var error = this.state.error;
 
     const onSubmit = (event) => {
 
@@ -79,6 +81,14 @@ var Invite = React.createClass({
       this.setState({
         loaded: false
       });
+
+      if (window.authorizedAccount === undefined) {
+        this.setState({
+          loaded: true,
+          error: 'Please connect an account with balance first.'
+        });
+        return;
+      }
 
       const amount = window.web3.utils.toWei(0.01, 'ether');
       const gas = 650000;
@@ -170,7 +180,15 @@ var Invite = React.createClass({
             { isWagerOpen && !isOwnerLoggedIn &&
               <div>
                 <form onSubmit={onSubmit}>
-                  <div><input type="submit" value="Fund Wager" /></div>
+                  { error ? (
+                    <div>
+                      <div><input type="submit" value="Fund Wager" /></div>
+                      <br />
+                      <div className="error">{this.state.error}</div>
+                    </div>
+                  ) : (
+                    <div><input type="submit" value="Fund Wager" /></div>
+                  ) }
                 </form>
                 <br />
               </div>
@@ -181,6 +199,7 @@ var Invite = React.createClass({
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />
+            <div>Please wait...</div>
             <br />
             <br />
           </div>

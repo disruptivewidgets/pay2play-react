@@ -3,6 +3,7 @@ var request = require('superagent');
 import util from 'ethereumjs-util';
 
 import EventLogServerActions from '../actions/EventLogServerActions';
+import { contractAddress } from '../utils/Web3Api.js';
 
 module.exports = {
   findItems: function(query) {
@@ -23,8 +24,8 @@ module.exports = {
       "WinningsWithdrawn": "0x9f1f3144430cc9624860cf28da61318e428f6d15f17e420c04e8203581951a91"
     };
 
-    var registrarAddress = "0xdccd2a82cea71049b76c3824338f9af65f6515db";
-    var address = registrarAddress;
+    // var registrarAddress = "0x812d7c22103a243072dfcf0f60acee1eda171a29";
+    var address = contractAddress;
 
     var topic0 = events[key];
 
@@ -44,10 +45,7 @@ module.exports = {
 
       if (response.statusCode == 200) {
         var result = JSON.parse(response.text).result;
-
         console.log(result);
-
-        console.log("YO YO YO");
 
         var data = {
           transactions: result,

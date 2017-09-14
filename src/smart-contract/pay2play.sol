@@ -1,7 +1,7 @@
 /**
  * @title Pay2Play Smart Contract
  * @url http://pay2play.io
- * @version 0.1.0
+ * @version 1.0.0
  */
 
 pragma solidity ^0.4.11;
@@ -16,7 +16,7 @@ contract Deposit {
   address public owner;
   uint public value;
 
-  bool active;
+  bool public active;
 
   event BalanceTransfered(address winner);
 
@@ -45,7 +45,14 @@ contract Deposit {
   function withdraw(address winner) onlyRegistrar {
     winner.transfer(this.balance);
 
+    value = 0;
+    active = false;
+
     BalanceTransfered(winner);
+  }
+
+  function getActiveState() returns (bool) {
+    return active;
   }
 }
 
@@ -58,7 +65,7 @@ contract Registrar {
     uint32 constant wagerWindow = 24 hours;
     uint constant minPrice = 0.01 ether;
 
-    enum Mode { Open, Closed, Finished }
+    enum Mode { Open, Closed, Finished, Settled }
 
     struct wager {
         address[] depositors;
@@ -97,6 +104,12 @@ contract Registrar {
         var wager = wagers[index];
 
         if (wager.winner != node) {
+          var deposit = deposits[wager.winner][index];
+
+          if (deposit.getActiveState() != true) {
+            return Mode.Settled;
+          }
+
           return Mode.Finished;
         }
 

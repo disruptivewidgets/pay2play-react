@@ -24,11 +24,6 @@ var EventLogs = React.createClass({
   _onChange: function() {
     this.setState(EventLogStore.getDataStore());
     this.setState(EventLogStore.getData());
-
-    // console.log("HAHAHA");
-    // console.log(EventLogStore.getData());
-    //
-    // console.log(EventLogStore.getDataStore());
   },
   render: function() {
 

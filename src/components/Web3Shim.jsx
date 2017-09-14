@@ -2,7 +2,9 @@ import React from 'react';
 import Web3 from 'web3';
 
 import interfaces from "../smart-contract/interfaces.js";
-import ApiUtils from '../helpers/ApiUtils'
+import ApiUtils from '../helpers/ApiUtils';
+
+import { contractAddress } from '../utils/Web3Api.js';
 
 export default class Web3Shim extends React.Component {
   constructor(props) {
@@ -24,37 +26,40 @@ export default class Web3Shim extends React.Component {
       window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
     }
 
+    console.log("Ropsen Pay2Play: ");
+    console.log(contractAddress);
+
     return null;
 
-    // API
-    var url = "http://www.hypewizard.com/api/ask_amazon";
-    var params = {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: 'Business'
-      })
-    };
-
-    var Api = {
-      getItems: function() {
-        return fetch(url, params)
-          .then(ApiUtils.checkStatus)
-          .then(ApiUtils.parseResponse)
-          .then(function(response) {
-            console.log(response);
-            console.log(response["ItemAttributes"]["Title"]);
-            return response;
-          })
-          .catch(e => e)
-      },
-    };
-
-    Api.getItems();
-    // API
+    // // API
+    // var url = "http://www.hypewizard.com/api/ask_amazon";
+    // var params = {
+    //   method: 'POST',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     query: 'Business'
+    //   })
+    // };
+    //
+    // var Api = {
+    //   getItems: function() {
+    //     return fetch(url, params)
+    //       .then(ApiUtils.checkStatus)
+    //       .then(ApiUtils.parseResponse)
+    //       .then(function(response) {
+    //         console.log(response);
+    //         console.log(response["ItemAttributes"]["Title"]);
+    //         return response;
+    //       })
+    //       .catch(e => e)
+    //   },
+    // };
+    //
+    // Api.getItems();
+    // // API
   }
   componentDidMount() {
     if (window.web3.eth.currentProvider.isConnected()) {
@@ -86,7 +91,7 @@ export default class Web3Shim extends React.Component {
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = "0xdccd2a82cea71049b76c3824338f9af65f6515db"; // Ropsen Pay2Play
+    contract.options.address = contractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
       console.log("registrarStartDate");

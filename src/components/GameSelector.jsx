@@ -113,6 +113,7 @@ var GameSelector = React.createClass({
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />
+            <div>Please wait...</div>
             <br />
             <br />
           </div>

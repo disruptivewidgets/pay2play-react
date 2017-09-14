@@ -6,13 +6,13 @@ var request = require('superagent');
 
 import interfaces from "../smart-contract/interfaces.js";
 
-var registrarAddress = "0xdccd2a82cea71049b76c3824338f9af65f6515db";
+var contractAddress = "0x20b4bc2c50cf618c441e08f246f283cc81a0035b"; // Ropsen Pay2Play
 
 function retrieveWager(index, callback) {
   var wagers = [];
 
   var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-  contract.options.address = registrarAddress; // Ropsen Pay2Play
+  contract.options.address = contractAddress; // Ropsen Pay2Play
 
   contract.methods.getWager(index.toString()).call({}, function(error, result) {
     var state = "open";
@@ -29,6 +29,8 @@ function retrieveWager(index, callback) {
       case "2":
         state = "finished";
         break;
+      case "3":
+        state = "settled";
     }
 
     console.log(result);
@@ -64,8 +66,10 @@ function eachAsync(array, f, callback) {
 
 module.exports = {
   retrieveWagers: function() {
+    console.log("retrieveWagers");
+
     var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = registrarAddress;
+    contract.options.address = contractAddress;
 
     contract.methods.getWagerCount().call({}, function(error, result) {
       var index = result - 1;
@@ -96,5 +100,6 @@ module.exports = {
     window.web3.eth.getAccounts((error, accounts) => {
       Web3ServerActions.retrieveAccounts(accounts);
     });
-  }
+  },
+  contractAddress: contractAddress
 };

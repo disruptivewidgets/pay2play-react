@@ -5,6 +5,7 @@ var loaders = require('./webpack.loaders');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var DashboardPlugin = require('webpack-dashboard/plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = process.env.PORT || "8888";
@@ -36,9 +37,40 @@ loaders.push({
     }
   }
 });
+
 // loaders.push({
 //   test: /\.(jpe?g|png|gif|svg)$/i,
-//   loader: "file-loader?name=/images/[name].[ext]"
+//   use: {
+//     loader: 'file-loader',
+//     options: {
+//       name: '/icons/[name].[ext]'
+//     }
+//   }
+// });
+
+// loaders.push({
+//   test: /\.(jpe?g|png|gif|svg)$/i,
+//   loader: "file-loader"
+// });
+
+// loaders.push({
+//   test: /\.(jpe?g|png|gif|svg)$/i,
+//   loader: "file-loader?name=/icons/icons/[name].[ext]"
+// });
+
+// loaders.push({
+//   test: /\.(jpe?g|png|gif|svg)$/i,
+//   use: {
+//     loader: 'file-loader',
+//     options: {
+//       name: 'icons/[hash].[ext]'
+//     }
+//   }
+// });
+
+// loaders.push({
+//   test: /\.(jpe?g|png|gif|svg)$/i,
+//   loader: "url-loader?name=/images/[name].[ext]"
 // });
 
 module.exports = {
@@ -85,6 +117,12 @@ module.exports = {
         css: ['style.css'],
         js: [ "bundle.js"],
       }
-    })
+    }),
+    new CopyWebpackPlugin([
+      {
+        from: 'icons',
+        to: 'icons'
+      }
+    ])
   ]
 };

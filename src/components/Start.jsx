@@ -95,6 +95,14 @@ var Start = React.createClass({
         return;
       }
 
+      if (window.authorizedAccount === undefined) {
+        this.setState({
+          loaded: true,
+          error: 'Please connect an account with balance first.'
+        });
+        return;
+      }
+
       amount = window.web3.utils.toWei(0.01, 'ether');
       const gas = 650000;
       const gasPrice = window.web3.utils.toWei(20, 'shannon');
@@ -158,6 +166,7 @@ var Start = React.createClass({
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />
+            <div>Please wait...</div>
             <br />
             <br />
           </div>
