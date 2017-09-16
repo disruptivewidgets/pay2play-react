@@ -5,6 +5,8 @@ import Invite from '../components/Invite';
 import Rules from '../components/Rules';
 import EventLogs from '../components/EventLogs';
 
+import SessionHelper from "../helpers/SessionUtils.js";
+
 import WinnerSelector from '../components/WinnerSelector';
 
 import Helpers from "../helpers/TransactionUtils.js";
@@ -26,6 +28,24 @@ var Wager = React.createClass({
     this.setState(WagerStore.get());
 
     Web3Actions.retrieveWager(this.props.match.params.id);
+
+    var transaction = SessionHelper.hasTransactionsWithWagerId(this.props.match.params.id);
+
+    console.log("TRANSACTION");
+    console.log(transaction);
+
+    if (transaction) {
+      if(transaction.status == "pending_counter_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_counter_receipt_review");
+      }
+    }
+
+    // if (SessionHelper.hasTransactionsWithStatus("pending_counter_receipt_review")) {
+    //   this.setState({
+    //     processing: true
+    //   });
+    // }
+
   },
   componentDidMount: function() {
     this.setState({
@@ -36,6 +56,8 @@ var Wager = React.createClass({
   },
   componentWillUnmount: function() {
     WagerStore.removeChangeListener(this._onChange);
+  },
+  componentWillReceiveProps: function() {
   },
   _onChange: function() {
     this.setState(WagerStore.get());

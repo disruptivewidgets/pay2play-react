@@ -82,12 +82,12 @@ var EventLogs = React.createClass({
 function EventLogItem(props) {
   const {item} = props;
 
-  const url = "https://" + 'ropsten' + ".etherscan.io/tx/" + item.transactionHash;
+  const url = "https://" + 'ropsten' + ".etherscan.io/tx/" + item.txid;
 
   return (
     <div>
       <label>
-        {item.topic} | <a href={url}>{item.transactionHash}</a>
+        {item.topic} | <a href={url}>{item.txid}</a>
       </label>
     </div>
   );

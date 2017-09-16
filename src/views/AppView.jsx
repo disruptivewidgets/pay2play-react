@@ -12,6 +12,10 @@ import Wager from '../components/Wager';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Web3 from 'web3';
+import { contractAddress } from '../utils/Web3Api.js';
+import interfaces from "../smart-contract/interfaces.js";
+
 import {Helmet} from "react-helmet";
 
 import {
@@ -42,14 +46,12 @@ const AppView = () => (
     <Router>
       <div>
 
-
         <Logo />
         <br />
         <div>Smart Wagers with Ethereum Blockchain</div>
         <br />
 
         <MistSite />
-
       </div>
     </Router>
   </div>
@@ -65,6 +67,59 @@ class MistSite extends React.Component {
       this.setState({
         hasMist: true
       });
+
+      //
+      console.log("WEB3 START");
+
+      if (typeof web3 !== 'undefined') {
+        // Use Mist/MetaMask's provider
+        window.web3 = new Web3(web3.currentProvider);
+      } else {
+        console.log('No web3? You should consider trying MetaMask!');
+        // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+      }
+
+      console.log("Ropsen Pay2Play: ");
+      console.log(contractAddress);
+
+      if (window.web3.eth.currentProvider.isConnected()) {
+        console.log("web3 connected");
+      } else {
+        console.log("web3 not connected");
+      }
+
+      this.setState({version: window.web3.version});
+
+      window.web3.eth.getAccounts((err, accounts) => {
+        if (err || !accounts || accounts.length == 0) return;
+        this.setState({authorizedAccount: accounts[0]});
+
+        window.authorizedAccount = accounts[0];
+      });
+
+      window.web3.eth.getBlockNumber((err, blockNumber) => {
+        this.setState({blockNumber: blockNumber});
+      });
+
+      window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
+      contract.options.address = contractAddress; // Ropsen Pay2Play
+
+      window.contract.methods.registrarStartDate().call({}, function(error, result) {
+        console.log("registrarStartDate");
+        console.log(error, result);
+      });
+
+      window.contract.methods.node().call({}, function(error, result) {
+        console.log("node");
+        console.log(error, result);
+
+        window.hostNode = result;
+      });
+
+      console.log("WEB3 END");
+      //
+
     } else {
       console.log("Mist browser not detected");
       this.setState({

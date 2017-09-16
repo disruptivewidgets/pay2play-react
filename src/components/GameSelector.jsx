@@ -48,14 +48,10 @@ var GameSelector = React.createClass({
       return game;
     });
 
-    console.log("HERE");
-
     var selected = _.find(dataStore.list, function(game) {
       console.log(game.referenceHash, games[0].value);
       return game.referenceHash == games[0].value;
     });
-
-    console.log(selected);
 
     this.setState({
         games: games,
@@ -90,10 +86,8 @@ var GameSelector = React.createClass({
       <div>
         { loaded ? (
           <div>
-            <p className="highlighted">Select your wager</p>
-
             <Select
-              addLabelText='Select One'
+              addLabelText='Select Game'
               name="form-field-name"
               options={this.state.games}
               onChange={onChange}

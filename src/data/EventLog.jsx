@@ -3,7 +3,8 @@ import Immutable from 'immutable';
 const EventLog = Immutable.Record({
   id: '',
   topic: '',
-  transactionHash: ''
+  txid: '',
+  wagerId: 0
 });
 
 export default EventLog;

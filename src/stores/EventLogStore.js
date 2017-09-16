@@ -32,6 +32,22 @@ var EventLogStore = ObjectAssign({}, EventEmitter.prototype, {
 
   getData: function() {
     return _store.data
+  },
+
+  getTransaction: function(wagerId) {
+    console.log("getTransaction");
+
+    var logs = _store.data["WagerStarted"];
+
+    console.log(logs);
+
+    if (logs) {
+      var log = _.findWhere(logs, {wagerId: wagerId});
+
+      console.log("LOG LOG");
+      console.log(log);
+    }
+
   }
 });
 
@@ -45,21 +61,33 @@ AppDispatcher.register(function(payload) {
         console.log(action.response);
 
         var transactions = action.response.transactions;
-        var topic = action.response.topic;
+        var topicKey = action.response.topic;
 
         var eventLogs = _.map(transactions, function(transaction) {
 
           const id = EventLogCounter.increment();
 
+          console.log("transaction");
+
+          var wagerId = 0;
+
+          if (topicKey == "WagerStarted") {
+            var topics = transaction.topics;
+            var topic = topics[1];
+
+            wagerId = window.web3.utils.hexToNumber(topic);
+          }
+
           return new EventLog({
             id,
-            topic: topic,
-            transactionHash: transaction.transactionHash
+            topic: topicKey,
+            txid: transaction.transactionHash,
+            wagerId: wagerId
           })
         });
 
         _store.list = eventLogs;
-        _store.data[topic] = eventLogs;
+        _store.data[topicKey] = eventLogs;
 
         EventLogStore.emit(CHANGE_EVENT);
         break;

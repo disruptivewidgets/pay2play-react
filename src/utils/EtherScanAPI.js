@@ -54,5 +54,26 @@ module.exports = {
         EventLogServerActions.receivedLogs(data);
       }
     });
+  },
+  pullTransaction: function(txid, callback) {
+    var url = "https://ropsten.etherscan.io/tx/" + txid;
+
+    console.log(url);
+
+    request.get(url)
+    .set('Accept', 'application/json')
+    .end(function(error, response) {
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (response.statusCode == 200) {
+        var result = JSON.parse(response.text).result;
+        console.log(result);
+
+        callback(result)
+      }
+    });
   }
 };

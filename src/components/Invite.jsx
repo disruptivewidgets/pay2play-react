@@ -11,7 +11,10 @@ import WagerStore from '../stores/WagerStore';
 import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
 import SwarmActions from '../actions/SwarmActions';
+import EventLogStore from '../stores/EventLogStore';
 import Web3API from '../utils/Web3API';
+
+import SessionHelper from "../helpers/SessionUtils.js";
 
 import _ from 'lodash';
 
@@ -26,22 +29,69 @@ var Invite = React.createClass({
     return WagerStore.get();
   },
   componentWillMount: function() {
+    console.log("componentWillMount");
+
     this.setState(WagerStore.get());
     this.setState(Web3Store.getStore());
 
-    Web3Actions.retrieveWager(this.props.match.params.id);
-    Web3Actions.getAccounts();
-  },
-  componentDidMount: function() {
     this.setState({
       loaded: true,
       error: ''
     });
 
+    Web3Actions.retrieveWager(this.props.match.params.id);
+    Web3Actions.getAccounts();
+
+    var transaction = SessionHelper.hasTransactionsWithWagerId(this.props.match.params.id.toString());
+
+    if (transaction) {
+      if(transaction.status == "pending_start_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_start_receipt_review");
+      }
+
+      if (transaction.status == "pending_counter_receipt_review") {
+        this.setState({
+          processing: true
+        });
+      }
+    }
+
+    SessionHelper.listTransactions();
+  },
+  componentDidMount: function() {
+    // EventLogStore.getTransaction(this.props.match.params.id);
+
     WagerStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
     WagerStore.removeChangeListener(this._onChange);
+  },
+  componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps");
+
+    this.setState({
+      loaded: true,
+      error: ''
+    });
+
+    Web3Actions.retrieveWager(nextProps.match.params.id);
+    Web3Actions.getAccounts();
+
+    var transaction = SessionHelper.hasTransactionsWithWagerId(nextProps.match.params.id.toString());
+
+    if (transaction) {
+      if(transaction.status == "pending_start_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_start_receipt_review");
+      }
+
+      if (transaction.status == "pending_counter_receipt_review") {
+        this.setState({
+          processing: true
+        });
+      }
+    }
+
+    SessionHelper.listTransactions();
   },
   _onChange: function() {
     this.setState(WagerStore.get());
@@ -69,17 +119,17 @@ var Invite = React.createClass({
       showCallToAction = true;
     }
 
-    var loaded = this.state.loaded;
     var error = this.state.error;
+    var loaded = this.state.loaded;
+    var processing = this.state.processing;
 
     const onSubmit = (event) => {
 
       event.preventDefault();
 
-      console.log(window.web3.version);
-
       this.setState({
-        loaded: false
+        loaded: false,
+        error: ''
       });
 
       if (window.authorizedAccount === undefined) {
@@ -103,23 +153,49 @@ var Invite = React.createClass({
 
       console.log(params);
 
-      // var hash = this.state.hash;
-      //
-      // console.log("hash", hash);
-      // console.log(typeof(this.state.hash));
-      //
-      // hash = 'd3ba5f21813ef1002930ba5c0c01f2f54236717e1f7a254354ac81a7d0bbfd53';
-
       window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params, Helpers.getTxHandler({
+          onStart: (txid) => {
+            console.log("onStart");
+            console.log("txid: " + txid);
+
+            SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
+
+            var transaction = {
+              id: txid,
+              status: "pending_block",
+              type: "counter",
+              wagerId: this.props.match.params.id
+            }
+
+            SessionHelper.storeTransaction(transaction);
+            SessionHelper.listTransactions();
+          },
           onDone: () => {
             console.log("onDone");
           },
           onSuccess: (txid, receipt) => {
             console.log("onSuccess");
-            console.log(txid, receipt);
+            console.log(txid);
+            console.log(receipt);
+
+            var logs = receipt.logs;
+
+            var log = logs[0];
+
+            var topics = log.topics;
+
+            var topic = topics[1];
+
+            var wagerId = window.web3.utils.hexToNumber(topic);
+
+            SessionHelper.updateTransaction(txid, "status", "pending_counter_receipt_review");
+            SessionHelper.listTransactions();
+
+            // console.log(SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"));
 
             this.setState({
-              loaded: true
+              loaded: true,
+              processing: true
             });
           },
           onError: (error) => {
@@ -179,18 +255,27 @@ var Invite = React.createClass({
             <br />
             { isWagerOpen && !isOwnerLoggedIn &&
               <div>
-                <form onSubmit={onSubmit}>
-                  { error ? (
-                    <div>
+                { processing ? (
+                  <div>
+                    <br />
+                    <div className="highlighted-green">Congratulations! Your counter is in queue.</div>
+                    <div>Note: This message will disappear when the queue clears.</div>
+                    <br />
+                  </div>
+                ) : (
+                  <form onSubmit={onSubmit}>
+                    { error ? (
+                      <div>
+                        <div><input type="submit" value="Fund Wager" /></div>
+                        <br />
+                        <div className="error">{this.state.error}</div>
+                      </div>
+                    ) : (
                       <div><input type="submit" value="Fund Wager" /></div>
-                      <br />
-                      <div className="error">{this.state.error}</div>
-                    </div>
-                  ) : (
-                    <div><input type="submit" value="Fund Wager" /></div>
-                  ) }
-                </form>
-                <br />
+                    ) }
+                    <br />
+                  </form>
+                )}
               </div>
             }
 

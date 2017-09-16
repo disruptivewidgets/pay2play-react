@@ -48,6 +48,7 @@ AppDispatcher.register(function(payload) {
             date: wager.date.toString(),
             startTimestamp: wager.startTimestamp,
             amount: wager.amount,
+            players: wager.players,
             referenceHash: wager.referenceHash
           })
         });

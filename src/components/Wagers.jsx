@@ -6,6 +6,7 @@ import {
   Link,
   Route,
   HashRouter as Router,
+  browserHistory, Redirect
 } from 'react-router-dom'
 
 var Wagers = React.createClass({
@@ -22,6 +23,8 @@ var Wagers = React.createClass({
   componentWillUnmount: function() {
     WagerBulkStore.removeChangeListener(this._onChange);
   },
+  componentWillReceiveProps: function() {
+  },
   _onChange: function() {
     this.setState(WagerBulkStore.getList());
   },
@@ -29,12 +32,14 @@ var Wagers = React.createClass({
     return (
       <div>
         <p className="highlighted">Wagers</p>
+
         {this.state.list.map(item => (
           <WagerItem
             key={item.id}
             item={item}
           />
         ))}
+
       </div>
     );
   }
@@ -53,7 +58,7 @@ function WagerItem(props) {
       <label>
         <Link to={`/invites/${item.index}`} replace>
           {item.index}
-        </Link> | {item.state} | {item.date} | {item.amount}
+        </Link> | {item.state} | {item.players[0]} | {item.date} | {item.amount}
       </label>
     </div>
   );

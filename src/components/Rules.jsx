@@ -18,6 +18,11 @@ var Rules = React.createClass({
 
     SwarmActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
   },
+  componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps");
+
+    SwarmActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
+  },
   componentDidMount: function() {
     RuleStore.addChangeListener(this._onChange);
   },

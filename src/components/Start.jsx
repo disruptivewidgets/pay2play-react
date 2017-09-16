@@ -5,13 +5,16 @@ import SwarmApi from '../utils/SwarmApi.js';
 
 import GameSelector from '../components/GameSelector';
 
-import Helpers from "../helpers/TransactionUtils.js";
+import TransactionHelper from "../helpers/TransactionUtils.js";
+import SessionHelper from "../helpers/SessionUtils.js";
 
 import { Intent, Spinner } from "@blueprintjs/core";
 
 import "@blueprintjs/core/dist/blueprint.css";
 
 var validator = require('validator');
+
+import _ from 'lodash';
 
 var Start = React.createClass({
   getInitialState: function() {
@@ -22,6 +25,11 @@ var Start = React.createClass({
     };
   },
   componentWillMount: function() {
+    if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review")) {
+      this.setState({
+        processing: true
+      });
+    }
   },
   componentDidMount: function() {
     this.setState({
@@ -52,8 +60,9 @@ var Start = React.createClass({
       });
     };
 
-    var loaded = this.state.loaded;
     var error = this.state.error;
+    var loaded = this.state.loaded;
+    var processing = this.state.processing;
 
     const onSubmit = (event) => {
 
@@ -61,8 +70,6 @@ var Start = React.createClass({
 
       console.log(this.state.amount);
       console.log(this.state.referenceHash);
-
-      console.log(window.web3.version);
 
       this.setState({
         loaded: false,
@@ -116,15 +123,48 @@ var Start = React.createClass({
 
       console.log(params);
 
-      window.contract.methods.createWagerAndDeposit(this.state.referenceHash).send(params, Helpers.getTxHandler({
+      window.contract.methods.createWagerAndDeposit(this.state.referenceHash).send(params, TransactionHelper.getTxHandler({
+          onStart: (txid) => {
+            console.log("onStart");
+            console.log("txid: " + txid);
+
+            var transaction = {
+              id: txid,
+              status: "pending_block",
+              type: "start",
+              wagerId: -1
+            }
+
+            SessionHelper.storeTransaction(transaction);
+            SessionHelper.listTransactions();
+          },
           onDone: () => {
             console.log("onDone");
           },
           onSuccess: (txid, receipt) => {
             console.log("onSuccess");
-            console.log(txid, receipt);
+            console.log(txid);
+            console.log(receipt);
+
+            var logs = receipt.logs;
+
+            var log = logs[0];
+
+            var topics = log.topics;
+
+            var topic = topics[1];
+
+            var wagerId = window.web3.utils.hexToNumber(topic);
+
+            SessionHelper.updateTransaction(txid, "status", "pending_start_receipt_review");
+            SessionHelper.updateTransaction(txid, "wagerId", wagerId);
+            SessionHelper.listTransactions();
+
+            // console.log(SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"));
+
             this.setState({
-              loaded: true
+              loaded: true,
+              processing: true
             });
           },
           onError: (error) => {
@@ -141,28 +181,42 @@ var Start = React.createClass({
     return (
       <div>
         { loaded ? (
-          <form onSubmit={onSubmit}>
-            <GameSelector onSelect={this.handleSelect} />
+          <div>
+            <div className="highlighted">Wager Details</div>
 
-            <label>
-              <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
-            </label>
-            <br />
-            <br />
-
-            { error ? (
+            { processing ? (
               <div>
-                <div><input type="submit" value="Start Wager" /></div>
                 <br />
-                <div className="error">{this.state.error}</div>
+                <div className="highlighted-green">Congratulations! You have a wager in queue.</div>
+                <div>Note: You will be able to start more wagers once the queue clears.</div>
+                <br />
               </div>
             ) : (
-              <div><input type="submit" value="Start Wager" /></div>
+              <form onSubmit={onSubmit}>
+                <br />
+
+                <GameSelector onSelect={this.handleSelect} />
+
+                <label>
+                  <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                </label>
+                <br />
+                <br />
+
+                { error ? (
+                  <div>
+                    <div><input type="submit" value="Start Wager" /></div>
+                    <br />
+                    <div className="error">{this.state.error}</div>
+                  </div>
+                ) : (
+                  <div><input type="submit" value="Start Wager" /></div>
+                ) }
+
+                <br />
+              </form>
             ) }
-
-            <br />
-          </form>
-
+          </div>
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />

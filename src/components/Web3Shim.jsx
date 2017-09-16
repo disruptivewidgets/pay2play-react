@@ -16,7 +16,12 @@ export default class Web3Shim extends React.Component {
     };
   }
   componentWillMount() {
+    console.log("componentWillMount Web3Shim");
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+
+    //
+    console.log("WEB3 START");
+
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
       window.web3 = new Web3(web3.currentProvider);
@@ -29,39 +34,20 @@ export default class Web3Shim extends React.Component {
     console.log("Ropsen Pay2Play: ");
     console.log(contractAddress);
 
-    return null;
+    // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result){
+    //     if (!error)
+    //         console.log(error);
+    // })
+    // .on("data", function(blockHeader){
+    //   console.log(blockHeader);
+    // });
 
-    // // API
-    // var url = "http://www.hypewizard.com/api/ask_amazon";
-    // var params = {
-    //   method: 'POST',
-    //   headers: {
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     query: 'Business'
-    //   })
-    // };
-    //
-    // var Api = {
-    //   getItems: function() {
-    //     return fetch(url, params)
-    //       .then(ApiUtils.checkStatus)
-    //       .then(ApiUtils.parseResponse)
-    //       .then(function(response) {
-    //         console.log(response);
-    //         console.log(response["ItemAttributes"]["Title"]);
-    //         return response;
-    //       })
-    //       .catch(e => e)
-    //   },
-    // };
-    //
-    // Api.getItems();
-    // // API
-  }
-  componentDidMount() {
+    // // unsubscribes the subscription
+    // subscription.unsubscribe(function(error, success){
+    //     if(success)
+    //         console.log('Successfully unsubscribed!');
+    // });
+
     if (window.web3.eth.currentProvider.isConnected()) {
       console.log("web3 connected");
     } else {
@@ -75,15 +61,6 @@ export default class Web3Shim extends React.Component {
       this.setState({authorizedAccount: accounts[0]});
 
       window.authorizedAccount = accounts[0];
-
-      // window.web3.eth.personal.unlockAccount(accounts[0]);
-      //
-      // window.web3.eth.personal.sign("test", accounts[0]).then(console.log);
-      //
-      // mist.requestAccount(function(e, address) {
-      //   console.log(address);
-      // });
-
     });
 
     window.web3.eth.getBlockNumber((err, blockNumber) => {
@@ -105,7 +82,10 @@ export default class Web3Shim extends React.Component {
       window.hostNode = result;
     });
 
-    console.log("connect contract END");
+    console.log("WEB3 END");
+    //
+  }
+  componentDidMount() {
   }
   render() {
     return (
