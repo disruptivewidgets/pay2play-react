@@ -106,6 +106,7 @@ var Invite = React.createClass({
     const startTimestamp = this.state.wager.startTimestamp;
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const hasPlayers = (this.state.wager.players !== undefined);
+    const isAuthorized = (window.authorizedAccount !== undefined);
 
     var isOwnerLoggedIn = false;
 
@@ -253,7 +254,7 @@ var Invite = React.createClass({
             }
 
             <br />
-            { isWagerOpen && !isOwnerLoggedIn &&
+            { isWagerOpen && !isOwnerLoggedIn && isAuthorized &&
               <div>
                 { processing ? (
                   <div>
