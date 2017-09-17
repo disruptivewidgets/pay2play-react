@@ -15,103 +15,62 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 var GameSelector = React.createClass({
-  getInitialState: function() {
-    return GameStore.getDataStore();
-  },
   componentWillMount: function() {
-    this.setState(GameStore.getDataStore());
+    console.log("componentWillMount");
 
-    SwarmActions.retrieveGames();
-  },
-  componentDidMount: function() {
     this.setState({
-      games: [
+      options: [
         { value: 'one', label: 'One' },
         { value: 'two', label: 'Two' }
       ],
-      value: "one",
-      loaded: false
+      selected: { value: 'one', label: 'One' }
     });
-    GameStore.addChangeListener(this._onChange);
+  },
+  componentDidMount: function() {
   },
   componentWillUnmount: function() {
-    GameStore.removeChangeListener(this._onChange);
   },
-  _onChange: function() {
-    var dataStore = GameStore.getDataStore();
+  componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps");
 
-    var games = _.map(dataStore.list, function(item) {
-      var game = {
-        value: item.referenceHash,
-        label: item.title
-      };
-      return game;
-    });
-
-    var selected = _.find(dataStore.list, function(game) {
-      console.log(game.referenceHash, games[0].value);
-      return game.referenceHash == games[0].value;
+    var selected = _.find(nextProps.data, function(game) {
+      return game.referenceHash == nextProps.selected.value;
     });
 
     this.setState({
-        games: games,
-        value: games[0],
-        loaded: true,
-        selected: selected
+        selected: selected,
+        value: nextProps.selected,
+        options: this.props.options
     });
 
-    this.props.onSelect(games[0]);
-
-    this.setState(GameStore.getDataStore());
+    // this.props.onSelect(nextProps.selected);
+  },
+  _onChange: function() {
   },
   render: function() {
     const onChange = (value) => {
-      console.log("Selected: " + JSON.stringify(value));
-
-      var selected = _.find(this.state.list, function(game) {
-        return game.referenceHash == value.value;
-      });
-
-      this.setState({
-          selected: selected,
-          value: value
-      });
-
       this.props.onSelect(value);
     };
 
-    const loaded = this.state.loaded;
-
     return (
       <div>
-        { loaded ? (
-          <div>
-            <Select
-              addLabelText='Select Game'
-              name="form-field-name"
-              options={this.state.games}
-              onChange={onChange}
-              value={this.state.value}
-              clearable={false}
-              cache={false}
-              searchable={false}
-            />
+        <Select
+          addLabelText='Select Game'
+          name="form-field-name"
+          options={this.state.options}
+          onChange={onChange}
+          value={this.state.value}
+          clearable={false}
+          cache={false}
+          searchable={false}
+        />
 
-            <br />
-            <GameItem
-              key={this.state.selected.id}
-              item={this.state.selected}
-            />
-            <br />
-          </div>
-        ) : (
-          <div>
-            <Spinner intent={Intent.PRIMARY} />
-            <div>Please wait...</div>
-            <br />
-            <br />
-          </div>
-        ) }
+        <br />
+        <GameItem
+          key={this.state.selected.id}
+          item={this.state.selected}
+        />
+        <br />
       </div>
     );
   }

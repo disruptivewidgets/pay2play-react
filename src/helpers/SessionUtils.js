@@ -63,15 +63,15 @@ Session.hasTransactionsWithStatus = function(status) {
   });
 
   if (transactions.length > 0) {
-    return true;
+    return transactions[0];
   } else {
-    return false;
+    return null;
   }
 }
 
 Session.hasTransactionsWithWagerId = function(wagerId) {
   console.log(wagerId);
-  
+
   var transactions = _.filter(Session.getJSON("transactions"), function(transaction) {
     return transaction.wagerId == wagerId;
   });

@@ -1,34 +1,31 @@
-import React from 'react';
-import WagerStore from '../stores/WagerStore';
-
-import SwarmActions from '../actions/SwarmActions';
-import Web3Actions from '../actions/Web3Actions';
-import SwarmApi from '../utils/SwarmApi.js';
+import React, {Component} from 'react';
 
 import GameStore from '../stores/GameStore';
-import GameSelector from '../components/GameSelector';
+import SwarmActions from '../actions/SwarmActions';
+
+import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core";
 
 import TransactionHelper from "../helpers/TransactionUtils.js";
 import SessionHelper from "../helpers/SessionUtils.js";
 
-import { Intent, Spinner } from "@blueprintjs/core";
-
 import "@blueprintjs/core/dist/blueprint.css";
-
-var validator = require('validator');
-
-import {
-  Link,
-  withRouter
-} from 'react-router-dom'
 
 import _ from 'lodash';
 
-var Start = React.createClass({
+import Select from 'react-select';
+
+// Be sure to include styles at some point, probably during your bootstrapping
+import 'react-select/dist/react-select.css';
+
+var StartWagerForm = React.createClass({
   getInitialState: function() {
     return GameStore.getDataStore();
   },
   componentWillMount: function() {
+    this.setState(GameStore.getDataStore());
+
+    SwarmActions.retrieveGames();
+
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review")) {
       this.setState({
         processing: true
@@ -36,26 +33,34 @@ var Start = React.createClass({
     }
 
     this.setState({
-      games: [
-        { value: 'one', label: 'One' },
-        { value: 'two', label: 'Two' }
-      ],
-      selected: { value: 'one', label: 'One' },
-      loaded: false,
+      loaded: true,
       error: '',
       amount: ''
     });
 
-    SwarmActions.retrieveGames();
   },
   componentDidMount: function() {
+    this.setState({
+      games: [
+        { value: 'one', label: 'One' },
+        { value: 'two', label: 'Two' }
+      ],
+      value: "one",
+      loaded: false,
+      error: ''
+    });
+
+    this.props.onLoadStart();
+
     GameStore.addChangeListener(this._onChange);
   },
   componentWillUnmount: function() {
-
+    console.log("componentWillUnmount");
+    
     GameStore.removeChangeListener(this._onChange);
   },
   _onChange: function() {
+    console.log("here");
 
     var dataStore = GameStore.getDataStore();
 
@@ -75,70 +80,31 @@ var Start = React.createClass({
     this.setState({
         games: games,
         value: games[0],
-        referenceHash: selected.referenceHash,
         loaded: true,
-        selected: games[0]
+        selected: selected
     });
+
+    this.props.onLoadFinish();
+
+    this.props.onSelect(games[0]);
 
     this.setState(GameStore.getDataStore());
   },
-  forceUpdate() {
-    // var dataStore = GameStore.getDataStore();
-    //
-    // var games = _.map(dataStore.list, function(item) {
-    //   var game = {
-    //     value: item.referenceHash,
-    //     label: item.title
-    //   };
-    //   return game;
-    // });
-    //
-    // var selected = _.find(dataStore.list, function(game) {
-    //   console.log(game.referenceHash, games[0].value);
-    //   return game.referenceHash == games[0].value;
-    // });
-    //
-    // this.setState({
-    //     games: games,
-    //     value: games[0],
-    //     referenceHash: selected.referenceHash,
-    //     loaded: true,
-    //     selected: games[0]
-    // });
+  render: function() {
+    const onChange = (value) => {
+      console.log("Selected: " + JSON.stringify(value));
 
-    this.setState(GameStore.getDataStore());
-  },
-  handleSelect(game) {
-    console.log("handleSelect");
-    console.log(game);
-
-    this.setState({
-      referenceHash: game.value,
-      selected: game
-    });
-  },
-  render() {
-    const onChange = (event) => {
-      console.log(event.target.value);
+      var selected = _.find(this.state.list, function(game) {
+        return game.referenceHash == value.value;
+      });
 
       this.setState({
-        amount: event.target.value,
-        error: ''
+          selected: selected,
+          value: value
       });
+
+      this.props.onSelect(value);
     };
-
-    var error = this.state.error;
-    var loaded = this.state.loaded;
-    var processing = this.state.processing;
-
-    var transaction = SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review");
-
-    console.log(transaction);
-
-    var queuedWagerId = -1;
-    if (transaction) {
-      queuedWagerId = transaction.wagerId;
-    }
 
     const onSubmit = (event) => {
 
@@ -242,7 +208,6 @@ var Start = React.createClass({
               loaded: true,
               processing: true
             });
-
           },
           onError: (error) => {
             console.log("onError");
@@ -250,60 +215,90 @@ var Start = React.createClass({
             this.setState({
               loaded: true
             });
-
-            this.forceUpdate();
           }
         })
       );
     };
 
+    var loaded = this.state.loaded;
+    var error = this.state.error;
+    var processing = this.state.processing;
+
     return (
       <div>
-        <div className="highlighted">Wager Details</div>
+        <form onSubmit={onSubmit}>
           <br />
-          { loaded ? (
             <div>
               { processing ? (
                 <div>
+                  <br />
                   <div className="highlighted-green">Congratulations! You have a wager in queue.</div>
                   <div>Note: You will be able to start more wagers once the queue clears.</div>
-                  <div>Invite Id: <Link to={`/invites/${queuedWagerId}`} replace>{queuedWagerId}</Link></div>
                   <br />
                 </div>
               ) : (
-                <form onSubmit={onSubmit}>
-                  <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} />
+                <div>
+                  { this.state.selected &&
+                    <div>
+                      <Select
+                        addLabelText='Select Game'
+                        name="form-field-name"
+                        options={this.state.games}
+                        onChange={onChange}
+                        value={this.state.value}
+                        clearable={false}
+                        cache={false}
+                        searchable={false}
+                      />
 
+                      <br />
+                      <GameItem
+                        key={this.state.selected.id}
+                        item={this.state.selected}
+                      />
+                    </div>
+                  }
+
+                  <br />
                   <label>
-                    <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                    <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={this.props.onAmountInput} />
                   </label>
                   <br />
                   <br />
+                </div>
+            ) }
+          </div>
 
-                  { error ? (
-                    <div>
-                      <div><input type="submit" value="Start Wager" /></div>
-                      <br />
-                      <div className="error">{this.state.error}</div>
-                    </div>
-                  ) : (
-                    <div><input type="submit" value="Start Wager" /></div>
-                  ) }
-
-                  <br />
-                </form>
-              ) }
+          { error ? (
+            <div>
+              <div><input type="submit" value="Start Wager" /></div>
+              <br />
+              <div className="error">{this.state.error}</div>
             </div>
           ) : (
-            <div>
-              <Spinner intent={Intent.PRIMARY} />
-              <div>Please wait...</div>
-              <br />
-            </div>
+            <div><input type="submit" value="Start Wager" /></div>
           ) }
+
+          <br />
+        </form>
       </div>
     );
   }
 });
 
-module.exports = Start;
+function GameItem(props) {
+  const {item} = props;
+  return (
+    <div>
+      <label>
+        Swarm Hash: {item.referenceHash}
+      </label>
+      <br />
+      <label>
+        Effective Timeframe: {item.timeframe}
+      </label>
+    </div>
+  );
+}
+
+module.exports = StartWagerForm;
