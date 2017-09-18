@@ -38,14 +38,13 @@ var Wager = React.createClass({
       if(transaction.status == "pending_counter_receipt_review") {
         SessionHelper.updateTransaction(transaction.id, "status", "finished_counter_receipt_review");
       }
+      if(transaction.status == "pending_winner_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_winner_receipt_review");
+      }
+      if(transaction.status == "pending_withrawal_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_withrawal_receipt_review");
+      }
     }
-
-    // if (SessionHelper.hasTransactionsWithStatus("pending_counter_receipt_review")) {
-    //   this.setState({
-    //     processing: true
-    //   });
-    // }
-
   },
   componentDidMount: function() {
     this.setState({
@@ -112,15 +111,46 @@ var Wager = React.createClass({
           console.log(params);
 
           window.contract.methods.withdrawWinnings(this.props.match.params.id).send(params, Helpers.getTxHandler({
+              onStart: (txid) => {
+                console.log("onStart");
+                console.log("txid: " + txid);
+
+                SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
+
+                var transaction = {
+                  id: txid,
+                  status: "pending_block",
+                  type: "withdrawal",
+                  wagerId: this.props.match.params.id
+                }
+
+                SessionHelper.storeTransaction(transaction);
+                SessionHelper.listTransactions();
+              },
               onDone: () => {
                 console.log("onDone");
               },
               onSuccess: (txid, receipt) => {
                 console.log("onSuccess");
-                console.log(txid, receipt);
+                console.log(txid);
+                console.log(receipt);
+
+                var logs = receipt.logs;
+
+                var log = logs[0];
+
+                var topics = log.topics;
+
+                var topic = topics[2];
+
+                var wagerId = window.web3.utils.hexToNumber(topic);
+
+                SessionHelper.updateTransaction(txid, "status", "pending_withrawal_receipt_review");
+                SessionHelper.listTransactions();
 
                 this.setState({
-                  loaded: true
+                  loaded: true,
+                  processing: true
                 });
               },
               onError: (error) => {
@@ -151,15 +181,46 @@ var Wager = React.createClass({
           console.log(params);
 
           window.contract.methods.setWagerWinner(this.props.match.params.id, winner).send(params, Helpers.getTxHandler({
+              onStart: (txid) => {
+                console.log("onStart");
+                console.log("txid: " + txid);
+
+                SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
+
+                var transaction = {
+                  id: txid,
+                  status: "pending_block",
+                  type: "wager_winner",
+                  wagerId: this.props.match.params.id
+                }
+
+                SessionHelper.storeTransaction(transaction);
+                SessionHelper.listTransactions();
+              },
               onDone: () => {
                 console.log("onDone");
               },
               onSuccess: (txid, receipt) => {
                 console.log("onSuccess");
-                console.log(txid, receipt);
+                console.log(txid);
+                console.log(receipt);
+
+                var logs = receipt.logs;
+
+                var log = logs[0];
+
+                var topics = log.topics;
+
+                var topic = topics[1];
+
+                var wagerId = window.web3.utils.hexToNumber(topic);
+
+                SessionHelper.updateTransaction(txid, "status", "pending_winner_receipt_review");
+                SessionHelper.listTransactions();
 
                 this.setState({
-                  loaded: true
+                  loaded: true,
+                  processing: true
                 });
               },
               onError: (error) => {
@@ -179,6 +240,7 @@ var Wager = React.createClass({
     const startTimestamp = this.state.wager.startTimestamp;
 
     var loaded = this.state.loaded;
+    var processing = this.state.processing;
 
     var isModerator = false;
     if (window.authorizedAccount == window.hostNode) {
@@ -187,7 +249,7 @@ var Wager = React.createClass({
 
     return (
         <div>
-          <div className="highlighted">Wager Ticket</div>
+          <div className="highlighted">Wager Terms</div>
           <br />
           <div>Wager Id: {this.state.wager.index}</div>
           <div>Start Time: {this.state.wager.date}</div>
@@ -205,31 +267,35 @@ var Wager = React.createClass({
             <div>
               <br />
               <div className="highlighted">Moderator Tools</div>
-
+              <br />
               { loaded ? (
                 <div>
                   { isWagerFinished ? (
                       <div>
-                        <br />
                         <div>Wager Winner: {this.state.wager.winner}</div>
                       </div>
                     ) : (
                       <div>
-                        <br />
-                        <form name="set-winner-form" onSubmit={onSubmit}>
-                          <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
-                          <div><input type="submit" value="Set Winner" /></div>
-                        </form>
+                        { processing ? (
+                          <div>
+                            <br />
+                            <div className="highlighted-green">You have set transaction winner.</div>
+                            <div>Note: This message will disappear when the queue clears.</div>
+                            <br />
+                          </div>
+                        ) : (
+                          <form name="set-winner-form" onSubmit={onSubmit}>
+                            <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
+                            <div><input type="submit" value="Set Winner" /></div>
+                          </form>
+                        )}
                       </div>
                   )}
                 </div>
               ) : (
                 <div>
-                  <br />
-                  <div>
-                    <Spinner intent={Intent.PRIMARY} />
-                    <div>Please wait...</div>
-                  </div>
+                  <Spinner intent={Intent.PRIMARY} />
+                  <div>Please wait...</div>
                 </div>
               )}
             </div>
@@ -240,19 +306,38 @@ var Wager = React.createClass({
                 <div>
                   { loaded ? (
                     <div>
-                      <div className="highlighted-green">Congratulations! You are the winner!</div>
-                      <br />
-
                       { !isWagerSettled &&
-                        <form name="windraw-winnings-form" onSubmit={onSubmit}>
-                          <div><input type="submit" value="Withdraw Winnings" /></div>
+                        <div>
+                          { processing ? (
+                            <div>
+                              <br />
+                              <div className="highlighted-green">Congratulations! Your withdrawal is in queue.</div>
+                              <div>Note: This message will disappear when the queue clears.</div>
+                              <br />
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="highlighted-green">Congratulations! You are the winner!</div>
+                              <br />
+
+                              <form name="windraw-winnings-form" onSubmit={onSubmit}>
+                                <div><input type="submit" value="Withdraw Winnings" /></div>
+                                <br />
+                              </form>
+                            </div>
+                          )}
+                        </div>
+                      }
+
+                      { isWagerSettled &&
+                        <div>
+                          <div className="highlighted-green">Congratulations! You are the winner!</div>
                           <br />
-                        </form>
+                        </div>
                       }
                     </div>
                   ) : (
                     <div>
-                      <br />
                       <div>
                         <Spinner intent={Intent.PRIMARY} />
                         <div>Please wait...</div>
@@ -264,7 +349,8 @@ var Wager = React.createClass({
               }
               { isLoser &&
                 <div>
-                  <div className="highlighted-red">Sorry, you lost.</div>
+                  <div className="highlighted-red">Sorry, you did not win.</div>
+                  <br />
                   <div>Wager Winner: {this.state.wager.winner}</div>
                   <br />
                 </div>

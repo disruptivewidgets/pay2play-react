@@ -260,47 +260,47 @@ var Start = React.createClass({
     return (
       <div>
         <div className="highlighted">Wager Details</div>
-          <br />
-          { loaded ? (
-            <div>
-              { processing ? (
-                <div>
-                  <div className="highlighted-green">Congratulations! You have a wager in queue.</div>
-                  <div>Note: You will be able to start more wagers once the queue clears.</div>
-                  <div>Invite Id: <Link to={`/invites/${queuedWagerId}`} replace>{queuedWagerId}</Link></div>
-                  <br />
-                </div>
-              ) : (
-                <form onSubmit={onSubmit}>
-                  <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} />
+        <br />
+        { loaded ? (
+          <div>
+            { processing ? (
+              <div>
+                <div className="highlighted-green">Congratulations! You have a wager in queue.</div>
+                <div>Note: You will be able to start more wagers once the queue clears.</div>
+                <div>Invite Id: <Link to={`/invites/${queuedWagerId}`} replace>{queuedWagerId}</Link></div>
+                <br />
+              </div>
+            ) : (
+              <form onSubmit={onSubmit}>
+                <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} />
 
-                  <label>
-                    <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
-                  </label>
-                  <br />
-                  <br />
+                <label>
+                  <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                </label>
+                <br />
+                <br />
 
-                  { error ? (
-                    <div>
-                      <div><input type="submit" value="Start Wager" /></div>
-                      <br />
-                      <div className="error">{this.state.error}</div>
-                    </div>
-                  ) : (
+                { error ? (
+                  <div>
                     <div><input type="submit" value="Start Wager" /></div>
-                  ) }
+                    <br />
+                    <div className="error">{this.state.error}</div>
+                  </div>
+                ) : (
+                  <div><input type="submit" value="Start Wager" /></div>
+                ) }
 
-                  <br />
-                </form>
-              ) }
-            </div>
-          ) : (
-            <div>
-              <Spinner intent={Intent.PRIMARY} />
-              <div>Please wait...</div>
-              <br />
-            </div>
-          ) }
+                <br />
+              </form>
+            ) }
+          </div>
+        ) : (
+          <div>
+            <Spinner intent={Intent.PRIMARY} />
+            <div>Please wait...</div>
+            <br />
+          </div>
+        ) }
       </div>
     );
   }

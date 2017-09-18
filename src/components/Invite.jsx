@@ -192,8 +192,6 @@ var Invite = React.createClass({
             SessionHelper.updateTransaction(txid, "status", "pending_counter_receipt_review");
             SessionHelper.listTransactions();
 
-            // console.log(SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"));
-
             this.setState({
               loaded: true,
               processing: true
@@ -212,10 +210,10 @@ var Invite = React.createClass({
 
     return (
       <div>
+        <div className="highlighted">Wager Invite</div>
+        <br />
         { loaded ? (
           <div>
-            <div className="highlighted">Wager Invite</div>
-            <br />
             <div>Wager Id: <Link to={`/wagers/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
             <div>Start Time: {this.state.wager.date}</div>
             <div>Amount: {this.state.wager.amount}</div>
@@ -286,8 +284,6 @@ var Invite = React.createClass({
           <div>
             <Spinner intent={Intent.PRIMARY} />
             <div>Please wait...</div>
-            <br />
-            <br />
           </div>
         ) }
 
