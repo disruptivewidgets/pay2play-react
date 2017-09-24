@@ -265,12 +265,12 @@ var Invite = React.createClass({
                   <form onSubmit={onSubmit}>
                     { error ? (
                       <div>
-                        <div><input type="submit" value="Fund Wager" /></div>
+                        <div><input type="submit" value="counter Wager" /></div>
                         <br />
                         <div className="error">{this.state.error}</div>
                       </div>
                     ) : (
-                      <div><input type="submit" value="Fund Wager" /></div>
+                      <div><input type="submit" value="Counter Wager" /></div>
                     ) }
                     <br />
                   </form>

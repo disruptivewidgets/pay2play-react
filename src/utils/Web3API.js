@@ -7,6 +7,7 @@ var request = require('superagent');
 import interfaces from "../smart-contract/interfaces.js";
 
 var contractAddress = "0x20b4bc2c50cf618c441e08f246f283cc81a0035b"; // Ropsen Pay2Play
+contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
 
 function retrieveWager(index, callback) {
   var wagers = [];

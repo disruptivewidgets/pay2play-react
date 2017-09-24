@@ -26,6 +26,17 @@ import {
   withRouter
 } from 'react-router-dom'
 
+// window.addEventListener('load', function() {
+//   if (typeof web3 !== 'undefined') {
+//     var provider = web3.currentProvider;
+//     window.web3 = new Web3(web3.currentProvider);
+//
+//     console.log('Web3 detected');
+//   } else {
+//     console.log('No web3? You should consider trying MetaMask!');
+//   }
+// });
+
 const StartButton = withRouter(({ history, label, to }) => (
   <div>
     <button type="button" className="btn-secondary" onClick={() => history.replace(to)} >
@@ -60,82 +71,137 @@ const AppView = () => (
 class MistSite extends React.Component {
   constructor(props) {
     super(props);
+
+    this.handleLoad = this.handleLoad.bind(this);
   }
   componentWillMount() {
-    if (typeof(mist) !== "undefined") {
-      console.log("Mist browser detected");
-      this.setState({
-        hasMist: true
-      });
+    // if (window.web3.currentProvider.isMetaMask === true) {
+    //   console.log("MetaMask detected");
+    // }
+    this.setState({
+      hasMetamask: false,
+      hasMist: false
+    });
 
-      //
-      console.log("WEB3 START");
-
-      if (typeof web3 !== 'undefined') {
-        // Use Mist/MetaMask's provider
-        window.web3 = new Web3(web3.currentProvider);
-      } else {
-        console.log('No web3? You should consider trying MetaMask!');
-        // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-        window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-      }
-
-      console.log("Ropsen Pay2Play: ");
-      console.log(contractAddress);
-
-      if (window.web3.eth.currentProvider.isConnected()) {
-        console.log("web3 connected");
-      } else {
-        console.log("web3 not connected");
-      }
-
-      this.setState({version: window.web3.version});
-
-      window.web3.eth.getAccounts((err, accounts) => {
-        if (err || !accounts || accounts.length == 0) return;
-        this.setState({authorizedAccount: accounts[0]});
-
-        window.authorizedAccount = accounts[0];
-      });
-
-      window.web3.eth.getBlockNumber((err, blockNumber) => {
-        this.setState({blockNumber: blockNumber});
-      });
-
-      window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-      contract.options.address = contractAddress; // Ropsen Pay2Play
-
-      window.contract.methods.registrarStartDate().call({}, function(error, result) {
-        console.log("registrarStartDate");
-        console.log(error, result);
-      });
-
-      window.contract.methods.node().call({}, function(error, result) {
-        console.log("node");
-        console.log(error, result);
-
-        window.hostNode = result;
-      });
-
-      console.log("WEB3 END");
-      //
-
-    } else {
-      console.log("Mist browser not detected");
-      this.setState({
-        hasMist: false
-      });
-    }
   }
   componentDidMount() {
+    window.addEventListener('load', this.handleLoad);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('load', this.handleLoad);
+  }
+  handleLoad(e) {
+    console.log("handle load");
+    console.log(e);
+
+    if (typeof web3 !== 'undefined') {
+      var provider = web3.currentProvider;
+      window.web3 = new Web3(web3.currentProvider);
+
+      console.log('Web3 detected');
+
+      if (window.web3.currentProvider.isMetaMask === true) {
+        console.log("MetaMask detected");
+
+        this.setupWeb3();
+
+        this.setState({
+          hasMetamask: true
+        });
+      }
+
+      if (typeof(mist) !== "undefined") {
+        console.log("Mist browser detected");
+
+        this.setupWeb3();
+
+        this.setState({
+          hasMist: true
+        });
+      }
+
+    } else {
+      console.log('No web3? You should consider trying MetaMask!');
+    }
+
+    // if (typeof(mist) !== "undefined") {
+    //   console.log("Mist browser detected");
+    //
+    //   this.setState({
+    //     hasMist: true
+    //   });
+    //
+    //   //
+    //   console.log("WEB3 START");
+    //
+    //   if (typeof web3 !== 'undefined') {
+    //     // Use Mist/MetaMask's provider
+    //     window.web3 = new Web3(web3.currentProvider);
+    //   } else {
+    //     console.log('No web3? You should consider trying MetaMask!');
+    //     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+    //     // window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    //   }
+    // } else {
+    //   console.log("Mist browser not detected");
+    //   this.setState({
+    //     hasMist: false
+    //   });
+    // }
+
+  }
+  setupWeb3() {
+    //
+    console.log("WEB3 SETUP START");
+
+    console.log("Ropsen Pay2Play: ");
+    console.log(contractAddress);
+
+    if (window.web3.eth.currentProvider.isConnected()) {
+      console.log("web3 connected");
+    } else {
+      console.log("web3 not connected");
+    }
+
+    this.setState({version: window.web3.version});
+
+    window.web3.eth.getAccounts((err, accounts) => {
+      if (err || !accounts || accounts.length == 0) return;
+      this.setState({authorizedAccount: accounts[0]});
+
+      window.authorizedAccount = accounts[0];
+    });
+
+    window.web3.eth.getBlockNumber((err, blockNumber) => {
+      this.setState({blockNumber: blockNumber});
+    });
+
+    window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
+    contract.options.address = contractAddress; // Ropsen Pay2Play
+
+    window.contract.methods.registrarStartDate().call({}, function(error, result) {
+      console.log("registrarStartDate");
+      console.log(error, result);
+    });
+
+    window.contract.methods.node().call({}, function(error, result) {
+      console.log("node");
+      console.log(error, result);
+
+      window.hostNode = result;
+    });
+
+    console.log("WEB3 SETUP FINISH");
+    //
   }
   render() {
 
     const hasMistBrowser = this.state.hasMist;
+    const hasMetamask = this.state.hasMetamask;
 
     return (
       <div>
-        { hasMistBrowser ? (
+        { hasMistBrowser || hasMetamask ? (
           <div>
             <Route exact path="/" component={Home}/>
             <Route exact path="/start" component={Start}/>

@@ -4,7 +4,7 @@
  * @version 1.0.0
  */
 
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.17;
 
 contract Deposit {
   address public registrar;
@@ -78,11 +78,15 @@ contract Registrar {
     wager[] public wagers;
     mapping (address => mapping(uint => Deposit)) public deposits;
 
+    address[] moderators;
+
     event WagerStarted(uint indexed index, uint createdAt);
     event NewDeposit(uint indexed index, address indexed owner, uint amount);
 
     event WagerWinnerUpdated(uint indexed index, address indexed winner);
     event WinningsWithdrawn(uint indexed index, address indexed winner, uint amount);
+
+    event ModeratorListUpdated(address indexed moderator);
 
     function Registrar() {
         registrarStartDate = now;
@@ -120,6 +124,15 @@ contract Registrar {
         if (wager.depositors.length == 2) {
           return Mode.Closed;
         }
+    }
+
+    function isModerator(address moderator) constant returns(bool) {
+      for (uint i = 0; i < moderators.length; i++) {
+        if (moderators[i] == moderator) {
+          return true;
+        }
+      }
+      return false;
     }
 
     modifier inState(uint _index, Mode _state) {
@@ -196,5 +209,12 @@ contract Registrar {
       }
 
       WinningsWithdrawn(index, w.winner, w.amount);
+    }
+
+    function addModerator(address moderator) onlyRegistrar {
+      if (isModerator(moderator) != true) {
+        moderators.push(moderator);
+        ModeratorListUpdated(moderator);
+      }
     }
 }
