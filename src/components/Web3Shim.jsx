@@ -6,15 +6,16 @@ import ApiUtils from '../helpers/ApiUtils';
 
 import { contractAddress } from '../utils/Web3Api.js';
 
-export default class Web3Shim extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+import Web3Store from '../stores/Web3Store';
+
+var Web3Shim = React.createClass({
+  getInitialState: function() {
+    return {
       version: '',
       authorizedAccount: 'None',
       blockNumber: 0
     };
-  }
+  },
   componentWillMount() {
     console.log("componentWillMount Web3Shim");
     // Checking if Web3 has been injected by the browser (Mist/MetaMask)
@@ -84,9 +85,22 @@ export default class Web3Shim extends React.Component {
 
     console.log("WEB3 END");
     //
-  }
+  },
   componentDidMount() {
-  }
+    //
+    console.log("WEB3SHIM MOUNTED");
+    Web3Store.addChangeListener(this._onChange);
+    //
+  },
+  componentWillUnmount: function() {
+    //
+    console.log("WEB3SHIM UNMOUNTED");
+    Web3Store.removeChangeListener(this._onChange);
+    //
+  },
+  _onChange: function() {
+    console.log("Web3Shim _onChange fired");
+  },
   render() {
     return (
       <div>
@@ -97,4 +111,6 @@ export default class Web3Shim extends React.Component {
       </div>
     );
   }
-}
+});
+
+module.exports = Web3Shim;

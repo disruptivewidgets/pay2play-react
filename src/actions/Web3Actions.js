@@ -23,6 +23,51 @@ const Actions = {
     });
 
     Web3API.getAccounts();
+  },
+  startWager(hash, params) {
+    console.log('startWager');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.START_WAGER,
+    });
+
+    Web3API.startWager(hash, params);
+  },
+  counterWagerAndDeposit(wagerId, params) {
+    console.log('counterWagerAndDeposit');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.COUNTER_WAGER_AND_DEPOSIT,
+    });
+
+    Web3API.counterWagerAndDeposit(wagerId, params);
+  },
+  setWagerWinner(wagerId, winner, params) {
+    console.log('setWagerWinner');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.SET_WAGER_WINNER,
+    });
+
+    Web3API.setWagerWinner(wagerId, winner, params);
+  },
+  withdrawWinnings(wagerId, params) {
+    console.log('withdrawWinnings');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.WITHDRAW_WINNINGS,
+    });
+
+    Web3API.withdrawWinnings(wagerId, params);
+  },
+  ping() {
+    console.log('start wager');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.PING,
+    });
+
+    Web3API.ping();
   }
 }
 

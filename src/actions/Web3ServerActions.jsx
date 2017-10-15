@@ -20,4 +20,39 @@ module.exports = {
       response: response
     });
   },
+  startWager(response) {
+    console.log("startWager");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.START_WAGER_RESPONSE,
+      response: response
+    });
+  },
+  counterWagerAndDeposit(response) {
+    console.log("counterWagerAndDeposit");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.COUNTER_WAGER_AND_DEPOSIT_RESPONSE,
+      response: response
+    });
+  },
+  setWagerWinner(response) {
+    console.log("setWagerWinner");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.SET_WAGER_WINNER_RESPONSE,
+      response: response
+    });
+  },
+  withdrawWinnings(response) {
+    console.log("withdrawWinnings");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.WITHDRAW_WINNINGS_RESPONSE,
+      response: response
+    });
+  },
+  ping(response) {
+    console.log("ping");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.PING,
+      response: response
+    });
+  }
 };

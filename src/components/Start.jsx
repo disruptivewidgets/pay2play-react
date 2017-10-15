@@ -5,11 +5,13 @@ import SwarmActions from '../actions/SwarmActions';
 import Web3Actions from '../actions/Web3Actions';
 import SwarmApi from '../utils/SwarmApi.js';
 
+import Web3Store from '../stores/Web3Store';
 import GameStore from '../stores/GameStore';
 import GameSelector from '../components/GameSelector';
 
 import TransactionHelper from "../helpers/TransactionUtils.js";
 import SessionHelper from "../helpers/SessionUtils.js";
+import QueueManager from "../helpers/QueueManager.js";
 
 import { Intent, Spinner } from "@blueprintjs/core";
 
@@ -50,10 +52,19 @@ var Start = React.createClass({
   },
   componentDidMount: function() {
     GameStore.addChangeListener(this._onChange);
+
+    Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.addConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.addReceiptListener(this.onEvent_Receipt);
+    Web3Store.addErrorListener(this.onEvent_Error);
   },
   componentWillUnmount: function() {
-
     GameStore.removeChangeListener(this._onChange);
+
+    Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.removeReceiptListener(this.onEvent_Receipt);
+    Web3Store.removeErrorListener(this.onEvent_Error);
   },
   _onChange: function() {
 
@@ -81,6 +92,29 @@ var Start = React.createClass({
     });
 
     this.setState(GameStore.getDataStore());
+  },
+  onEvent_TransactionHash: function() {
+    console.log("onEvent_TransactionHash");
+  },
+  onEvent_Confirmation: function() {
+    console.log("onEvent_Confirmation");
+
+    this.setState({
+      loaded: true,
+      processing: true
+    });
+  },
+  onEvent_Receipt: function() {
+    console.log("onEvent_Receipt");
+  },
+  onEvent_Error: function() {
+    console.log("onEvent_Error");
+
+    this.setState({
+      loaded: true
+    });
+
+    this.forceUpdate();
   },
   forceUpdate() {
     // var dataStore = GameStore.getDataStore();
@@ -199,62 +233,7 @@ var Start = React.createClass({
 
       console.log(params);
 
-      window.contract.methods.createWagerAndDeposit(this.state.referenceHash).send(params, TransactionHelper.getTxHandler({
-          onStart: (txid) => {
-            console.log("onStart");
-            console.log("txid: " + txid);
-
-            var transaction = {
-              id: txid,
-              status: "pending_block",
-              type: "start",
-              wagerId: -1
-            }
-
-            SessionHelper.storeTransaction(transaction);
-            SessionHelper.listTransactions();
-          },
-          onDone: () => {
-            console.log("onDone");
-          },
-          onSuccess: (txid, receipt) => {
-            console.log("onSuccess");
-            console.log(txid);
-            console.log(receipt);
-
-            var logs = receipt.logs;
-
-            var log = logs[0];
-
-            var topics = log.topics;
-
-            var topic = topics[1];
-
-            var wagerId = window.web3.utils.hexToNumber(topic);
-
-            SessionHelper.updateTransaction(txid, "status", "pending_start_receipt_review");
-            SessionHelper.updateTransaction(txid, "wagerId", wagerId);
-            SessionHelper.listTransactions();
-
-            // console.log(SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"));
-
-            this.setState({
-              loaded: true,
-              processing: true
-            });
-
-          },
-          onError: (error) => {
-            console.log("onError");
-
-            this.setState({
-              loaded: true
-            });
-
-            this.forceUpdate();
-          }
-        })
-      );
+      Web3Actions.startWager(this.state.referenceHash, params);
     };
 
     return (

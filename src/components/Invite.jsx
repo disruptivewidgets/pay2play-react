@@ -59,12 +59,20 @@ var Invite = React.createClass({
     SessionHelper.listTransactions();
   },
   componentDidMount: function() {
-    // EventLogStore.getTransaction(this.props.match.params.id);
-
     WagerStore.addChangeListener(this._onChange);
+
+    Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.addConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.addReceiptListener(this.onEvent_Receipt);
+    Web3Store.addErrorListener(this.onEvent_Error);
   },
   componentWillUnmount: function() {
     WagerStore.removeChangeListener(this._onChange);
+
+    Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.removeReceiptListener(this.onEvent_Receipt);
+    Web3Store.removeErrorListener(this.onEvent_Error);
   },
   componentWillReceiveProps: function(nextProps) {
     console.log("componentWillReceiveProps");
@@ -100,6 +108,29 @@ var Invite = React.createClass({
     this.setState({
       players: this.state.wager.players
     });
+  },
+  onEvent_TransactionHash: function() {
+    console.log("onEvent_TransactionHash");
+  },
+  onEvent_Confirmation: function() {
+    console.log("onEvent_Confirmation");
+
+    this.setState({
+      loaded: true,
+      processing: true
+    });
+  },
+  onEvent_Receipt: function() {
+    console.log("onEvent_Receipt");
+  },
+  onEvent_Error: function() {
+    console.log("onEvent_Error");
+
+    this.setState({
+      loaded: true
+    });
+
+    this.forceUpdate();
   },
   render: function() {
     const referenceHash = this.state.wager.referenceHash;
@@ -154,58 +185,109 @@ var Invite = React.createClass({
 
       console.log(params);
 
-      window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params, Helpers.getTxHandler({
-          onStart: (txid) => {
-            console.log("onStart");
-            console.log("txid: " + txid);
-
-            SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
-
-            var transaction = {
-              id: txid,
-              status: "pending_block",
-              type: "counter",
-              wagerId: this.props.match.params.id
-            }
-
-            SessionHelper.storeTransaction(transaction);
-            SessionHelper.listTransactions();
-          },
-          onDone: () => {
-            console.log("onDone");
-          },
-          onSuccess: (txid, receipt) => {
-            console.log("onSuccess");
-            console.log(txid);
-            console.log(receipt);
-
-            var logs = receipt.logs;
-
-            var log = logs[0];
-
-            var topics = log.topics;
-
-            var topic = topics[1];
-
-            var wagerId = window.web3.utils.hexToNumber(topic);
-
-            SessionHelper.updateTransaction(txid, "status", "pending_counter_receipt_review");
-            SessionHelper.listTransactions();
-
-            this.setState({
-              loaded: true,
-              processing: true
-            });
-          },
-          onError: (error) => {
-            console.log("onError");
-
-            this.setState({
-              loaded: true
-            });
-          }
-        })
-      );
+      Web3Actions.counterWagerAndDeposit(this.props.match.params.id, params);
+      // // NEW
+      // window.component = this;
+      // window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params)
+      // .on('transactionHash', function(hash) {
+      //   console.log("transactionHash");
+      //   console.log("txid: " + hash);
+      //
+      //   SessionHelper.removeTransaction("wagerId", window.component.props.match.params.id);
+      //
+      //   var transaction = {
+      //     id: hash,
+      //     status: "pending_block",
+      //     type: "counter",
+      //     wagerId: this.props.match.params.id
+      //   }
+      //
+      //   SessionHelper.storeTransaction(transaction);
+      //   SessionHelper.listTransactions();
+      // })
+      // .on('confirmation', function(confirmationNumber, receipt) {
+      //   console.log(confirmationNumber);
+      //   console.log(receipt);
+      //
+      //   if (confirmationNumber == 0) {
+      //     var hash = receipt.transactionHash;
+      //
+      //     SessionHelper.updateTransaction(hash, "status", "pending_counter_receipt_review");
+      //     SessionHelper.listTransactions();
+      //
+      //     window.component.setState({
+      //       loaded: true,
+      //       processing: true
+      //     });
+      //   }
+      // })
+      // .on('receipt', function(receipt) {
+      //   console.log("receipt");
+      //   console.log(receipt)
+      // })
+      // .on('error', function(error) {
+      //   console.log("error");
+      //   console.error(error);
+      //
+      //   window.component.setState({
+      //     loaded: true
+      //   });
+      //
+      //   window.component.forceUpdate();
+      // });
+      // // OLD
+      // // window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params, Helpers.getTxHandler({
+      // //     onStart: (txid) => {
+      // //       console.log("onStart");
+      // //       console.log("txid: " + txid);
+      // //
+      // //       SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
+      // //
+      // //       var transaction = {
+      // //         id: txid,
+      // //         status: "pending_block",
+      // //         type: "counter",
+      // //         wagerId: this.props.match.params.id
+      // //       }
+      // //
+      // //       SessionHelper.storeTransaction(transaction);
+      // //       SessionHelper.listTransactions();
+      // //     },
+      // //     onDone: () => {
+      // //       console.log("onDone");
+      // //     },
+      // //     onSuccess: (txid, receipt) => {
+      // //       console.log("onSuccess");
+      // //       console.log(txid);
+      // //       console.log(receipt);
+      // //
+      // //       var logs = receipt.logs;
+      // //
+      // //       var log = logs[0];
+      // //
+      // //       var topics = log.topics;
+      // //
+      // //       var topic = topics[1];
+      // //
+      // //       var wagerId = window.web3.utils.hexToNumber(topic);
+      // //
+      // //       SessionHelper.updateTransaction(txid, "status", "pending_counter_receipt_review");
+      // //       SessionHelper.listTransactions();
+      // //
+      // //       this.setState({
+      // //         loaded: true,
+      // //         processing: true
+      // //       });
+      // //     },
+      // //     onError: (error) => {
+      // //       console.log("onError");
+      // //
+      // //       this.setState({
+      // //         loaded: true
+      // //       });
+      // //     }
+      // //   })
+      // // );
     };
 
     return (

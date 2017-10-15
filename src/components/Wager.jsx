@@ -1,5 +1,6 @@
 import React from 'react';
 import WagerStore from '../stores/WagerStore';
+import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
 import Invite from '../components/Invite';
 import Rules from '../components/Rules';
@@ -52,14 +53,47 @@ var Wager = React.createClass({
     });
 
     WagerStore.addChangeListener(this._onChange);
+
+    Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.addConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.addReceiptListener(this.onEvent_Receipt);
+    Web3Store.addErrorListener(this.onEvent_Error);
   },
   componentWillUnmount: function() {
     WagerStore.removeChangeListener(this._onChange);
+
+    Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
+    Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
+    Web3Store.removeReceiptListener(this.onEvent_Receipt);
+    Web3Store.removeErrorListener(this.onEvent_Error);
   },
   componentWillReceiveProps: function() {
   },
   _onChange: function() {
     this.setState(WagerStore.get());
+  },
+  onEvent_TransactionHash: function() {
+    console.log("onEvent_TransactionHash");
+  },
+  onEvent_Confirmation: function() {
+    console.log("onEvent_Confirmation");
+
+    this.setState({
+      loaded: true,
+      processing: true
+    });
+  },
+  onEvent_Receipt: function() {
+    console.log("onEvent_Receipt");
+  },
+  onEvent_Error: function() {
+    console.log("onEvent_Error");
+
+    this.setState({
+      loaded: true
+    });
+
+    this.forceUpdate();
   },
   render: function() {
     const isWagerFinished = (this.state.wager.state === 'finished') ;
@@ -110,58 +144,8 @@ var Wager = React.createClass({
 
           console.log(params);
 
-          window.contract.methods.withdrawWinnings(this.props.match.params.id).send(params, Helpers.getTxHandler({
-              onStart: (txid) => {
-                console.log("onStart");
-                console.log("txid: " + txid);
+          Web3Actions.withdrawWinnings(this.props.match.params.id, params);
 
-                SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
-
-                var transaction = {
-                  id: txid,
-                  status: "pending_block",
-                  type: "withdrawal",
-                  wagerId: this.props.match.params.id
-                }
-
-                SessionHelper.storeTransaction(transaction);
-                SessionHelper.listTransactions();
-              },
-              onDone: () => {
-                console.log("onDone");
-              },
-              onSuccess: (txid, receipt) => {
-                console.log("onSuccess");
-                console.log(txid);
-                console.log(receipt);
-
-                var logs = receipt.logs;
-
-                var log = logs[0];
-
-                var topics = log.topics;
-
-                var topic = topics[2];
-
-                var wagerId = window.web3.utils.hexToNumber(topic);
-
-                SessionHelper.updateTransaction(txid, "status", "pending_withrawal_receipt_review");
-                SessionHelper.listTransactions();
-
-                this.setState({
-                  loaded: true,
-                  processing: true
-                });
-              },
-              onError: (error) => {
-                console.log("onError");
-
-                this.setState({
-                  loaded: true
-                });
-              }
-            })
-          );
           break;
         case 'set-winner-form':
           console.log(event.target.winner.value);
@@ -180,58 +164,8 @@ var Wager = React.createClass({
 
           console.log(params);
 
-          window.contract.methods.setWagerWinner(this.props.match.params.id, winner).send(params, Helpers.getTxHandler({
-              onStart: (txid) => {
-                console.log("onStart");
-                console.log("txid: " + txid);
+          Web3Actions.setWagerWinner(this.props.match.params.id, winner, params);
 
-                SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
-
-                var transaction = {
-                  id: txid,
-                  status: "pending_block",
-                  type: "wager_winner",
-                  wagerId: this.props.match.params.id
-                }
-
-                SessionHelper.storeTransaction(transaction);
-                SessionHelper.listTransactions();
-              },
-              onDone: () => {
-                console.log("onDone");
-              },
-              onSuccess: (txid, receipt) => {
-                console.log("onSuccess");
-                console.log(txid);
-                console.log(receipt);
-
-                var logs = receipt.logs;
-
-                var log = logs[0];
-
-                var topics = log.topics;
-
-                var topic = topics[1];
-
-                var wagerId = window.web3.utils.hexToNumber(topic);
-
-                SessionHelper.updateTransaction(txid, "status", "pending_winner_receipt_review");
-                SessionHelper.listTransactions();
-
-                this.setState({
-                  loaded: true,
-                  processing: true
-                });
-              },
-              onError: (error) => {
-                console.log("onError");
-
-                this.setState({
-                  loaded: true
-                });
-              }
-            })
-          );
           break;
       }
     };

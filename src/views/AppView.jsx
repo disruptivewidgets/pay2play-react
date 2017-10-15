@@ -16,7 +16,7 @@ import Web3 from 'web3';
 import { contractAddress } from '../utils/Web3Api.js';
 import interfaces from "../smart-contract/interfaces.js";
 
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 
 import {
   HashRouter as Router,
@@ -56,6 +56,7 @@ const AppView = () => (
     <Meta />
     <Router>
       <div>
+        <br />
 
         <Logo />
         <br />

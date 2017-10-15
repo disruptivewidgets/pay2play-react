@@ -1,6 +1,8 @@
 var Web3ServerActions = require('../actions/Web3ServerActions');
 var request = require('superagent');
 
+import SessionHelper from "../helpers/SessionUtils.js";
+
 // import * as moment from 'moment';
 // import 'moment-duration-format';
 
@@ -66,6 +68,13 @@ function eachAsync(array, f, callback) {
 }
 
 module.exports = {
+  ping: function() {
+    setTimeout(function() {
+      alert("Hello!");
+
+      Web3ServerActions.ping('TEST');
+    }, 3000);
+  },
   retrieveWagers: function() {
     console.log("retrieveWagers");
 
@@ -100,6 +109,254 @@ module.exports = {
   getAccounts: function() {
     window.web3.eth.getAccounts((error, accounts) => {
       Web3ServerActions.retrieveAccounts(accounts);
+    });
+  },
+  startWager: function(referenceHash, params) {
+    console.log("startWager");
+
+    window.contract.methods.createWagerAndDeposit(referenceHash).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      var transaction = {
+        id: hash,
+        status: "pending_block",
+        type: "start",
+        wagerId: -1
+      }
+
+      SessionHelper.storeTransaction(transaction);
+      SessionHelper.listTransactions();
+
+      Web3ServerActions.startWager('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        var events = receipt.events;
+
+        var wagerId = events.WagerStarted.returnValues.index;
+
+        console.log("wagerId: " + wagerId);
+
+        var hash = receipt.transactionHash;
+
+        SessionHelper.updateTransaction(hash, "status", "pending_start_receipt_review");
+        SessionHelper.updateTransaction(hash, "wagerId", wagerId);
+        SessionHelper.listTransactions();
+
+        // //
+        // window.component.setState({
+        //   loaded: true,
+        //   processing: true
+        // });
+        // //
+
+        Web3ServerActions.startWager('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+
+      Web3ServerActions.startWager('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+
+      // //
+      // window.component.setState({
+      //   loaded: true
+      // });
+      //
+      // window.component.forceUpdate();
+      // //
+
+      Web3ServerActions.startWager('error');
+    });
+
+  },
+  counterWagerAndDeposit: function(wagerId, params) {
+    console.log("counterWagerAndDeposit");
+
+    window.contract.methods.counterWagerAndDeposit(wagerId).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      SessionHelper.removeTransaction("wagerId", wagerId);
+
+      var transaction = {
+        id: hash,
+        status: "pending_block",
+        type: "counter",
+        wagerId: wagerId
+      }
+
+      SessionHelper.storeTransaction(transaction);
+      SessionHelper.listTransactions();
+
+      Web3ServerActions.counterWagerAndDeposit('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        var hash = receipt.transactionHash;
+
+        SessionHelper.updateTransaction(hash, "status", "pending_counter_receipt_review");
+        SessionHelper.listTransactions();
+
+        // window.component.setState({
+        //   loaded: true,
+        //   processing: true
+        // });
+
+        Web3ServerActions.counterWagerAndDeposit('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+
+      Web3ServerActions.counterWagerAndDeposit('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+
+      // window.component.setState({
+      //   loaded: true
+      // });
+      //
+      // window.component.forceUpdate();
+
+      Web3ServerActions.counterWagerAndDeposit('error');
+    });
+  },
+  setWagerWinner: function(wagerId, winner, params) {
+    console.log("setWagerWinner");
+
+    window.contract.methods.setWagerWinner(wagerId, winner).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      SessionHelper.removeTransaction("wagerId", wagerId);
+
+      var transaction = {
+        id: hash,
+        status: "pending_block",
+        type: "wager_winner",
+        wagerId: wagerId
+      }
+
+      SessionHelper.storeTransaction(transaction);
+      SessionHelper.listTransactions();
+
+      Web3ServerActions.setWagerWinner('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        var hash = receipt.transactionHash;
+
+        SessionHelper.updateTransaction(hash, "status", "pending_winner_receipt_review");
+        SessionHelper.listTransactions();
+
+        // window.component.setState({
+        //   loaded: true,
+        //   processing: true
+        // });
+
+        Web3ServerActions.setWagerWinner('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+
+      Web3ServerActions.setWagerWinner('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+
+      // window.component.setState({
+      //   loaded: true
+      // });
+      //
+      // window.component.forceUpdate();
+
+      Web3ServerActions.setWagerWinner('error');
+    });
+  },
+  withdrawWinnings: function(wagerId, params) {
+    console.log("withdrawWinnings");
+
+    window.contract.methods.withdrawWinnings(wagerId).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      SessionHelper.removeTransaction("wagerId", wagerId);
+
+      var transaction = {
+        id: hash,
+        status: "pending_block",
+        type: "withdrawal",
+        wagerId: wagerId
+      }
+
+      SessionHelper.storeTransaction(transaction);
+      SessionHelper.listTransactions();
+
+      Web3ServerActions.withdrawWinnings('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log(confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        var hash = receipt.transactionHash;
+
+        SessionHelper.updateTransaction(hash, "status", "pending_withrawal_receipt_review");
+        SessionHelper.listTransactions();
+
+        // window.component.setState({
+        //   loaded: true,
+        //   processing: true
+        // });
+
+        Web3ServerActions.withdrawWinnings('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt);
+
+      Web3ServerActions.withdrawWinnings('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+      console.log(error.name);
+      console.log(error.message);
+
+      // window.component.setState({
+      //   loaded: true
+      // });
+      //
+      // window.component.forceUpdate();
+
+      Web3ServerActions.withdrawWinnings('error');
     });
   },
   contractAddress: contractAddress
