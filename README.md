@@ -79,7 +79,7 @@ npm run lint
 sudo pip install aws-cli
 rm -r public && mkdir public
 npm run build
-aws s3 sync public s3://pay2play/public --acl public-read
+aws s3 sync public s3://pay2play/public --acl public-read --profile playent
 http://s3-us-west-2.amazonaws.com/pay2play/public/index.html
 ```
 
