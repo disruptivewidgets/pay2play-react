@@ -13,7 +13,7 @@ import TransactionHelper from "../helpers/TransactionUtils.js";
 import SessionHelper from "../helpers/SessionUtils.js";
 import QueueManager from "../helpers/QueueManager.js";
 
-import { Intent, Spinner } from "@blueprintjs/core";
+import { Intent, Spinner } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
 

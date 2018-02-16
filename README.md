@@ -15,7 +15,7 @@ Pay2Play is a decentralized wager settlement system based on Swarm and Ethereum
 * Fork and clone the project:
 
 ```
-git clone https://github.com/disruptivewidgets/pay2play-react.git
+git clone https://github.com/pay2play/pay2play-react.git
 ```
 
 * Then install the dependencies:

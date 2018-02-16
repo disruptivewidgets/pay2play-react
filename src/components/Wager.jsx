@@ -12,7 +12,7 @@ import WinnerSelector from '../components/WinnerSelector';
 
 import Helpers from "../helpers/TransactionUtils.js";
 
-import { Intent, Spinner } from "@blueprintjs/core";
+import { Intent, Spinner } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
 

@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import GameStore from '../stores/GameStore';
 import SwarmActions from '../actions/SwarmActions';
 
-import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core";
+import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
 
@@ -11,7 +11,6 @@ import _ from 'lodash';
 
 import Select from 'react-select';
 
-// Be sure to include styles at some point, probably during your bootstrapping
 import 'react-select/dist/react-select.css';
 
 var GameSelector = React.createClass({
