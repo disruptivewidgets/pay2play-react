@@ -218,9 +218,10 @@ class MistSite extends React.Component {
           </div>
         ) : (
           <div>
-            <div className="highlighted-red">Pay2Play requires Mist browser to work.</div>
-            <div>Please <a href="https://github.com/ethereum/mist/releases">download</a> Mist browser and all the blocks before using Pay2Play</div>
-            <div>MetaMask and Parity support comming soon.</div>
+            <div className="highlighted-red">Pay2Play requires MetaMask to work.</div>
+            <div>Please <a href="https://metamask.io">download</a> before enjoying Pay2Play.</div>
+            <br />
+            <div>Cheers, Pay2Play Team!</div>
             <br />
           </div>
         )}
