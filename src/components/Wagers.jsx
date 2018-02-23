@@ -32,14 +32,35 @@ var Wagers = React.createClass({
     return (
       <div>
         <p className="highlighted">Wagers</p>
-
-        {this.state.list.map(item => (
-          <WagerItem
-            key={item.id}
-            item={item}
-          />
-        ))}
-
+        <table className="wagers">
+          <thead>
+            <tr>
+              <td>
+                Id
+              </td>
+              <td>
+                Status
+              </td>
+              <td>
+                Creator
+              </td>
+              <td>
+                Start Timestamp
+              </td>
+              <td>
+                Pot (Eth)
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.list.map(item => (
+              <WagerItem
+                key={item.id}
+                item={item}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -54,13 +75,25 @@ const About = () => (
 function WagerItem(props) {
   const {item} = props;
   return (
-    <div>
-      <label>
+    <tr>
+      <td>
         <Link to={`/invites/${item.index}`} replace>
           {item.index}
-        </Link> | {item.state} | {item.players[0]} | {item.date} | {item.amount}
-      </label>
-    </div>
+        </Link>
+      </td>
+      <td>
+        {item.state}
+      </td>
+      <td>
+        {item.players[0]}
+      </td>
+      <td>
+        {item.date}
+      </td>
+      <td>
+        {item.amount / 1000000000000000000}
+      </td>
+    </tr>
   );
 }
 

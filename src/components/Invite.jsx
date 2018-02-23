@@ -172,7 +172,7 @@ var Invite = React.createClass({
         return;
       }
 
-      const amount = window.web3.utils.toWei(0.01, 'ether');
+      const amount = this.state.wager.amount;
       const gas = 650000;
       const gasPrice = window.web3.utils.toWei(20, 'shannon');
 
@@ -298,7 +298,7 @@ var Invite = React.createClass({
           <div>
             <div>Wager Id: <Link to={`/wagers/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
             <div>Start Time: {this.state.wager.date}</div>
-            <div>Amount: {this.state.wager.amount}</div>
+            <div>Amount: {this.state.wager.amount / 1000000000000000000} Eth</div>
 
             <br />
             { referenceHash ? (

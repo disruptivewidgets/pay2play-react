@@ -220,7 +220,7 @@ var Start = React.createClass({
         return;
       }
 
-      amount = window.web3.utils.toWei(0.01, 'ether');
+      amount = window.web3.utils.toWei(amount, 'ether');
       const gas = 650000;
       const gasPrice = window.web3.utils.toWei(20, 'shannon');
 

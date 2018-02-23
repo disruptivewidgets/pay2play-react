@@ -188,7 +188,7 @@ var Wager = React.createClass({
           <div>Wager Id: {this.state.wager.index}</div>
           <div>Start Time: {this.state.wager.date}</div>
           <div>{this.state.wager.state}</div>
-          <div>Amount: {this.state.wager.amount}</div>
+          <div>Amount: {this.state.wager.amount / 1000000000000000000} Eth</div>
 
           <br />
           { referenceHash ? (

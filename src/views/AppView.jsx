@@ -218,8 +218,8 @@ class MistSite extends React.Component {
           </div>
         ) : (
           <div>
-            <div className="highlighted-red">Pay2Play requires MetaMask to work.</div>
-            <div>Please <a href="https://metamask.io">download</a> before enjoying Pay2Play.</div>
+            <div className="highlighted-red">Pay2Play requires Web3.0 compatible browser to work.</div>
+            <div>Please <a href="https://metamask.io">download</a> before using Pay2Play.</div>
             <br />
             <div>Cheers, Pay2Play Team!</div>
             <br />
