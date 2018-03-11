@@ -74,15 +74,77 @@ const About = () => (
 
 function WagerItem(props) {
   const {item} = props;
+
+  var isOpen = true;
+  var isClosed = false;
+
+  if (item.state != "open")
+  {
+      isOpen = false;
+  }
+
+  if (item.state == "closed")
+  {
+      isClosed = true;
+  }
+
+  var isCreator = (item.players[0] === window.authorizedAccount && window.authorizedAccount != undefined);
+  var isCounter = (item.players[1] === window.authorizedAccount && window.authorizedAccount != undefined);
+
+  console.log(window.authorizedAccount);
+
+  var style = "";
+
+  if (isCreator)
+  {
+    style = "highlight-creator";
+  }
+
+  if (isCounter)
+  {
+    style = "highlight-player";
+  }
+
   return (
-    <tr>
+    <tr className={style}>
       <td>
-        <Link to={`/invites/${item.index}`} replace>
-          {item.index}
-        </Link>
+        {
+          isOpen ?
+          (
+              <Link to={`/invites/${item.index}`} replace>
+                {item.index}
+              </Link>
+          )
+          :
+          (
+              <Link to={`/wagers/${item.index}`} replace>
+                {item.index}
+              </Link>
+          )
+        }
       </td>
       <td>
-        {item.state}
+        <div>
+          { isClosed ? (
+            <div>
+              {
+                isCreator || isCounter ? (
+                  <div>
+                    funded
+                  </div>
+                ) : (
+                  <div>
+                    { item.state }
+                  </div>
+                )
+              }
+            </div>
+          ) : (
+            <div>
+              { item.state }
+            </div>
+          )}
+        </div>
       </td>
       <td>
         {item.players[0]}

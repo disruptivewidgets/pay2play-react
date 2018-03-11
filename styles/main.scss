@@ -1,18 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
-/*
-  greenery 88b04b
-  online lime 548a4d
-  true blue 395181
-  directoire blue 046aaa
-  viridian green 00979c
-  blue radiance 62cbd5
-  goblin blue 5f7278
-  silver blue 8a9a9a
-  kalamata 5f5b4c
-  silt green a9bdb1
-  willow bough 59754d
-  calypso coral ec5d73
-*/
+
 /*
   hawaiian surf #117fad
   ultraviolet #6d5b97
@@ -24,39 +11,54 @@
   butterum #c59169
 */
 
-
-body {
+body
+{
   background-color: #ffffff;
   color: #8a9a9a;
   font-size: 16px;
   font-family: 'Montserrat', sans-serif !important;
   text-align: center;
 }
-p.highlighted {
-  background: #8a9a9a;
+p.highlighted
+{
+  background: #117fad;
   color: #ffffff;
 }
-div.highlighted {
-  background: #8a9a9a;
+div.highlighted
+{
+  background: #117fad;
   color: #ffffff;
 }
-div.highlighted-green {
-  background: #88b04b;
+div.highlighted-green
+{
+  background: #6d5b97;
   color: #ffffff;
 }
-div.highlighted-red {
-  background: #ec5d73;
+div.highlighted-red
+{
+  background: #d74061;
   color: #ffffff;
 }
-.logo {
+.logo
+{
     width: 512px;
 }
-div.error {
-  background-color: red;
+div.error
+{
+  background-color: #d74061;
   color: white;
 }
-
 table.wagers
 {
   width: 100%;
+}
+.highlight-player
+{
+  background-color: #fcb239;
+  color: white;
+}
+.highlight-creator
+{
+  background-color: #b66ba3;
+  color: white;
 }

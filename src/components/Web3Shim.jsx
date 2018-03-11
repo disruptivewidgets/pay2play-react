@@ -102,12 +102,21 @@ var Web3Shim = React.createClass({
     console.log("Web3Shim _onChange fired");
   },
   render() {
+    const isAuthorized = (window.authorizedAccount !== undefined);
+
+    var style = "";
+    if (isAuthorized)
+    {
+      style = "highlight-creator";
+    }
+
     return (
       <div>
         <p className="highlighted">Web3 Status</p>
         <p>Library Version: { this.state.version }</p>
         <p>Block Number: { this.state.blockNumber }</p>
-        <p>Authorized Account: { this.state.authorizedAccount }</p>
+
+        <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
       </div>
     );
   }

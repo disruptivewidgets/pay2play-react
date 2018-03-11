@@ -186,6 +186,7 @@ var Invite = React.createClass({
       console.log(params);
 
       Web3Actions.counterWagerAndDeposit(this.props.match.params.id, params);
+
       // // NEW
       // window.component = this;
       // window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params)

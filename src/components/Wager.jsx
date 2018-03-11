@@ -67,7 +67,32 @@ var Wager = React.createClass({
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   },
-  componentWillReceiveProps: function() {
+  componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps");
+
+    this.setState({
+      loaded: true,
+      error: ''
+    });
+
+    Web3Actions.retrieveWager(nextProps.match.params.id);
+    Web3Actions.getAccounts();
+
+    var transaction = SessionHelper.hasTransactionsWithWagerId(nextProps.match.params.id.toString());
+
+    if (transaction) {
+      if(transaction.status == "pending_start_receipt_review") {
+        SessionHelper.updateTransaction(transaction.id, "status", "finished_start_receipt_review");
+      }
+
+      if (transaction.status == "pending_counter_receipt_review") {
+        this.setState({
+          processing: true
+        });
+      }
+    }
+
+    SessionHelper.listTransactions();
   },
   _onChange: function() {
     this.setState(WagerStore.get());
@@ -96,20 +121,25 @@ var Wager = React.createClass({
     this.forceUpdate();
   },
   render: function() {
+    const isWagerOpen = (this.state.wager.state === 'open') ;
     const isWagerFinished = (this.state.wager.state === 'finished') ;
     const isWagerSettled = (this.state.wager.state === 'settled');
 
     const hasPlayers = (this.state.wager.players !== undefined);
 
     var isWinner = false;
+    var creator = "";
 
-    if (hasPlayers) {
+    if (hasPlayers)
+    {
       isWinner = (this.state.wager.winner === window.authorizedAccount);
+      creator = this.state.wager.players[0];
     }
 
     var isLoser = false;
 
-    if (hasPlayers) {
+    if (hasPlayers)
+    {
       if (!isWinner && this.state.wager.players.indexOf(window.authorizedAccount) != -1) {
         isLoser = true;
       }
@@ -181,6 +211,8 @@ var Wager = React.createClass({
       isModerator = true;
     }
 
+    console.log(isWagerSettled);
+
     return (
         <div>
           <div className="highlighted">Wager Terms</div>
@@ -218,10 +250,31 @@ var Wager = React.createClass({
                             <br />
                           </div>
                         ) : (
-                          <form name="set-winner-form" onSubmit={onSubmit}>
-                            <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
-                            <div><input type="submit" value="Set Winner" /></div>
-                          </form>
+                          <div>
+                          {
+                            isWagerSettled ? (
+                              <div>
+                                <div>Wager Creator: {creator}</div>
+                                <div>Wager Winner: {this.state.wager.winner}</div>
+                              </div>
+                            ) : (
+                              <div>
+                              {
+                                isWagerOpen ? (
+                                  <div>
+                                    <div>Wager has not started.</div>
+                                  </div>
+                                ) : (
+                                  <form name="set-winner-form" onSubmit={onSubmit}>
+                                    <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
+                                    <div><input type="submit" value="Set Winner" /></div>
+                                  </form>
+                                )
+                              }
+                              </div>
+                            )
+                          }
+                          </div>
                         )}
                       </div>
                   )}
