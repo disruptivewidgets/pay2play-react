@@ -16,7 +16,7 @@ import Web3 from 'web3';
 import { contractAddress } from '../utils/Web3Api.js';
 import interfaces from "../smart-contract/interfaces.js";
 
-import { Helmet } from "react-helmet";
+// import { Helmet } from "react-helmet";
 
 import {
   HashRouter as Router,
@@ -53,7 +53,7 @@ const Logo = withRouter(({ history }) => (
 
 const AppView = () => (
   <div>
-    <Meta />
+    {/* <Meta /> */}
     <Router>
       <div>
         <br />
@@ -219,7 +219,9 @@ class MistSite extends React.Component {
         ) : (
           <div>
             <div className="highlighted-red">Pay2Play requires Web3.0 compatible browser to work.</div>
-            <div>Please <a href="https://metamask.io">download</a> before using Pay2Play.</div>
+            <div>Please download <a href="https://metamask.io">MetaMask</a> before using Pay2Play.</div>
+            <br />
+            <div>For more information on how to get it setup, see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial.</a></div>
             <br />
             <div>Cheers, Pay2Play Team!</div>
             <br />
@@ -330,17 +332,17 @@ class MistSite extends React.Component {
 //   <meta name="msapplication-TileImage" content={MsIcon144x144} />
 //   <meta name="theme-color" content="#ffffff" />
 // </Helmet>
-const Meta = React.createClass({
-  render: function() {
-    return (
-      <Helmet
-        link={[
-          {"rel": "apple-touch-icon", "href" : require('../../icons/apple-icon-57x57.png'), "sizes" : "57x57"}
-        ]}
-      />
-    );
-  }
-});
+// const Meta = React.createClass({
+//   render: function() {
+//     return (
+//       <Helmet
+//         link={[
+//           {"rel": "apple-touch-icon", "href" : require('../../icons/apple-icon-57x57.png'), "sizes" : "57x57"}
+//         ]}
+//       />
+//     );
+//   }
+// });
 
 const Home = () => (
   <div>

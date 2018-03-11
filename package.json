@@ -8,7 +8,7 @@
     "start": "webpack-dev-server --progress --profile --colors",
     "lint": "eslint --ext js --ext jsx src || exit 0",
     "dev": " webpack-dashboard -- webpack-dev-server --progress --profile --colors",
-    "test": "export NODE_ENV=test && jest"
+    "test": "export NODE_ENV=test && jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "react-select": "^1.0.0-rc.5",
     "react-toolbox": "^2.0.0-beta.12",
     "sass-loader": "^6.0.2",
+    "scrypt": "^6.0.3",
     "superagent": "^3.5.2",
     "validator": "^8.1.0",
     "web3": "^1.0.0-beta.13"
@@ -86,7 +87,9 @@
     },
     "moduleFileExtensions": [
       "js",
-      "jsx"
+      "jsx",
+      "node",
+      "json"
     ],
     "moduleDirectories": [
       "node_modules"

@@ -48,7 +48,7 @@ Open the web browser to `http://localhost:8888/`
 To run unit tests:
 
 ```
-npm test
+npm run test
 ```
 
 Tests come bundled with:
@@ -83,6 +83,9 @@ aws s3 sync public s3://pay2play/public --acl public-read --profile playent
 http://s3-us-west-2.amazonaws.com/pay2play/public/index.html
 ```
 
+### Smart Contract Deployment
+
+https://remix.ethereum.org/
 
 ### Notes on importing css styles
 * styles having /src/ in their absolute path considered part of the application and exported as local css modules.

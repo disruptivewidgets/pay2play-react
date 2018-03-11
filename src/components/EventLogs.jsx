@@ -3,10 +3,12 @@ import EventLogStore from '../stores/EventLogStore';
 import EventLogActions from '../actions/EventLogActions';
 
 var EventLogs = React.createClass({
-  getInitialState: function() {
+  getInitialState: function()
+  {
     return EventLogStore.getData();
   },
-  componentWillMount: function() {
+  componentWillMount: function()
+  {
     this.setState(EventLogStore.getDataStore());
     this.setState(EventLogStore.getData());
 
@@ -15,18 +17,21 @@ var EventLogs = React.createClass({
     EventLogActions.pullEventLogs("WagerWinnerUpdated", this.props.index);
     EventLogActions.pullEventLogs("WinningsWithdrawn", this.props.index);
   },
-  componentDidMount: function() {
+  componentDidMount: function()
+  {
     EventLogStore.addChangeListener(this._onChange);
   },
-  componentWillUnmount: function() {
+  componentWillUnmount: function()
+  {
     EventLogStore.removeChangeListener(this._onChange);
   },
-  _onChange: function() {
+  _onChange: function()
+  {
     this.setState(EventLogStore.getDataStore());
     this.setState(EventLogStore.getData());
   },
-  render: function() {
-
+  render: function()
+  {
     const hasWagerStarted = (this.state.WagerStarted !== undefined);
     const hasNewDeposit = (this.state.NewDeposit !== undefined);
     const hasWagerWinnerUpdated = (this.state.WagerWinnerUpdated !== undefined);
@@ -79,7 +84,8 @@ var EventLogs = React.createClass({
   }
 });
 
-function EventLogItem(props) {
+function EventLogItem(props)
+{
   const {item} = props;
 
   const url = "https://" + 'ropsten' + ".etherscan.io/tx/" + item.txid;

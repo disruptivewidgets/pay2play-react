@@ -257,7 +257,7 @@ function getGamesSwarm() {
       }
 
       eachAsync(games, fetch, display);
-    };
+    }
   });
 };
 function getGameRulesSwarm(hash, wagerStartTimestamp) {
