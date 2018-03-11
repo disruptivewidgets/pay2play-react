@@ -1,5 +1,5 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
-import SwarmActionTypes from '../constants/SwarmActionTypes';
+import GameActionTypes from '../constants/GameActionTypes';
 
 import Game from '../data/Game';
 import GameCounter from '../data/GameCounter';
@@ -41,7 +41,7 @@ AppDispatcher.register(function(payload) {
   var action = payload.action;
 
   switch(action.actionType) {
-    case SwarmActionTypes.RETRIEVE_GAMES_RESPONSE:
+    case GameActionTypes.RETRIEVE_GAMES_RESPONSE:
 
         console.log(action.response);
 

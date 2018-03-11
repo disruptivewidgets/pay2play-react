@@ -23,7 +23,7 @@ var WinnerSelector = React.createClass({
   componentWillMount: function() {
     // this.setState(GameStore.getDataStore());
 
-    // SwarmActions.retrieveGames();
+    // GameActions.retrieveGames();
   },
   componentDidMount: function() {
     console.log("players: " + this.props.players);

@@ -10,7 +10,7 @@ import EventLogs from '../components/EventLogs';
 import WagerStore from '../stores/WagerStore';
 import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
-import SwarmActions from '../actions/SwarmActions';
+import GameActions from '../actions/GameActions';
 import EventLogStore from '../stores/EventLogStore';
 import Web3API from '../utils/Web3API';
 
@@ -132,8 +132,12 @@ var Invite = React.createClass({
 
     this.forceUpdate();
   },
-  render: function() {
+  render: function()
+  {
     const referenceHash = this.state.wager.referenceHash;
+
+    console.log("referenceHash: " + referenceHash);
+
     const startTimestamp = this.state.wager.startTimestamp;
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const hasPlayers = (this.state.wager.players !== undefined);
@@ -143,11 +147,13 @@ var Invite = React.createClass({
 
     var showCallToAction = false;
 
-    if (hasPlayers) {
+    if (hasPlayers)
+    {
       isOwnerLoggedIn = (this.state.wager.players[0] === window.authorizedAccount);
     }
 
-    if (isOwnerLoggedIn) {
+    if (isOwnerLoggedIn)
+    {
       showCallToAction = true;
     }
 
@@ -174,7 +180,7 @@ var Invite = React.createClass({
 
       const amount = this.state.wager.amount;
       const gas = 650000;
-      const gasPrice = window.web3.utils.toWei(20, 'shannon');
+      const gasPrice = window.web3.utils.toWei("20", 'shannon');
 
       var params = {
         value: amount,
@@ -377,13 +383,11 @@ var Invite = React.createClass({
   }
 });
 
-function Player(props) {
-
+function Player(props)
+{
   const player = props.player;
   const winner = props.winner;
   const accounts = props.accounts;
-
-  console.log(accounts);
 
   var element = <div>{player}</div>;
 

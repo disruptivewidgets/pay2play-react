@@ -4,6 +4,8 @@ import Web3 from 'web3';
 import interfaces from "../smart-contract/interfaces.js";
 import ApiUtils from '../helpers/ApiUtils';
 
+import util from 'ethereumjs-util';
+
 import { contractAddress } from '../utils/Web3Api.js';
 
 import Web3Store from '../stores/Web3Store';
@@ -33,7 +35,7 @@ var Web3Shim = React.createClass({
     }
 
     console.log("Ropsen Pay2Play: ");
-    console.log(contractAddress);
+    console.log("contractAddress: " + contractAddress);
 
     // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result){
     //     if (!error)
@@ -51,6 +53,22 @@ var Web3Shim = React.createClass({
 
     if (window.web3.eth.currentProvider.isConnected()) {
       console.log("web3 connected");
+
+      var topic1 = util.bufferToHex(util.setLengthLeft(parseInt(1), 32));
+
+      console.log("YO");
+      window.web3.eth.getPastLogs({
+        address: contractAddress,
+        fromBlock: "0",
+        topics: ["0x52b3086eb00fd2639eeb5190527da3e1c4c1400ee550073dde793315159cfe77"]
+      }).then( value => {
+        console.log("AAA");
+        console.log(value); // Success!
+      }, reason => {
+        console.log("B");
+        console.log(reason); // Error!
+      } );
+
     } else {
       console.log("web3 not connected");
     }

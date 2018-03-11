@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import GameStore from '../stores/GameStore';
-import SwarmActions from '../actions/SwarmActions';
+import GameActions from '../actions/GameActions';
 
 import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core/dist";
 
@@ -80,7 +80,7 @@ function GameItem(props) {
   return (
     <div>
       <label>
-        Swarm Hash: {item.referenceHash}
+        Rules Hash: {item.referenceHash}
       </label>
       <br />
       <label>

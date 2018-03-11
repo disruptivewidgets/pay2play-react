@@ -1,9 +1,9 @@
 import React from 'react';
 import WagerStore from '../stores/WagerStore';
 
-import SwarmActions from '../actions/SwarmActions';
+import GameActions from '../actions/GameActions';
 import Web3Actions from '../actions/Web3Actions';
-import SwarmApi from '../utils/SwarmApi.js';
+import RulesAPI from '../utils/RulesAPI.js';
 
 import Web3Store from '../stores/Web3Store';
 import GameStore from '../stores/GameStore';
@@ -48,7 +48,7 @@ var Start = React.createClass({
       amount: ''
     });
 
-    SwarmActions.retrieveGames();
+    GameActions.retrieveGames();
   },
   componentDidMount: function() {
     GameStore.addChangeListener(this._onChange);
@@ -220,9 +220,9 @@ var Start = React.createClass({
         return;
       }
 
-      amount = window.web3.utils.toWei(amount, 'ether');
+      amount = window.web3.utils.toWei(amount.toString(), 'ether');
       const gas = 650000;
-      const gasPrice = window.web3.utils.toWei(20, 'shannon');
+      const gasPrice = window.web3.utils.toWei("20", 'shannon');
 
       var params = {
         value: amount,
@@ -233,7 +233,12 @@ var Start = React.createClass({
 
       console.log(params);
 
-      Web3Actions.startWager(this.state.referenceHash, params);
+      console.log("PARAMS");
+      console.log(this.state.referenceHash);
+
+      var hash_sha3 = web3.utils.sha3(this.state.referenceHash);
+
+      Web3Actions.startWager(hash_sha3, params);
     };
 
     return (

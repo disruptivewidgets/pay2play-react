@@ -11,6 +11,9 @@ import interfaces from "../smart-contract/interfaces.js";
 var contractAddress = "0x20b4bc2c50cf618c441e08f246f283cc81a0035b"; // Ropsen Pay2Play
 contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
 
+var fromBlock = '';
+var toBlock = '';
+
 function retrieveWager(index, callback) {
   var wagers = [];
 
@@ -36,8 +39,6 @@ function retrieveWager(index, callback) {
         state = "settled";
     }
 
-    console.log(result);
-
     var wager = {
       index: index,
       state: state,
@@ -46,7 +47,7 @@ function retrieveWager(index, callback) {
       amount: result[2].toString(),
       winner: result[3],
       players: result[4],
-      referenceHash: result[5].substring(2)
+      referenceHash: result[5]
     };
 
     callback(wager);

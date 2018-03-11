@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import GameStore from '../stores/GameStore';
-import SwarmActions from '../actions/SwarmActions';
+import GameActions from '../actions/GameActions';
 
 import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core";
 
@@ -24,7 +24,7 @@ var StartWagerForm = React.createClass({
   componentWillMount: function() {
     this.setState(GameStore.getDataStore());
 
-    SwarmActions.retrieveGames();
+    GameActions.retrieveGames();
 
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review")) {
       this.setState({
@@ -56,7 +56,7 @@ var StartWagerForm = React.createClass({
   },
   componentWillUnmount: function() {
     console.log("componentWillUnmount");
-    
+
     GameStore.removeChangeListener(this._onChange);
   },
   _onChange: function() {
@@ -291,7 +291,7 @@ function GameItem(props) {
   return (
     <div>
       <label>
-        Swarm Hash: {item.referenceHash}
+        Rules Hash: {item.referenceHash}
       </label>
       <br />
       <label>

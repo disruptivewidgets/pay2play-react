@@ -122,7 +122,8 @@ var Wager = React.createClass({
   },
   render: function() {
     const isWagerOpen = (this.state.wager.state === 'open') ;
-    const isWagerFinished = (this.state.wager.state === 'finished') ;
+    const isWagerClosed = (this.state.wager.state === 'closed');
+    const isWagerFinished = (this.state.wager.state === 'finished');
     const isWagerSettled = (this.state.wager.state === 'settled');
 
     const hasPlayers = (this.state.wager.players !== undefined);
@@ -130,10 +131,14 @@ var Wager = React.createClass({
     var isWinner = false;
     var creator = "";
 
+    var isPlayer = false
+
     if (hasPlayers)
     {
       isWinner = (this.state.wager.winner === window.authorizedAccount);
       creator = this.state.wager.players[0];
+
+      isPlayer = (this.state.wager.players[0] === window.authorizedAccount || this.state.wager.players[1] === window.authorizedAccount);
     }
 
     var isLoser = false;
@@ -185,7 +190,7 @@ var Wager = React.createClass({
           });
 
           const winner = event.target.winner.value;
-          const amount = window.web3.utils.toWei(0.01, 'ether');
+          // const amount = window.web3.utils.toWei(0.01, 'ether');
 
           var params = {
             from: window.authorizedAccount,
@@ -211,15 +216,37 @@ var Wager = React.createClass({
       isModerator = true;
     }
 
-    console.log(isWagerSettled);
-
     return (
         <div>
           <div className="highlighted">Wager Terms</div>
           <br />
           <div>Wager Id: {this.state.wager.index}</div>
           <div>Start Time: {this.state.wager.date}</div>
-          <div>{this.state.wager.state}</div>
+          <div>
+
+            {
+              isPlayer ? (
+                <div>
+                  {
+                    isWagerClosed ? (
+                      <div>
+                        funded
+                      </div>
+                    ) : (
+                      <div>
+                        {this.state.wager.state}
+                      </div>
+                    )
+                  }
+                </div>
+              ) : (
+                <div>
+                    {this.state.wager.state}
+                </div>
+              )
+            }
+          </div>
+
           <div>Amount: {this.state.wager.amount / 1000000000000000000} Eth</div>
 
           <br />
@@ -289,7 +316,8 @@ var Wager = React.createClass({
           ) : (
             <div>
               <br />
-              { isWinner &&
+              {
+                isWinner &&
                 <div>
                   { loaded ? (
                     <div>
@@ -334,7 +362,8 @@ var Wager = React.createClass({
                   )}
                 </div>
               }
-              { isLoser &&
+              {
+                isLoser &&
                 <div>
                   <div className="highlighted-red">Sorry, you did not win.</div>
                   <br />
@@ -342,7 +371,27 @@ var Wager = React.createClass({
                   <br />
                 </div>
               }
-              <HomeButton to="/" label="Start Over" />
+
+              {
+                isPlayer ? (
+                  <div>
+
+                    { isWagerClosed &&
+                      <div>
+                        <div className="highlighted-green">Waiting for game results...</div>
+                        <br />
+                      </div>
+                    }
+
+                    <HomeButton to="/" label="Start New Wager" />
+                  </div>
+                ) : (
+                  <div>
+                      <HomeButton to="/" label="Start Your Wager" />
+                  </div>
+                )
+              }
+
             </div>
           )}
 
