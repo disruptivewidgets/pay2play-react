@@ -1,0 +1,6 @@
+const ActionTypes = {
+  GET_TRANSACTIONS: 'GET_TRANSACTIONS',
+  GET_TRANSACTIONS_RESPONSE: 'GET_TRANSACTIONS_RESPONSE'
+};
+
+export default ActionTypes;
