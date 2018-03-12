@@ -83,4 +83,17 @@ Session.hasTransactionsWithWagerId = function(wagerId) {
   }
 }
 
+Session.getTransactions = function()
+{
+  return Session.getJSON("transactions");
+  // var transactions = _.filter(Session.getJSON("transactions"), function(transaction) {
+  //   return transaction.status == status;
+  // });
+  //
+  // if (transactions.length > 0) {
+  //   return transactions[0];
+  // } else {
+  //   return null;
+  // }
+}
 export default Session;

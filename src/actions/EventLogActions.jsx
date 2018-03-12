@@ -1,6 +1,6 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 import EventLogActionTypes from '../constants/EventLogActionTypes';
-import EtherScanApi from '../utils/EtherScanApi';
+import EtherScanAPI from '../api/EtherScanAPI';
 
 module.exports = {
   pullEventLogs(key, index) {
@@ -8,6 +8,6 @@ module.exports = {
       actionType: EventLogActionTypes.PULL_EVENT_LOGS,
     });
 
-    EtherScanApi.pullEventLogs(key, index);
+    EtherScanAPI.pullEventLogs(key, index);
   }
 };

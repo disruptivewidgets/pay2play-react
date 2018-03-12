@@ -58,7 +58,7 @@ AppDispatcher.register(function(payload) {
   switch(action.actionType) {
     case EventLogActionTypes.PULL_EVENT_LOGS_RESPONSE:
 
-        console.log(action.response);
+        // console.log(action.response);
 
         var transactions = action.response.transactions;
         var topicKey = action.response.topic;
@@ -67,7 +67,7 @@ AppDispatcher.register(function(payload) {
 
           const id = EventLogCounter.increment();
 
-          console.log("transaction");
+          // console.log("transaction");
 
           var wagerId = 0;
 

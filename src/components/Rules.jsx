@@ -2,8 +2,6 @@ import React from 'react';
 import RuleStore from '../stores/RuleStore';
 import GameActions from '../actions/GameActions';
 
-import Web3Api from '../utils/Web3Api';
-
 import * as moment from 'moment';
 import 'moment-duration-format';
 
@@ -12,16 +10,11 @@ var Rules = React.createClass({
     return RuleStore.getDataStore();
   },
   componentWillMount: function() {
-    console.log("props");
-    
-    console.log(this.props);
     this.setState(RuleStore.getDataStore());
 
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
   },
   componentWillReceiveProps: function(nextProps) {
-    console.log("componentWillReceiveProps");
-
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
   },
   componentDidMount: function() {

@@ -3,7 +3,7 @@ import WagerStore from '../stores/WagerStore';
 
 import GameActions from '../actions/GameActions';
 import Web3Actions from '../actions/Web3Actions';
-import RulesAPI from '../utils/RulesAPI.js';
+import RulesAPI from '../api/RulesAPI.js';
 
 import Web3Store from '../stores/Web3Store';
 import GameStore from '../stores/GameStore';
@@ -153,7 +153,7 @@ var Start = React.createClass({
   },
   render() {
     const onChange = (event) => {
-      console.log(event.target.value);
+      // console.log(event.target.value);
 
       this.setState({
         amount: event.target.value,
@@ -170,7 +170,8 @@ var Start = React.createClass({
     console.log(transaction);
 
     var queuedWagerId = -1;
-    if (transaction) {
+    if (transaction)
+    {
       queuedWagerId = transaction.wagerId;
     }
 
@@ -249,8 +250,9 @@ var Start = React.createClass({
           <div>
             { processing ? (
               <div>
-                <div className="highlighted-green">Congratulations! You have a wager in queue.</div>
+                <div className="highlighted-green">Congratulations! Your wager is in queue.</div>
                 <div>Note: You will be able to start more wagers once the queue clears.</div>
+                <br />
                 <div>Invite Id: <Link to={`/invites/${queuedWagerId}`} replace>{queuedWagerId}</Link></div>
                 <br />
               </div>

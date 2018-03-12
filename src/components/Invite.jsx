@@ -12,7 +12,7 @@ import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
 import GameActions from '../actions/GameActions';
 import EventLogStore from '../stores/EventLogStore';
-import Web3API from '../utils/Web3API';
+// import Web3API from '../api/Web3API';
 
 import SessionHelper from "../helpers/SessionUtils.js";
 

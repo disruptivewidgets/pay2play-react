@@ -6,6 +6,7 @@ import Web3Shim from '../components/Web3Shim';
 import ImgLogo from '../../images/logo.png';
 
 import Start from '../components/Start';
+import Session from '../components/Session';
 import Invite from '../components/Invite';
 import Wager from '../components/Wager';
 
@@ -13,7 +14,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Web3 from 'web3';
-import { contractAddress } from '../utils/Web3Api.js';
+import { contractAddress } from '../api/Web3API.js';
 import interfaces from "../smart-contract/interfaces.js";
 
 // import { Helmet } from "react-helmet";
@@ -152,11 +153,8 @@ class MistSite extends React.Component {
 
   }
   setupWeb3() {
-    //
-    console.log("WEB3 SETUP START");
-
-    console.log("Ropsen Pay2Play: ");
-    console.log(contractAddress);
+    // console.log("Ropsen Pay2Play: ");
+    // console.log(contractAddress);
 
     if (window.web3.eth.currentProvider.isConnected()) {
       console.log("web3 connected");
@@ -181,19 +179,16 @@ class MistSite extends React.Component {
     contract.options.address = contractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
-      console.log("registrarStartDate");
-      console.log(error, result);
+      // console.log("registrarStartDate");
+      // console.log(error, result);
     });
 
     window.contract.methods.node().call({}, function(error, result) {
-      console.log("node");
-      console.log(error, result);
+      // console.log("node");
+      // console.log(error, result);
 
       window.hostNode = result;
     });
-
-    console.log("WEB3 SETUP FINISH");
-    //
   }
   render() {
 
@@ -206,6 +201,7 @@ class MistSite extends React.Component {
           <div>
             <Route exact path="/" component={Home}/>
             <Route exact path="/start" component={Start}/>
+            <Route exact path="/session" component={Session}/>
 
             <Route exact path={`/invites/:id`} component={Invite}/>
 

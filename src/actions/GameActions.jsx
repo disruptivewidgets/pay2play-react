@@ -1,6 +1,6 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 import GameActionTypes from '../constants/GameActionTypes';
-import RulesAPI from '../utils/RulesAPI';
+import RulesAPI from '../api/RulesAPI';
 
 module.exports = {
   retrieveGames() {

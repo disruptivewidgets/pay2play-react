@@ -91,7 +91,7 @@ function WagerItem(props) {
   var isCreator = (item.players[0] === window.authorizedAccount && window.authorizedAccount != undefined);
   var isCounter = (item.players[1] === window.authorizedAccount && window.authorizedAccount != undefined);
 
-  console.log(window.authorizedAccount);
+  // console.log(window.authorizedAccount);
 
   var style = "";
 

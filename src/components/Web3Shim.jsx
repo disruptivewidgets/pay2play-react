@@ -6,7 +6,7 @@ import ApiUtils from '../helpers/ApiUtils';
 
 import util from 'ethereumjs-util';
 
-import { contractAddress } from '../utils/Web3Api.js';
+import { contractAddress } from '../api/Web3API';
 
 import Web3Store from '../stores/Web3Store';
 
@@ -20,10 +20,6 @@ var Web3Shim = React.createClass({
   },
   componentWillMount() {
     console.log("componentWillMount Web3Shim");
-    // Checking if Web3 has been injected by the browser (Mist/MetaMask)
-
-    //
-    console.log("WEB3 START");
 
     if (typeof web3 !== 'undefined') {
       // Use Mist/MetaMask's provider
@@ -37,37 +33,56 @@ var Web3Shim = React.createClass({
     console.log("Ropsen Pay2Play: ");
     console.log("contractAddress: " + contractAddress);
 
-    // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result){
-    //     if (!error)
-    //         console.log(error);
-    // })
-    // .on("data", function(blockHeader){
-    //   console.log(blockHeader);
-    // });
-
-    // // unsubscribes the subscription
-    // subscription.unsubscribe(function(error, success){
-    //     if(success)
-    //         console.log('Successfully unsubscribed!');
-    // });
-
     if (window.web3.eth.currentProvider.isConnected()) {
       console.log("web3 connected");
 
+      // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result) {
+      //   console.log(result);
+      //
+      //     if (!error)
+      //         console.log(error);
+      // })
+      // .on("data", function(blockHeader) {
+      //   console.log("HERE");
+      // });
+
+      // var subscription = window.web3.eth.subscribe('syncing', function(error, sync){
+      //     if (!error)
+      //         console.log(sync);
+      // })
+      // .on("data", function(sync){
+      //     // show some syncing stats
+      //     console.log(sync);
+      // })
+      // .on("changed", function(isSyncing){
+      //     if(isSyncing) {
+      //         // stop app operation
+      //         console.log("A");
+      //     } else {
+      //         // regain app operation
+      //         console.log("B");
+      //     }
+      // });
+
+      // // unsubscribes the subscription
+      // subscription.unsubscribe(function(error, success){
+      //     if(success)
+      //         console.log('Successfully unsubscribed!');
+      // });
+
+      // Retrive wagers start
       var topic1 = util.bufferToHex(util.setLengthLeft(parseInt(1), 32));
 
-      console.log("YO");
       window.web3.eth.getPastLogs({
         address: contractAddress,
         fromBlock: "0",
         topics: ["0x52b3086eb00fd2639eeb5190527da3e1c4c1400ee550073dde793315159cfe77"]
       }).then( value => {
-        console.log("AAA");
         console.log(value); // Success!
       }, reason => {
-        console.log("B");
         console.log(reason); // Error!
       } );
+      // end
 
     } else {
       console.log("web3 not connected");
@@ -90,34 +105,26 @@ var Web3Shim = React.createClass({
     contract.options.address = contractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
-      console.log("registrarStartDate");
-      console.log(error, result);
+      // console.log("registrarStartDate");
+      // console.log(error, result);
     });
 
     window.contract.methods.node().call({}, function(error, result) {
-      console.log("node");
-      console.log(error, result);
+      // console.log("node");
+      // console.log(error, result);
 
       window.hostNode = result;
     });
-
-    console.log("WEB3 END");
-    //
   },
-  componentDidMount() {
-    //
-    console.log("WEB3SHIM MOUNTED");
+  componentDidMount()
+  {
     Web3Store.addChangeListener(this._onChange);
-    //
   },
-  componentWillUnmount: function() {
-    //
-    console.log("WEB3SHIM UNMOUNTED");
+  componentWillUnmount: function()
+  {
     Web3Store.removeChangeListener(this._onChange);
-    //
   },
   _onChange: function() {
-    console.log("Web3Shim _onChange fired");
   },
   render() {
     const isAuthorized = (window.authorizedAccount !== undefined);
