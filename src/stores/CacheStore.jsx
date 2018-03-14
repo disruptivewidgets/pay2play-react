@@ -55,7 +55,7 @@ AppDispatcher.register(function(payload) {
           })
         });
 
-        _store.list = cacheRecords;
+        _store.list = cacheRecords.reverse();
 
         CacheStore.emit(CHANGE_EVENT);
         break;

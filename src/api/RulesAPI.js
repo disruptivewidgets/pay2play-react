@@ -476,14 +476,11 @@ function getGamesDefault() {
 function getGameRulesDefault (hash, wagerStartTimestamp) {
 
   setTimeout(function() {
-    window.web3.eth.getBlock('latest', function(err, block) {
-      // console.log("block: " + block);
-
+    window.web3.eth.getBlock('latest', function(err, block)
+    {
       var duration = 0;
       var result = {
       };
-
-      // console.log(hash);
 
       if (hash == "d8fe3958b201c46e3d1ca6d431a11de990457f953f349705669806e514832f1e" || hash == window.web3.utils.sha3("1")) {
         duration = 3600;

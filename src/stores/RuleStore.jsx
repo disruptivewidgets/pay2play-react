@@ -41,8 +41,6 @@ AppDispatcher.register(function(payload) {
   switch(action.actionType) {
     case GameActionTypes.RETRIEVE_GAME_RULES_RESPONSE:
 
-        console.log(action.response);
-
         var rules = action.response;
 
         const id = RuleCounter.increment();

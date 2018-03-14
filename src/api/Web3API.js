@@ -20,7 +20,8 @@ function retrieveWager(index, callback) {
   var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
   contract.options.address = contractAddress; // Ropsen Pay2Play
 
-  contract.methods.getWager(index.toString()).call({}, function(error, result) {
+  contract.methods.getWager(index.toString()).call({}, function(error, result)
+  {
     var state = "open";
 
     var date = new Date(result[1] * 1000);
@@ -99,9 +100,11 @@ module.exports = {
       eachAsync(wagerIndices, retrieveWager, sort);
     });
   },
-  retrieveWager: function(id) {
+  retrieveWager: function(id)
+  {
 
-    function parse(wager) {
+    function parse(wager)
+    {
       Web3ServerActions.receivedWager(wager);
     }
 
@@ -133,7 +136,7 @@ module.exports = {
       Web3ServerActions.startWager('transactionHash');
     })
     .on('confirmation', function(confirmationNumber, receipt) {
-      console.log(confirmationNumber);
+      console.log("confirmation: " + confirmationNumber);
       console.log(receipt);
 
       if (confirmationNumber == 0) {
@@ -182,7 +185,6 @@ module.exports = {
 
   },
   counterWagerAndDeposit: function(wagerId, params) {
-    console.log("counterWagerAndDeposit");
 
     window.contract.methods.counterWagerAndDeposit(wagerId).send(params)
     .on('transactionHash', function(hash) {
@@ -204,7 +206,7 @@ module.exports = {
       Web3ServerActions.counterWagerAndDeposit('transactionHash');
     })
     .on('confirmation', function(confirmationNumber, receipt) {
-      console.log(confirmationNumber);
+      console.log("confirmation: " + confirmationNumber);
       console.log(receipt);
 
       if (confirmationNumber == 0) {
@@ -263,7 +265,7 @@ module.exports = {
       Web3ServerActions.setWagerWinner('transactionHash');
     })
     .on('confirmation', function(confirmationNumber, receipt) {
-      console.log(confirmationNumber);
+      console.log("confirmation: " + confirmationNumber);
       console.log(receipt);
 
       if (confirmationNumber == 0) {
@@ -322,7 +324,7 @@ module.exports = {
       Web3ServerActions.withdrawWinnings('transactionHash');
     })
     .on('confirmation', function(confirmationNumber, receipt) {
-      console.log(confirmationNumber);
+      console.log("confirmation: " + confirmationNumber);
       console.log(receipt);
 
       if (confirmationNumber == 0) {

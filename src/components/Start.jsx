@@ -106,6 +106,8 @@ var Start = React.createClass({
   },
   onEvent_Receipt: function() {
     console.log("onEvent_Receipt");
+
+    
   },
   onEvent_Error: function() {
     console.log("onEvent_Error");
@@ -232,14 +234,7 @@ var Start = React.createClass({
         gasPrice: gasPrice
       };
 
-      console.log(params);
-
-      console.log("PARAMS");
-      console.log(this.state.referenceHash);
-
-      var hash_sha3 = web3.utils.sha3(this.state.referenceHash);
-
-      Web3Actions.startWager(hash_sha3, params);
+      Web3Actions.startWager(this.state.referenceHash, params);
     };
 
     return (

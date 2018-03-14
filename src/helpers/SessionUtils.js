@@ -22,18 +22,39 @@ Session.storeTransaction = function (transaction) {
   Session.setJSON("transactions", transactions);
 }
 
-Session.updateTransaction = function (id, searchKey, replaceValue) {
+Session.updateTransaction = function (hash, searchKey, replaceValue)
+{
   console.log("updateTransaction");
 
   var transactions = Session.getJSON("transactions");
 
-  _.each(transactions, function(transaction) {
+  var index = _.findIndex(transactions, function(transaction) {
+    return transaction.id == hash;
+  });
+
+  if (index != -1)
+  {
+    var transaction = transactions[index];
     _.each(transaction, function(value, key) {
       if(key === searchKey) {
         transaction[key] = replaceValue;
       }
     });
-  });
+
+    transactions[index] = transaction;
+  }
+
+  // transactions = _.filter(transactions, function(transaction) {
+  //     return transaction.id == hash;
+  // });
+  //
+  // _.each(transactions, function(transaction) {
+  //   _.each(transaction, function(value, key) {
+  //     if(key === searchKey) {
+  //       transaction[key] = replaceValue;
+  //     }
+  //   });
+  // });
 
   Session.setJSON("transactions", transactions);
 }

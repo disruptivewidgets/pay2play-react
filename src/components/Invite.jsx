@@ -101,7 +101,8 @@ var Invite = React.createClass({
 
     SessionHelper.listTransactions();
   },
-  _onChange: function() {
+  _onChange: function()
+  {
     this.setState(WagerStore.get());
     this.setState(Web3Store.getStore());
 
@@ -109,10 +110,12 @@ var Invite = React.createClass({
       players: this.state.wager.players
     });
   },
-  onEvent_TransactionHash: function() {
+  onEvent_TransactionHash: function()
+  {
     console.log("onEvent_TransactionHash");
   },
-  onEvent_Confirmation: function() {
+  onEvent_Confirmation: function()
+  {
     console.log("onEvent_Confirmation");
 
     this.setState({
@@ -120,10 +123,12 @@ var Invite = React.createClass({
       processing: true
     });
   },
-  onEvent_Receipt: function() {
+  onEvent_Receipt: function()
+  {
     console.log("onEvent_Receipt");
   },
-  onEvent_Error: function() {
+  onEvent_Error: function()
+  {
     console.log("onEvent_Error");
 
     this.setState({
@@ -135,8 +140,6 @@ var Invite = React.createClass({
   render: function()
   {
     const referenceHash = this.state.wager.referenceHash;
-
-    console.log("referenceHash: " + referenceHash);
 
     const startTimestamp = this.state.wager.startTimestamp;
     const isWagerOpen = (this.state.wager.state === 'open') ;
