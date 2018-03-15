@@ -21,6 +21,11 @@ import {
   withRouter
 } from 'react-router-dom'
 
+var loading_captions = [
+  "Pending Payment...",
+  "Pending Confirmation..."
+]
+
 var Wager = React.createClass({
   getInitialState: function() {
     return WagerStore.get();
@@ -94,13 +99,20 @@ var Wager = React.createClass({
 
     SessionHelper.listTransactions();
   },
-  _onChange: function() {
+  _onChange: function()
+  {
     this.setState(WagerStore.get());
   },
-  onEvent_TransactionHash: function() {
+  onEvent_TransactionHash: function()
+  {
     console.log("onEvent_TransactionHash");
+
+    this.setState({
+        loading_caption: loading_captions[1]
+    });
   },
-  onEvent_Confirmation: function() {
+  onEvent_Confirmation: function()
+  {
     console.log("onEvent_Confirmation");
 
     this.setState({
@@ -108,10 +120,12 @@ var Wager = React.createClass({
       processing: true
     });
   },
-  onEvent_Receipt: function() {
+  onEvent_Receipt: function()
+  {
     console.log("onEvent_Receipt");
   },
-  onEvent_Error: function() {
+  onEvent_Error: function()
+  {
     console.log("onEvent_Error");
 
     this.setState({
@@ -169,7 +183,8 @@ var Wager = React.createClass({
         case 'windraw-winnings-form':
 
           this.setState({
-            loaded: false
+            loaded: false,
+            loading_caption: loading_captions[0]
           });
 
           var params = {
@@ -186,7 +201,8 @@ var Wager = React.createClass({
           console.log(event.target.winner.value);
 
           this.setState({
-            loaded: false
+            loaded: false,
+            loading_caption: loading_captions[0]
           });
 
           const winner = event.target.winner.value;
@@ -292,10 +308,18 @@ var Wager = React.createClass({
                                     <div>Wager has not started.</div>
                                   </div>
                                 ) : (
-                                  <form name="set-winner-form" onSubmit={onSubmit}>
-                                    <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
-                                    <div><input type="submit" value="Set Winner" /></div>
-                                  </form>
+                                  <div>
+                                    <div>
+                                      <div>Wager Creator: {creator}</div>
+                                      <br />
+                                    </div>
+                                    <div>
+                                      <form name="set-winner-form" onSubmit={onSubmit}>
+                                        <WinnerSelector onSelect={this.handleSelect} players={this.state.wager.players} />
+                                        <div><input type="submit" value="Set Winner" /></div>
+                                      </form>
+                                    </div>
+                                </div>
                                 )
                               }
                               </div>
@@ -309,7 +333,7 @@ var Wager = React.createClass({
               ) : (
                 <div>
                   <Spinner intent={Intent.PRIMARY} />
-                  <div>Please wait...</div>
+                  <div>{this.state.loading_caption}</div>
                 </div>
               )}
             </div>
@@ -355,7 +379,7 @@ var Wager = React.createClass({
                     <div>
                       <div>
                         <Spinner intent={Intent.PRIMARY} />
-                        <div>Please wait...</div>
+                        <div>{this.state.loading_caption}</div>
                       </div>
                       <br />
                     </div>
@@ -387,7 +411,7 @@ var Wager = React.createClass({
                   </div>
                 ) : (
                   <div>
-                      <HomeButton to="/" label="Start Your Wager" />
+                      <HomeButton to="/" label="Start Over" />
                   </div>
                 )
               }

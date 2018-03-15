@@ -12,7 +12,6 @@ import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
 import GameActions from '../actions/GameActions';
 import EventLogStore from '../stores/EventLogStore';
-// import Web3API from '../api/Web3API';
 
 import SessionHelper from "../helpers/SessionUtils.js";
 
@@ -23,6 +22,11 @@ import Helpers from "../helpers/TransactionUtils.js";
 import { Intent, Spinner } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
+
+var loading_captions = [
+  "Pending Payment...",
+  "Pending Confirmation..."
+]
 
 var Invite = React.createClass({
   getInitialState: function() {
@@ -113,6 +117,10 @@ var Invite = React.createClass({
   onEvent_TransactionHash: function()
   {
     console.log("onEvent_TransactionHash");
+
+    this.setState({
+        loading_caption: loading_captions[1]
+    });
   },
   onEvent_Confirmation: function()
   {
@@ -170,7 +178,8 @@ var Invite = React.createClass({
 
       this.setState({
         loaded: false,
-        error: ''
+        error: '',
+        loading_caption: loading_captions[0]
       });
 
       if (window.authorizedAccount === undefined) {
@@ -375,7 +384,7 @@ var Invite = React.createClass({
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />
-            <div>Please wait...</div>
+            <div>{this.state.loading_caption}</div>
           </div>
         ) }
 

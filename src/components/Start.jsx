@@ -26,12 +26,21 @@ import {
 
 import _ from 'lodash';
 
+var loading_captions = [
+  "Loading Game Rules...",
+  "Pending Payment...",
+  "Pending Confirmation..."
+]
+
 var Start = React.createClass({
-  getInitialState: function() {
+  getInitialState: function()
+  {
     return GameStore.getDataStore();
   },
-  componentWillMount: function() {
-    if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review")) {
+  componentWillMount: function()
+  {
+    if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"))
+    {
       this.setState({
         processing: true
       });
@@ -45,12 +54,14 @@ var Start = React.createClass({
       selected: { value: 'one', label: 'One' },
       loaded: false,
       error: '',
-      amount: ''
+      amount: '',
+      loading_caption: loading_captions[0]
     });
 
     GameActions.retrieveGames();
   },
-  componentDidMount: function() {
+  componentDidMount: function()
+  {
     GameStore.addChangeListener(this._onChange);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
@@ -58,7 +69,8 @@ var Start = React.createClass({
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
   },
-  componentWillUnmount: function() {
+  componentWillUnmount: function()
+  {
     GameStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
@@ -66,8 +78,8 @@ var Start = React.createClass({
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   },
-  _onChange: function() {
-
+  _onChange: function()
+  {
     var dataStore = GameStore.getDataStore();
 
     var games = _.map(dataStore.list, function(item) {
@@ -93,10 +105,16 @@ var Start = React.createClass({
 
     this.setState(GameStore.getDataStore());
   },
-  onEvent_TransactionHash: function() {
+  onEvent_TransactionHash: function()
+  {
     console.log("onEvent_TransactionHash");
+
+    this.setState({
+        loading_caption: loading_captions[2]
+    });
   },
-  onEvent_Confirmation: function() {
+  onEvent_Confirmation: function()
+  {
     console.log("onEvent_Confirmation");
 
     this.setState({
@@ -104,12 +122,12 @@ var Start = React.createClass({
       processing: true
     });
   },
-  onEvent_Receipt: function() {
+  onEvent_Receipt: function()
+  {
     console.log("onEvent_Receipt");
-
-    
   },
-  onEvent_Error: function() {
+  onEvent_Error: function()
+  {
     console.log("onEvent_Error");
 
     this.setState({
@@ -118,33 +136,12 @@ var Start = React.createClass({
 
     this.forceUpdate();
   },
-  forceUpdate() {
-    // var dataStore = GameStore.getDataStore();
-    //
-    // var games = _.map(dataStore.list, function(item) {
-    //   var game = {
-    //     value: item.referenceHash,
-    //     label: item.title
-    //   };
-    //   return game;
-    // });
-    //
-    // var selected = _.find(dataStore.list, function(game) {
-    //   console.log(game.referenceHash, games[0].value);
-    //   return game.referenceHash == games[0].value;
-    // });
-    //
-    // this.setState({
-    //     games: games,
-    //     value: games[0],
-    //     referenceHash: selected.referenceHash,
-    //     loaded: true,
-    //     selected: games[0]
-    // });
-
+  forceUpdate()
+  {
     this.setState(GameStore.getDataStore());
   },
-  handleSelect(game) {
+  handleSelect(game)
+  {
     console.log("handleSelect");
     console.log(game);
 
@@ -153,8 +150,10 @@ var Start = React.createClass({
       selected: game
     });
   },
-  render() {
-    const onChange = (event) => {
+  render()
+  {
+    const onChange = (event) =>
+    {
       // console.log(event.target.value);
 
       this.setState({
@@ -186,7 +185,8 @@ var Start = React.createClass({
 
       this.setState({
         loaded: false,
-        error: ''
+        error: '',
+        loading_caption: loading_captions[1]
       });
 
       var amount = this.state.amount;
@@ -278,7 +278,7 @@ var Start = React.createClass({
         ) : (
           <div>
             <Spinner intent={Intent.PRIMARY} />
-            <div>Please wait...</div>
+            <div>{this.state.loading_caption}</div>
             <br />
           </div>
         ) }
