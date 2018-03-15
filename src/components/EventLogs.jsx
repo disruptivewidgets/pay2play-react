@@ -9,6 +9,8 @@ var EventLogs = React.createClass({
   },
   componentWillMount: function()
   {
+    console.log("componentWillReceiveProps");
+
     this.setState(EventLogStore.getDataStore());
     this.setState(EventLogStore.getData());
 
@@ -24,6 +26,27 @@ var EventLogs = React.createClass({
   componentWillUnmount: function()
   {
     EventLogStore.removeChangeListener(this._onChange);
+  },
+  componentDidUpdate: function() {
+  },
+  componentWillReceiveProps: function(nextProps) {
+    console.log("componentWillReceiveProps A");
+
+    console.log(nextProps);
+
+    if (nextProps.index !== this.props.index) {
+      // computeValue(nextProps.index)
+      //   .then(value => this.setState({value}));
+
+        EventLogActions.pullEventLogs("WagerStarted", nextProps.index);
+        EventLogActions.pullEventLogs("NewDeposit", nextProps.index);
+        EventLogActions.pullEventLogs("WagerWinnerUpdated", nextProps.index);
+        EventLogActions.pullEventLogs("WinningsWithdrawn", nextProps.index);
+    }
+    // EventLogActions.pullEventLogs("WagerStarted", nextProps.index);
+    // EventLogActions.pullEventLogs("NewDeposit", nextProps.index);
+    // EventLogActions.pullEventLogs("WagerWinnerUpdated", nextProps.index);
+    // EventLogActions.pullEventLogs("WinningsWithdrawn", nextProps.index);
   },
   _onChange: function()
   {

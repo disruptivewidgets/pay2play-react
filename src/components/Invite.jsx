@@ -104,6 +104,7 @@ var Invite = React.createClass({
     }
 
     SessionHelper.listTransactions();
+    // this.forceUpdate();
   },
   _onChange: function()
   {
