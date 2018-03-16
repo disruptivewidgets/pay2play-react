@@ -33,7 +33,7 @@ var Rules = React.createClass({
         <br />
         <div>Rules Hash: {this.props.referenceHash}</div>
         <div>Title: {this.state.rules.title}</div>
-        <div>Time Window: {this.state.rules.timeUntilEndString}</div>
+        {/* <div>Time Window: {this.state.rules.timeUntilEndString}</div> */}
       </div>
     );
   }
