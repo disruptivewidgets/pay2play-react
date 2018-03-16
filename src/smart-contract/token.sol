@@ -8,7 +8,7 @@ pragma solidity ^0.4.18;
 // Name        : Play Token
 // Total supply: 100000000
 // Decimals    : 0
-//
+// https://theethereum.wiki/w/index.php/ERC20_Token_Standard
 //
 // ----------------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ contract ApproveAndCallFallBack
 
 
 // ----------------------------------------------------------------------------
-// Owned contract
+// PlayTokenDeed contract
 // ----------------------------------------------------------------------------
 contract PlayTokenDeed
 {
