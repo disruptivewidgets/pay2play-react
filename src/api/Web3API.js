@@ -8,8 +8,16 @@ import SessionHelper from "../helpers/SessionUtils.js";
 
 import interfaces from "../smart-contract/interfaces.js";
 
-var contractAddress = "0x20b4bc2c50cf618c441e08f246f283cc81a0035b"; // Ropsen Pay2Play
+var contractAddress = ""; // Ropsen Pay2Play
+
+// 2018-02-19
 contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
+
+// 2018-03-19
+// 0x73c05de22e572c3fb017bb85e5429281bbe5ac5e // registrar
+// 0x63837e750f8f7a5ae596b1efefcd05ae19a89e56 // token
+
+contractAddress = "0x73c05de22e572c3fb017bb85e5429281bbe5ac5e";
 
 var fromBlock = '';
 var toBlock = '';

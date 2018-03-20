@@ -4,9 +4,12 @@
  * @version 1.0.0
  */
 
-pragma solidity ^0.4.17;
+pragma solidity ^0.4.21;
 
-contract Deposit {
+import './ERC20.sol';
+
+contract Deposit
+{
   address public registrar;
 
   address constant burn = 0xdead;
@@ -20,7 +23,8 @@ contract Deposit {
 
   event BalanceTransfered(address winner);
 
-  function Deposit(address _owner) payable {
+  function Deposit(address _owner) payable public
+  {
       owner = _owner;
       registrar = msg.sender;
       creationDate = now;
@@ -28,38 +32,45 @@ contract Deposit {
       value = msg.value;
   }
 
-  modifier onlyRegistrar {
-      if (msg.sender != registrar) throw;
+  modifier onlyRegistrar
+  {
+      if (msg.sender != registrar) revert();
       _;
   }
 
-  modifier onlyActive {
-      if (!active) throw;
+  modifier onlyActive
+  {
+      if (!active) revert();
       _;
   }
 
-  function setRegistrar(address _registrar) onlyRegistrar {
+  function setRegistrar(address _registrar) onlyRegistrar public
+  {
       registrar = _registrar;
   }
 
-  function withdraw(address winner) onlyRegistrar {
+  function withdraw(address winner) onlyRegistrar public
+  {
     winner.transfer(this.balance);
 
     value = 0;
     active = false;
 
-    BalanceTransfered(winner);
+    emit BalanceTransfered(winner);
   }
 
-  function getActiveState() returns (bool) {
+  function getActiveState() returns (bool)
+  {
     return active;
   }
 }
 
-contract Registrar {
+contract Registrar
+{
 
     uint public registrarStartDate;
     address public node;
+    address public tokenNode;
     uint public fee;
 
     uint32 constant wagerWindow = 24 hours;
@@ -67,7 +78,8 @@ contract Registrar {
 
     enum Mode { Open, Closed, Finished, Settled }
 
-    struct wager {
+    struct wager
+    {
         address[] depositors;
         uint createdAt;
         uint amount;
@@ -88,88 +100,106 @@ contract Registrar {
 
     event ModeratorListUpdated(address indexed moderator);
 
-    function Registrar() {
+    function Registrar(address _tokenNode) public
+    {
         registrarStartDate = now;
         node = msg.sender;
+        tokenNode = _tokenNode;
     }
 
-    modifier onlyRegistrar {
-        if (msg.sender != node) throw;
+    modifier onlyRegistrar
+    {
+        if (msg.sender != node) revert();
         _;
     }
 
-    modifier onlyWinner(uint index) {
+    modifier onlyWinner(uint index)
+    {
         wager w = wagers[index];
-        if (msg.sender != w.winner) throw;
+        if (msg.sender != w.winner) revert();
         _;
     }
 
-    function state(uint index) constant returns (Mode) {
+    function state(uint index) constant public returns (Mode)
+    {
         var wager = wagers[index];
 
-        if (wager.winner != node) {
+        if (wager.winner != node)
+        {
           var deposit = deposits[wager.winner][index];
 
-          if (deposit.getActiveState() != true) {
+          if (deposit.getActiveState() != true)
+          {
             return Mode.Settled;
           }
 
           return Mode.Finished;
         }
 
-        if (wager.depositors.length == 1) {
+        if (wager.depositors.length == 1)
+        {
           return Mode.Open;
         }
 
-        if (wager.depositors.length == 2) {
+        if (wager.depositors.length == 2)
+        {
           return Mode.Closed;
         }
     }
 
-    function isModerator(address moderator) constant returns(bool) {
-      for (uint i = 0; i < moderators.length; i++) {
-        if (moderators[i] == moderator) {
+    function isModerator(address moderator) constant public returns(bool)
+    {
+      for (uint i = 0; i < moderators.length; i++)
+      {
+        if (moderators[i] == moderator)
+        {
           return true;
         }
       }
       return false;
     }
 
-    modifier inState(uint _index, Mode _state) {
-        if(state(_index) != _state) throw;
+    modifier inState(uint _index, Mode _state)
+    {
+        if(state(_index) != _state) revert();
         _;
     }
 
-    function getWager(uint index) constant returns (Mode, uint, uint, address, address[], bytes32) {
+    function getWager(uint index) constant public returns (Mode, uint, uint, address, address[], bytes32)
+    {
         wager w = wagers[index];
 
         address[] memory owners = new address[](w.depositors.length);
 
-        for (uint i = 0; i < w.depositors.length; i++) {
+        for (uint i = 0; i < w.depositors.length; i++)
+        {
           owners[i] = w.depositors[i];
         }
 
         return (state(index), w.createdAt, w.amount, w.winner, owners, w.rulesHash);
     }
 
-    function getWagerCount() public constant returns (uint) {
+    function getWagerCount() public constant returns (uint)
+    {
         return wagers.length;
     }
 
-    function createWager(bytes32 rulesHash) constant returns (uint) {
+    function createWager(bytes32 rulesHash) constant public returns (uint)
+    {
         uint index = wagers.length;
 
         wagers.push(wager(new address[](0), now, 0, node, rulesHash));
 
-        WagerStarted(index, now);
+        emit WagerStarted(index, now);
 
         return index;
     }
 
-    function newDeposit(uint index) payable {
-        if (msg.value < minPrice) throw;
+    function newDeposit(uint index) payable public
+    {
+        if (msg.value < minPrice) revert();
 
-        if (address(deposits[msg.sender][index]) > 0 ) throw;
+        if (address(deposits[msg.sender][index]) > 0 ) revert();
 
         Deposit newDeposit = (new Deposit).value(msg.value)(msg.sender);
 
@@ -181,40 +211,52 @@ contract Registrar {
 
         w.amount = w.amount + msg.value;
 
-        NewDeposit(index, msg.sender, msg.value);
+        emit NewDeposit(index, msg.sender, msg.value);
     }
 
-    function createWagerAndDeposit(bytes32 rulesHash) payable {
+    function createWagerAndDeposit(bytes32 rulesHash) payable public
+    {
         uint index = createWager(rulesHash);
         newDeposit(index);
     }
 
-    function counterWagerAndDeposit(uint index) payable {
+    function counterWagerAndDeposit(uint index) payable public
+    {
         newDeposit(index);
     }
 
-    function setWagerWinner(uint index, address winner) onlyRegistrar {
+    function setWagerWinner(uint index, address winner) onlyRegistrar public
+    {
       wager w = wagers[index];
 
       w.winner = winner;
 
-      WagerWinnerUpdated(index, winner);
+      /* ERC20Interface(tokenNode).approve(msg.sender, 1);
+      ERC20Interface(tokenNode).transferFrom(msg.sender, winner, 1); */
+
+      /* ERC20Interface(tokenNode).transfer(winner, 1); */
+
+      emit WagerWinnerUpdated(index, winner);
     }
 
-    function withdrawWinnings(uint index) onlyWinner(index) {
+    function withdrawWinnings(uint index) onlyWinner(index) public
+    {
       wager w = wagers[index];
 
-      for (uint i = 0; i < w.depositors.length; i++) {
+      for (uint i = 0; i < w.depositors.length; i++)
+      {
         deposits[w.depositors[i]][index].withdraw(w.winner);
       }
 
-      WinningsWithdrawn(index, w.winner, w.amount);
+      emit WinningsWithdrawn(index, w.winner, w.amount);
     }
 
-    function addModerator(address moderator) onlyRegistrar {
-      if (isModerator(moderator) != true) {
+    function addModerator(address moderator) onlyRegistrar public
+    {
+      if (isModerator(moderator) != true)
+      {
         moderators.push(moderator);
-        ModeratorListUpdated(moderator);
+        emit ModeratorListUpdated(moderator);
       }
     }
 }
