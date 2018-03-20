@@ -17,7 +17,18 @@ contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
 // 0x73c05de22e572c3fb017bb85e5429281bbe5ac5e // registrar
 // 0x63837e750f8f7a5ae596b1efefcd05ae19a89e56 // token
 
-contractAddress = "0x73c05de22e572c3fb017bb85e5429281bbe5ac5e";
+contractAddress = "0x8ab9dbf7590a0cc2d4e8c4d900fa9bc4515faccc";
+
+// 2018-03-20
+// "0xef9b74aee53d1371e692ba5b65a658a2b0104ff8" // token
+// "0x6225dd896a97ac63330b264fd9e20a54fe1ed2c5" // registrar
+// "0xdba36a59310db0ca38c39d27082a4e55ffbc3fea" // moderator
+// "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D" // player 1
+// "0x360e9D72b8B74baF3FBC472963FA4879006caFc7" // player 2
+
+// "0xdba36a59310db0ca38c39d27082a4e55ffbc3fea", "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D"
+
+contractAddress = "0x6225dd896a97ac63330b264fd9e20a54fe1ed2c5";
 
 var fromBlock = '';
 var toBlock = '';
