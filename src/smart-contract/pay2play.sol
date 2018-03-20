@@ -231,13 +231,7 @@ contract Registrar
 
       w.winner = winner;
 
-      /* ERC20Interface(tokenNode).approve(msg.sender, 1);
-      ERC20Interface(tokenNode).transferFrom(msg.sender, winner, 1); */
-      /* ERC20Interface(tokenNode).transfer(winner, 1); */
-
-      /* ERC20Interface(tokenNode).approve(this, 1); */
-
-      ERC20Interface(tokenNode).approve(winner, 1);
+      ERC20Interface(tokenNode).transfer(winner, 1);
 
       emit WagerWinnerUpdated(index, winner);
     }
@@ -250,9 +244,6 @@ contract Registrar
       {
         deposits[w.depositors[i]][index].withdraw(w.winner);
       }
-
-      ERC20Interface(tokenNode).transferFrom(node, w.winner, 1);
-
       emit WinningsWithdrawn(index, w.winner, w.amount);
     }
 
