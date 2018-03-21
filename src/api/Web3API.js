@@ -9,6 +9,7 @@ import SessionHelper from "../helpers/SessionUtils.js";
 import interfaces from "../smart-contract/interfaces.js";
 
 var contractAddress = ""; // Ropsen Pay2Play
+var tokenContractAddress = ""; // Ropsen Pay2Play
 
 // 2018-02-19
 contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
@@ -20,15 +21,22 @@ contractAddress = "0xf7023174540af178df5e96adf145e09e17b7afa7";
 contractAddress = "0x8ab9dbf7590a0cc2d4e8c4d900fa9bc4515faccc";
 
 // 2018-03-20
-// "0xef9b74aee53d1371e692ba5b65a658a2b0104ff8" // token
-// "0x6225dd896a97ac63330b264fd9e20a54fe1ed2c5" // registrar
+// "0x7e50651fc0229857ba21a4342124744283ba546d" // token
+// "0x018d513ef96d4e6c9ef2a360989d4b17ac5b1495" // registrar
+
 // "0xdba36a59310db0ca38c39d27082a4e55ffbc3fea" // moderator
 // "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D" // player 1
 // "0x360e9D72b8B74baF3FBC472963FA4879006caFc7" // player 2
 
-// "0xdba36a59310db0ca38c39d27082a4e55ffbc3fea", "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D"
+// "0x018d513ef96d4e6c9ef2a360989d4b17ac5b1495", 1000
 
-contractAddress = "0x6225dd896a97ac63330b264fd9e20a54fe1ed2c5";
+// "0xdba36a59310db0ca38c39d27082a4e55ffbc3fea", "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D"
+// "0x6225dd896a97ac63330b264fd9e20a54fe1ed2c5", "0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D" works
+
+// 0xdba36a59310db0ca38c39d27082a4e55ffbc3fea, 0x73d7CA82CaB2e282575f77589a7a0d9A7b0A6F6D
+
+tokenContractAddress = "0x7e50651fc0229857ba21a4342124744283ba546d";
+contractAddress = "0x018d513ef96d4e6c9ef2a360989d4b17ac5b1495";
 
 var fromBlock = '';
 var toBlock = '';
@@ -381,5 +389,6 @@ module.exports = {
       Web3ServerActions.withdrawWinnings('error');
     });
   },
-  contractAddress: contractAddress
+  contractAddress: contractAddress,
+  tokenContractAddress: tokenContractAddress
 };

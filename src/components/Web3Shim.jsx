@@ -6,7 +6,7 @@ import ApiUtils from '../helpers/ApiUtils';
 
 import util from 'ethereumjs-util';
 
-import { contractAddress } from '../api/Web3API';
+import { contractAddress, tokenContractAddress } from '../api/Web3API';
 
 import Web3Store from '../stores/Web3Store';
 
@@ -15,7 +15,8 @@ var Web3Shim = React.createClass({
     return {
       version: '',
       authorizedAccount: 'None',
-      blockNumber: 0
+      blockNumber: 0,
+      tokenBalance: 0
     };
   },
   componentWillMount() {
@@ -32,6 +33,7 @@ var Web3Shim = React.createClass({
 
     console.log("Ropsen Pay2Play: ");
     console.log("contractAddress: " + contractAddress);
+    console.log("tokenContractAddress: " + tokenContractAddress);
 
     if (window.web3.eth.currentProvider.isConnected()) {
       console.log("web3 connected");
@@ -90,19 +92,12 @@ var Web3Shim = React.createClass({
 
     this.setState({version: window.web3.version});
 
-    window.web3.eth.getAccounts((err, accounts) => {
-      if (err || !accounts || accounts.length == 0) return;
-      this.setState({authorizedAccount: accounts[0]});
-
-      window.authorizedAccount = accounts[0];
-    });
-
     window.web3.eth.getBlockNumber((err, blockNumber) => {
       this.setState({blockNumber: blockNumber});
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = contractAddress; // Ropsen Pay2Play
+    window.contract.options.address = contractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
       // console.log("registrarStartDate");
@@ -114,6 +109,34 @@ var Web3Shim = React.createClass({
       // console.log(error, result);
 
       window.hostNode = result;
+    });
+
+    window.tokenContract = new window.web3.eth.Contract(interfaces.tokenInterface);
+    window.tokenContract.options.address = tokenContractAddress; // Ropsen Pay2Play
+
+    // function setTokenBalance(result) {
+    //   this.setState({
+    //     tokenBalance: result
+    //   });
+    // };
+
+    var shim = this;
+
+    window.web3.eth.getAccounts((err, accounts) => {
+      if (err || !accounts || accounts.length == 0) return;
+      this.setState({authorizedAccount: accounts[0]});
+
+      window.authorizedAccount = accounts[0];
+
+      // window.tokenContract.options.address = tokenContractAddress; // Ropsen Pay2Play
+      window.tokenContract.methods.balanceOf(window.authorizedAccount).call({}, function(error, result) {
+        console.log("balanceOf");
+        console.log(error, result);
+
+        shim.setState({
+          tokenBalance: result
+        });
+      });
     });
   },
   componentDidMount()
@@ -130,9 +153,12 @@ var Web3Shim = React.createClass({
     const isAuthorized = (window.authorizedAccount !== undefined);
 
     var style = "";
+    var url = "";
     if (isAuthorized)
     {
       style = "highlight-creator";
+      // https://ropsten.etherscan.io/token/0x7e50651fc0229857ba21a4342124744283ba546d?a=0x360e9d72b8b74baf3fbc472963fa4879006cafc7
+      url = "https://" + 'ropsten' + ".etherscan.io/token/" + tokenContractAddress + "?a=" + window.authorizedAccount;
     }
 
     return (
@@ -141,7 +167,18 @@ var Web3Shim = React.createClass({
         <p>Library Version: { this.state.version }</p>
         <p>Block Number: { this.state.blockNumber }</p>
 
-        <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
+        {
+          isAuthorized ? (
+            <div>
+              <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
+              <p>Token Balance: {this.state.tokenBalance} <a href={url}>Play</a></p>
+            </div>
+          ) : (
+            <div>
+              <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
+            </div>
+          )
+        }
       </div>
     );
   }
