@@ -120,7 +120,6 @@ contract PlayToken is ERC20Interface, TokenDeed, SafeMathInterface
     mapping(address => uint) balances;
     mapping(address => mapping(address => uint)) allowed;
 
-
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
@@ -129,7 +128,7 @@ contract PlayToken is ERC20Interface, TokenDeed, SafeMathInterface
         symbol = "PLAY";
         name = "Play Token";
         decimals = 0;
-        _totalSupply = 100000000000000000000000000;
+        _totalSupply = 1000000000;
         balances[owner] = _totalSupply;
         emit Transfer(address(0), owner, _totalSupply);
     }

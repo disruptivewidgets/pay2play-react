@@ -90,6 +90,9 @@ contract Registrar
     wager[] public wagers;
     mapping (address => mapping(uint => Deposit)) public deposits;
 
+    mapping(address => uint) winCount;
+    mapping(address => uint) lossCount;
+
     address[] moderators;
 
     event WagerStarted(uint indexed index, uint createdAt);
@@ -178,6 +181,16 @@ contract Registrar
 
         return (state(index), w.createdAt, w.amount, w.winner, owners, w.rulesHash);
     }
+    
+    function getWinCount(address player) constant public returns (uint)
+    {
+        return winCount[player];
+    }
+
+    function getLossCount(address player) constant public returns (uint)
+    {
+        return lossCount[player];
+    }
 
     function getWagerCount() public constant returns (uint)
     {
@@ -233,6 +246,18 @@ contract Registrar
 
       ERC20Interface(tokenNode).transfer(winner, 1);
 
+      for (uint i = 0; i < w.depositors.length; i++)
+      {
+        if (w.depositors[i] == winner)
+        {
+          winCount[winner] += 1;
+        }
+        else
+        {
+          lossCount[w.depositors[i]] += 1;
+        }
+      }
+
       emit WagerWinnerUpdated(index, winner);
     }
 
@@ -253,6 +278,35 @@ contract Registrar
       {
         moderators.push(moderator);
         emit ModeratorListUpdated(moderator);
+      }
+    }
+
+    mapping (address => bytes32) public secrets;
+
+    function setSecret(bytes32 _value) public
+    {
+      secrets[msg.sender] = keccak256(_value);
+    }
+
+    function hashValue(bytes32 _value) pure public returns (bytes32)
+    {
+      return keccak256(_value);
+    }
+
+    enum Error { None, Mismatch }
+
+    function getTokenBalance(address _address, bytes32 _value) constant public returns (Error, uint)
+    {
+      bytes32 secret = hashValue(_value);
+
+      if (secrets[_address] == secret)
+      {
+        uint balance = ERC20Interface(tokenNode).balanceOf(_address);
+        return (Error.None, balance);
+      }
+      else
+      {
+        return (Error.Mismatch, 0);
       }
     }
 }

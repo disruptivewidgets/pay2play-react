@@ -16,7 +16,9 @@ var Web3Shim = React.createClass({
       version: '',
       authorizedAccount: 'None',
       blockNumber: 0,
-      tokenBalance: 0
+      tokenBalance: 0,
+      winCount: 0,
+      lossCount: 0
     };
   },
   componentWillMount() {
@@ -137,6 +139,25 @@ var Web3Shim = React.createClass({
           tokenBalance: result
         });
       });
+
+      window.contract.methods.getWinCount(window.authorizedAccount).call({}, function(error, result) {
+        console.log("getWinCount");
+        console.log(error, result);
+
+        shim.setState({
+          winCount: result
+        });
+      });
+
+      window.contract.methods.getLossCount(window.authorizedAccount).call({}, function(error, result) {
+        console.log("getLossCount");
+        console.log(error, result);
+
+        shim.setState({
+          lossCount: result
+        });
+      });
+
     });
   },
   componentDidMount()
@@ -172,6 +193,8 @@ var Web3Shim = React.createClass({
             <div>
               <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
               <p>Token Balance: {this.state.tokenBalance} <a href={url}>Play</a></p>
+              <p>Win Count: {this.state.winCount}</p>
+              <p>Loss Count: {this.state.lossCount}</p>
             </div>
           ) : (
             <div>

@@ -1,9 +1,14 @@
 # pay2play-smart-contracts
 
 * Deploy token_ERC20.sol
-* Obtain contract address (use as tokenNode for pay2play.sol) ("0x562f02ba5211f3bdcca5393eeaef81bf29f2d69b") DO NOT FORGET QUOTES
+* Obtain contract address after deployment [A] ("0xe1ebf9518fd31426baad9b36cca87b80096be8ef")
+* Update dApp to reflect
 * Update interfaces.js
-* Deploy pay2play.sol
-* Transfer token amount from TokenContract to Registrar
-* Obtain contract address update dApp to reflect
-* Update interfaces.js (if needed)
+* Deploy Pay2Play.sol (use [A] for tokenNode input)
+* Obtain contract address [B] ("0xe018598af2954cb1717b2dff610e13a18587b044")
+* Update dApp to reflect
+* Update interfaces.js
+* Transfer token amount from TokenContract to Registrar (500,000,000) 1,000,000,000
+* transfer("0xe018598af2954cb1717b2dff610e13a18587b044", 500000000) [B]
+* Verify transfer
+* balanceOf ("0xe018598af2954cb1717b2dff610e13a18587b044") [B]
