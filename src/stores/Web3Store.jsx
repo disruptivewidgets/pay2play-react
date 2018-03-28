@@ -164,6 +164,25 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+    case Web3ActionTypes.SET_SECRET_RESPONSE:
+      console.log("SET_SECRET_RESPONSE");
+      console.log(action.response);
+
+      switch(action.response) {
+        case 'transactionHash':
+          Web3Store.emit(EVENT_TXN_HASH);
+          break;
+        case 'confirmation':
+          Web3Store.emit(EVENT_CONFIRMATION);
+          break;
+        case 'receipt':
+          Web3Store.emit(EVENT_RECEIPT);
+          break;
+        case 'error':
+          Web3Store.emit(EVENT_ERROR);
+          break;
+      }
+      break;
     case Web3ActionTypes.PING:
       console.log("PING");
 

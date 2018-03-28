@@ -60,6 +60,15 @@ const Actions = {
 
     Web3API.withdrawWinnings(wagerId, params);
   },
+  setSecret(secret, params) {
+    console.log('setSecret');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.SET_SECRET,
+    });
+
+    Web3API.setSecret(secret, params);
+  },
   ping() {
     console.log('start wager');
 

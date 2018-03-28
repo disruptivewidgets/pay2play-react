@@ -7,6 +7,7 @@ import ImgLogo from '../../images/logo.png';
 
 import Start from '../components/Start';
 import Session from '../components/Session';
+import Secret from '../components/Secret';
 import Invite from '../components/Invite';
 import Wager from '../components/Wager';
 
@@ -199,9 +200,10 @@ class MistSite extends React.Component {
       <div>
         { hasMistBrowser || hasMetamask ? (
           <div>
-            <Route exact path="/" component={Home}/>
-            <Route exact path="/start" component={Start}/>
-            <Route exact path="/session" component={Session}/>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/start" component={Start} />
+            <Route exact path="/session" component={Session} />
+            <Route exact path="/secret" component={Secret} />
 
             <Route exact path={`/invites/:id`} component={Invite}/>
 

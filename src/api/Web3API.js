@@ -119,6 +119,9 @@ module.exports = {
       Web3ServerActions.retrieveAccounts(accounts);
     });
   },
+  // getSecretHash: function() {
+  //
+  // },
   startWager: function(referenceHash, params) {
     console.log("startWager");
 
@@ -186,7 +189,6 @@ module.exports = {
 
       Web3ServerActions.startWager('error');
     });
-
   },
   counterWagerAndDeposit: function(wagerId, params) {
 
@@ -364,6 +366,39 @@ module.exports = {
       // window.component.forceUpdate();
 
       Web3ServerActions.withdrawWinnings('error');
+    });
+  },
+  setSecret: function(secret, params) {
+    console.log("setSecret");
+
+    window.contract.methods.setSecret(secret).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      Web3ServerActions.setSecret('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log("confirmation: " + confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        var hash = receipt.transactionHash;
+
+        Web3ServerActions.setSecret('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+
+      Web3ServerActions.setSecret('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+
+      Web3ServerActions.setSecret('error');
     });
   },
   contractAddress: contractAddress,

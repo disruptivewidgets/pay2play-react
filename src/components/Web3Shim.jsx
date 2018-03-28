@@ -10,6 +10,11 @@ import { contractAddress, tokenContractAddress } from '../api/Web3API';
 
 import Web3Store from '../stores/Web3Store';
 
+import {
+  Link,
+  withRouter
+} from 'react-router-dom'
+
 var Web3Shim = React.createClass({
   getInitialState: function() {
     return {
@@ -158,6 +163,17 @@ var Web3Shim = React.createClass({
         });
       });
 
+      window.contract.methods.secrets(window.authorizedAccount).call({}, function(error, result) {
+        console.log("getSecret");
+        console.log(error, result);
+
+        // shim.setState({
+        //   lossCount: result
+        // });
+
+        window.secretHash = result;
+      });
+
     });
   },
   componentDidMount()
@@ -195,6 +211,7 @@ var Web3Shim = React.createClass({
               <p>Token Balance: {this.state.tokenBalance} <a href={url}>Play</a></p>
               <p>Win Count: {this.state.winCount}</p>
               <p>Loss Count: {this.state.lossCount}</p>
+              <p><Link to={`/secret`} replace>Set Secret</Link></p>
             </div>
           ) : (
             <div>

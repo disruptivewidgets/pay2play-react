@@ -12,3 +12,4 @@
 * transfer("0xe018598af2954cb1717b2dff610e13a18587b044", 500000000) [B]
 * Verify transfer
 * balanceOf ("0xe018598af2954cb1717b2dff610e13a18587b044") [B]
+* set secret

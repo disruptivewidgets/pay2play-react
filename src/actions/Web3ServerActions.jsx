@@ -48,6 +48,13 @@ module.exports = {
       response: response
     });
   },
+  setSecret(response) {
+    console.log("setSecret");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.SET_SECRET_RESPONSE,
+      response: response
+    });
+  },
   ping(response) {
     console.log("ping");
     AppDispatcher.handleViewAction({
