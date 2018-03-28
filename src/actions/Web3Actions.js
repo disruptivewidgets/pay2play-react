@@ -69,6 +69,15 @@ const Actions = {
 
     Web3API.setSecret(secret, params);
   },
+  getSecretHash(address) {
+    console.log('getSecretHash');
+
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.GET_SECRET_HASH,
+    });
+
+    Web3API.getSecretHash(address);
+  },
   ping() {
     console.log('start wager');
 

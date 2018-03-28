@@ -25,19 +25,18 @@ var Secret = React.createClass({
   getInitialState: function()
   {
     return {
+      secretHash: "None",
       secret: ""
     };
   },
   componentWillMount: function()
   {
-    // window.contract.methods.getSecret(window.authorizedAccount).call({}, function(error, result) {
-    //   console.log("getSecret");
-    //   console.log(error, result);
-    //
-    //   shim.setState({
-    //     lossCount: result
-    //   });
-    // });
+    console.log(window.authorizedAccount);
+
+    window.web3.eth.getAccounts((err, accounts) => {
+      if (err || !accounts || accounts.length == 0) return;
+      Web3Actions.getSecretHash(accounts[0]);
+    });
 
     this.setState({
       loaded: true
@@ -45,10 +44,12 @@ var Secret = React.createClass({
   },
   componentDidMount: function()
   {
+    console.log("YO" + window.authorizedAccount);
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
+    Web3Store.addSecretHashListener(this.onEvent_SecretHash);
   },
   componentWillUnmount: function()
   {
@@ -56,6 +57,7 @@ var Secret = React.createClass({
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
+    Web3Store.removeSecretHashListener(this.onEvent_SecretHash);
   },
   _onChange: function()
   {
@@ -91,6 +93,13 @@ var Secret = React.createClass({
 
     this.forceUpdate();
   },
+  onEvent_SecretHash: function() {
+    console.log("onEvent_SecretHash");
+
+    this.setState({
+      secretHash: window.secretHash
+    });
+  },
   render()
   {
     const onChange = (event) =>
@@ -105,18 +114,6 @@ var Secret = React.createClass({
 
     var error = this.state.error;
     var loaded = this.state.loaded;
-    // var secretHash = window.secretHash;
-    // var processing = this.state.processing;
-    //
-    // var transaction = SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review");
-    //
-    // console.log(transaction);
-    //
-    // var queuedWagerId = -1;
-    // if (transaction)
-    // {
-    //   queuedWagerId = transaction.wagerId;
-    // }
 
     const onSubmit = (event) => {
 
@@ -168,8 +165,9 @@ var Secret = React.createClass({
       <div>
         <div className="highlighted">Network Access</div>
         <br />
-        {/* <div>Secret Hash: {secretHash}</div> */}
-        
+        <div>Secret Hash: {this.state.secretHash}</div>
+        <br />
+
         { loaded ? (
           <div>
             <form onSubmit={onSubmit}>

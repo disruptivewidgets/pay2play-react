@@ -119,9 +119,24 @@ module.exports = {
       Web3ServerActions.retrieveAccounts(accounts);
     });
   },
-  // getSecretHash: function() {
-  //
-  // },
+  getSecretHash: function(address) {
+    // window.web3.eth.getAccounts((error, accounts) => {
+    //   Web3ServerActions.retrieveAccounts(accounts);
+    // });
+
+    window.contract.methods.secrets(address).call({}, function(error, result) {
+      console.log("getSecret");
+      console.log(address);
+      // console.log(error, result);
+      //
+      // // shim.setState({
+      // //   lossCount: result
+      // // });
+      //
+
+      Web3ServerActions.getSecretHash(result);
+    });
+  },
   startWager: function(referenceHash, params) {
     console.log("startWager");
 

@@ -13,6 +13,7 @@ var EVENT_TXN_HASH = 'transactionHash';
 var EVENT_CONFIRMATION = 'confirmation';
 var EVENT_RECEIPT = 'receipt';
 var EVENT_ERROR = 'error';
+var SECRET_HASH = 'secretHash';
 
 var _store = {
   accounts: []
@@ -70,6 +71,16 @@ var Web3Store = ObjectAssign({}, EventEmitter.prototype, {
     this.removeListener(EVENT_ERROR, cb);
   },
   // EVENT_ERROR
+
+  // SECRET_HASH
+  addSecretHashListener: function(cb) {
+    this.on(SECRET_HASH, cb);
+  },
+
+  removeSecretHashListener: function(cb) {
+    this.removeListener(SECRET_HASH, cb);
+  },
+  // SECRET_HASH
 
   getStore: function() {
     return _store;
@@ -182,6 +193,28 @@ AppDispatcher.register(function(payload) {
           Web3Store.emit(EVENT_ERROR);
           break;
       }
+      break;
+    case Web3ActionTypes.GET_SECRET_HASH_RESPONSE:
+      console.log("GET_SECRET_HASH_RESPONSE");
+      console.log(action.response);
+
+      window.secretHash = action.response;
+
+      Web3Store.emit(SECRET_HASH);
+      // switch(action.response) {
+      //   case 'transactionHash':
+      //     Web3Store.emit(EVENT_TXN_HASH);
+      //     break;
+      //   case 'confirmation':
+      //     Web3Store.emit(EVENT_CONFIRMATION);
+      //     break;
+      //   case 'receipt':
+      //     Web3Store.emit(EVENT_RECEIPT);
+      //     break;
+      //   case 'error':
+      //     Web3Store.emit(EVENT_ERROR);
+      //     break;
+      // }
       break;
     case Web3ActionTypes.PING:
       console.log("PING");

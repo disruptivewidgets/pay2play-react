@@ -55,6 +55,13 @@ module.exports = {
       response: response
     });
   },
+  getSecretHash(response) {
+    console.log("getSecretHash");
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.GET_SECRET_HASH_RESPONSE,
+      response: response
+    });
+  },
   ping(response) {
     console.log("ping");
     AppDispatcher.handleViewAction({
