@@ -7,6 +7,7 @@ import ImgLogo from '../../images/logo.png';
 
 import Start from '../components/Start';
 import Session from '../components/Session';
+import Bracket from '../components/Bracket';
 import Secret from '../components/Secret';
 import Invite from '../components/Invite';
 import Wager from '../components/Wager';
@@ -204,6 +205,7 @@ class MistSite extends React.Component {
             <Route exact path="/start" component={Start} />
             <Route exact path="/session" component={Session} />
             <Route exact path="/secret" component={Secret} />
+            <Route exact path="/bracket" component={Bracket} />
 
             <Route exact path={`/invites/:id`} component={Invite}/>
 
