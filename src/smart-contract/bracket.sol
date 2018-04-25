@@ -19,6 +19,15 @@ contract Tournament
   address[] seats_SideA;
   address[] seats_SideB;
 
+  struct struct_Player
+  {
+     uint slot;
+     bool exists;
+   }
+
+  mapping (address => struct_Player) players_SideA;
+  mapping (address => struct_Player) players_SideB;
+
   struct range { uint start; uint finish; }
 
   constructor(uint _numberOfParticipants) public
@@ -56,6 +65,7 @@ contract Tournament
       return (seats_SideB);
   }
 
+  // SIDE A
   function join_SideA(uint slot) payable public
   {
     /* if (msg.value < minPrice) revert(); */
@@ -66,18 +76,49 @@ contract Tournament
     // can only join periphery
     if (slot < start && slot > finish) revert();
 
-    // can only join once
-    for (uint i = start; i <= finish; i++)
-    {
-      if (seats_SideA[i] == msg.sender)
-      {
-        revert();
-      }
-    }
+    if (containsPlayer_SideA(msg.sender)) revert();
 
-    seats_SideA[slot] == msg.sender;
+    seats_SideA[slot] = msg.sender;
+    addPlayer_SideA(msg.sender, slot);
   }
 
+  function addPlayer_SideA(address _player, uint _slot) private
+  {
+    if(!players_SideA[_player].exists)
+    {
+      players_SideA[_player].exists = true;
+    }
+
+    players_SideA[_player].slot = _slot;
+  }
+
+  function containsPlayer_SideA(address _player) returns (bool)
+  {
+    return players_SideA[_player].exists;
+  }
+
+  function getPlayerSlot_SideA(address _player) constant public returns (uint)
+  {
+    return players_SideA[_player].slot;
+  }
+
+  function promotePlayer_SideA(address _player) public
+  {
+    uint slot = getPlayerSlot_SideA(_player);
+    if (slot % 2 == 0)
+    {
+      slot = (slot - 2)/2;
+    }
+    else
+    {
+      slot = (slot - 1)/2;
+    }
+
+    seats_SideA[slot] = _player;
+    players_SideA[_player].slot = slot;
+  }
+
+  // SIDE B
   function join_SideB(uint slot) payable public
   {
     /* if (msg.value < minPrice) revert(); */
@@ -88,15 +129,45 @@ contract Tournament
     // can only join periphery
     if (slot < start && slot > finish) revert();
 
-    // can only join once
-    for (uint i = start; i <= finish; i++)
+    if (containsPlayer_SideB(msg.sender)) revert();
+
+    seats_SideB[slot] = msg.sender;
+    addPlayer_SideB(msg.sender, slot);
+  }
+
+  function addPlayer_SideB(address _player, uint _slot) private
+  {
+    if(!players_SideB[_player].exists)
     {
-      if (seats_SideB[i] == msg.sender)
-      {
-        revert();
-      }
+      players_SideB[_player].exists = true;
     }
 
-    seats_SideB[slot] == msg.sender;
+    players_SideB[_player].slot = _slot;
+  }
+
+  function containsPlayer_SideB(address _player) returns (bool)
+  {
+    return players_SideB[_player].exists;
+  }
+
+  function getPlayerSlot_SideB(address _player) constant public returns (uint)
+  {
+    return players_SideB[_player].slot;
+  }
+
+  function promotePlayer_SideB(address _player) public
+  {
+    uint slot = getPlayerSlot_SideB(_player);
+    if (slot % 2 == 0)
+    {
+      slot = (slot - 2)/2;
+    }
+    else
+    {
+      slot = (slot - 1)/2;
+    }
+
+    seats_SideB[slot] = _player;
+    players_SideB[_player].slot = slot;
   }
 }

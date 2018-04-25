@@ -15,7 +15,7 @@ var bracketContractAddress = "";
 // 2018-03-27
 tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
 contractAddress = "0xe018598af2954cb1717b2dff610e13a18587b044";
-bracketContractAddress = "0xb46d0a7d1ef6a4c3518d8118589273618e7d2f87";
+bracketContractAddress = "0x0617cd7edde2714b57ecf774a1ed2b237405b25a";
 
 var fromBlock = '';
 var toBlock = '';
