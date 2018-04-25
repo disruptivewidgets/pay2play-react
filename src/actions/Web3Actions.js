@@ -78,6 +78,21 @@ const Actions = {
 
     Web3API.getSecretHash(address);
   },
+  // Bracket
+  getSeats_SideA() {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.GET_SEATS_SIDE_A,
+    });
+
+    Web3API.getSeats_SideA();
+  },
+  getSeats_SideB() {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.GET_SEATS_SIDE_B,
+    });
+
+    Web3API.getSeats_SideB();
+  },
   ping() {
     console.log('start wager');
 

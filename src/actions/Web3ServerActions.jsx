@@ -62,6 +62,19 @@ module.exports = {
       response: response
     });
   },
+  // Bracket
+  getSeats_SideA(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.GET_SEATS_SIDE_A_RESPONSE,
+      response: response
+    });
+  },
+  getSeats_SideB(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.GET_SEATS_SIDE_B_RESPONSE,
+      response: response
+    });
+  },
   ping(response) {
     console.log("ping");
     AppDispatcher.handleViewAction({
