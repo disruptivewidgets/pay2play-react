@@ -9,7 +9,17 @@ function fill_SideA(playerCount, data)
 {
   console.log("fill_SideA");
 
-  var values = data;
+  var values = [];
+
+  for (var i = 0; i < data.length; i += 1)
+  {
+    values.push(
+      {
+        index: i,
+        value: data[i]
+      }
+    )
+  }
 
   var depth = 0;
   var nodeCount = playerCount;
@@ -68,8 +78,17 @@ function fill_SideB(playerCount, data)
 
   var playerCount = 32;
 
-  var values = data;
+  var values = [];
 
+  for (var i = 0; i < data.length; i += 1)
+  {
+    values.push(
+      {
+        index: i,
+        value: data[i]
+      }
+    )
+  }
   var depth = 0;
   var nodeCount = playerCount;
 
@@ -209,6 +228,32 @@ var Bracket = React.createClass({
     });
   },
   render: function() {
+    const {bracket_SideA, bracket_SideB} = this.state;
+
+    var rows_SideA = [];
+
+    for (var i = 0; i < bracket_SideA.length; i += 1)
+    {
+      rows_SideA.push(
+        {
+            index: i,
+            value: bracket_SideA[i]
+        }
+      );
+    }
+
+    var rows_SideB = [];
+
+    for (var i = 0; i < bracket_SideB.length; i += 1)
+    {
+      rows_SideB.push(
+        {
+            index: i,
+            value: bracket_SideB[i]
+        }
+      );
+    }
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -218,10 +263,10 @@ var Bracket = React.createClass({
               <td>
                 <table className="bracket-side-a">
                   <tbody>
-                    {this.state.bracket_SideA.map(item => (
+                    {rows_SideA.map(item => (
                       <BracketRow
-                        key={Math.floor(Math.random() * 1000000)}
-                        item={item}
+                        key={item.index}
+                        item={item.value}
                       />
                     ))}
                   </tbody>
@@ -230,10 +275,10 @@ var Bracket = React.createClass({
               <td>
                 <table className="bracket-side-b">
                   <tbody>
-                    {this.state.bracket_SideB.map(item => (
+                    {rows_SideB.map(item => (
                       <BracketRow
-                        key={Math.floor(Math.random() * 1000000)}
-                        item={item}
+                        key={item.index}
+                        item={item.value}
                       />
                     ))}
                   </tbody>
@@ -269,13 +314,17 @@ function BracketSlot(props) {
 
   var style = "";
 
-  if (item.length > 1)
-  {
-    var head = item.substring(0, 3);
-    var tail = item.substring(item.length - 4, item.length - 1);
-    item = head + '...' + tail;
+  var text = "X";
 
-    if (item == "0x0...000")
+  // console.log(item);
+
+  if (typeof item === 'object')
+  {
+    var head = item.value.substring(0, 3);
+    var tail = item.value.substring(item.value.length - 4, item.value.length - 1);
+    text = head + '...' + tail;
+
+    if (text == "0x0...000")
     {
       style = "highlight-creator";
     }
@@ -284,10 +333,13 @@ function BracketSlot(props) {
       style = "highlight-player";
     }
 
+    text = item.index + " : " + text;
   }
 
+  // var str = "0";
+
   return (
-    <td className={style}>{item}</td>
+    <td className={style}>{text}</td>
   );
 }
 
