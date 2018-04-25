@@ -263,9 +263,31 @@ function BracketRow(props) {
 }
 
 function BracketSlot(props) {
-  const {item} = props;
+  var {item} = props;
+
+  var highlight = false;
+
+  var style = "";
+
+  if (item.length > 1)
+  {
+    var head = item.substring(0, 3);
+    var tail = item.substring(item.length - 4, item.length - 1);
+    item = head + '...' + tail;
+
+    if (item == "0x0...000")
+    {
+      style = "highlight-creator";
+    }
+    else
+    {
+      style = "highlight-player";
+    }
+
+  }
+
   return (
-    <td>{item}</td>
+    <td className={style}>{item}</td>
   );
 }
 
