@@ -63,7 +63,8 @@ const AppView = () => (
 
         <Logo />
         <br />
-        <div>Smart Wagers with Ethereum Blockchain</div>
+        <div>Competitive Entertainment Suite</div>
+        <div>Smart Wagers and Tournament Bracket with Ethereum Blockchain</div>
         <br />
 
         <MistSite />
@@ -84,7 +85,8 @@ class MistSite extends React.Component {
     // }
     this.setState({
       hasMetamask: false,
-      hasMist: false
+      hasMist: false,
+      netId: -1
     });
 
   }
@@ -103,9 +105,14 @@ class MistSite extends React.Component {
       window.web3 = new Web3(web3.currentProvider);
 
       console.log('Web3 detected');
-
       if (window.web3.currentProvider.isMetaMask === true) {
         console.log("MetaMask detected");
+
+        window.web3.eth.net.getId().then(netId => {
+          this.setState({
+            netId: netId
+          });
+        })
 
         this.setupWeb3();
 
@@ -192,29 +199,52 @@ class MistSite extends React.Component {
       window.hostNode = result;
     });
   }
-  render() {
-
+  render()
+  {
     const hasMistBrowser = this.state.hasMist;
     const hasMetamask = this.state.hasMetamask;
+    const netId = this.state.netId;
+
+    var isSelectedNetworkSupported = false;
+
+    if (netId == 3)
+    {
+      isSelectedNetworkSupported = true;
+    }
 
     return (
       <div>
         { hasMistBrowser || hasMetamask ? (
           <div>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/start" component={Start} />
-            <Route exact path="/session" component={Session} />
-            <Route exact path="/secret" component={Secret} />
-            <Route exact path="/bracket" component={Bracket} />
 
-            <Route exact path={`/invites/:id`} component={Invite}/>
+          { isSelectedNetworkSupported ? (
+              <div>
+                <Route exact path="/" component={Home} />
+                <Route exact path="/start" component={Start} />
+                <Route exact path="/session" component={Session} />
+                <Route exact path="/secret" component={Secret} />
+                <Route exact path="/bracket" component={Bracket} />
 
-            <Route exact path={`/wagers/:id`} component={Wager}/>
+                <Route exact path={`/invites/:id`} component={Invite}/>
 
-            <Web3Shim />
-            <Wagers />
+                <Route exact path={`/wagers/:id`} component={Wager}/>
 
-            <br />
+                <Web3Shim />
+                <Wagers />
+
+                <br />
+              </div>
+            ) : (
+              <div>
+                <div className="highlighted-red">Pay2Play is currently available on Ropsten only. Please configure your Mist/MetaMask installation accordingly.</div>
+                <br />
+                <div>For more information on how to get it setup, see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial.</a></div>
+                <br />
+                <div>Cheers, Pay2Play Team!</div>
+                <br />
+              </div>
+            )
+          }
           </div>
         ) : (
           <div>
