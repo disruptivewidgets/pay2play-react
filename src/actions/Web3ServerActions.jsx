@@ -87,6 +87,18 @@ module.exports = {
       response: response
     });
   },
+  promotePlayer_SideA(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_A_RESPONSE,
+      response: response
+    });
+  },
+  promotePlayer_SideB(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_B_RESPONSE,
+      response: response
+    });
+  },
   // Misc
   ping(response) {
     console.log("ping");

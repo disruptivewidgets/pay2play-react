@@ -344,7 +344,6 @@ var Bracket = React.createClass({
             </tr>
           </tbody>
         </table>
-
       </div>
     );
   }

@@ -467,6 +467,8 @@ module.exports = {
       console.log("error");
       console.error(error);
     });
+
+    Web3ServerActions.takeSeat_SideA('transactionHash');
   },
   takeSeat_SideB: function(index, params) {
     console.log("takeSeat_SideB: " + index);
@@ -492,6 +494,62 @@ module.exports = {
       console.log("error");
       console.error(error);
     });
+
+    Web3ServerActions.takeSeat_SideB('transactionHash');
+  },
+  promotePlayer_SideA: function(address, params) {
+    console.log("promotePlayer_SideA: " + address);
+
+    // window.bracketContract.methods.join_SideA(index).send(params)
+    // .on('transactionHash', function(hash) {
+    //   console.log("transactionHash");
+    //   console.log("txid: " + hash);
+    // })
+    // .on('confirmation', function(confirmationNumber, receipt) {
+    //   console.log("confirmation: " + confirmationNumber);
+    //   console.log(receipt);
+    //
+    //   if (confirmationNumber == 0) {
+    //
+    //   }
+    // })
+    // .on('receipt', function(receipt) {
+    //   console.log("receipt");
+    //   console.log(receipt)
+    // })
+    // .on('error', function(error) {
+    //   console.log("error");
+    //   console.error(error);
+    // });
+
+    Web3ServerActions.promotePlayer_SideA('transactionHash');
+  },
+  promotePlayer_SideB: function(address, params) {
+    console.log("promotePlayer_SideB: " + address);
+
+    // window.bracketContract.methods.join_SideA(index).send(params)
+    // .on('transactionHash', function(hash) {
+    //   console.log("transactionHash");
+    //   console.log("txid: " + hash);
+    // })
+    // .on('confirmation', function(confirmationNumber, receipt) {
+    //   console.log("confirmation: " + confirmationNumber);
+    //   console.log(receipt);
+    //
+    //   if (confirmationNumber == 0) {
+    //
+    //   }
+    // })
+    // .on('receipt', function(receipt) {
+    //   console.log("receipt");
+    //   console.log(receipt)
+    // })
+    // .on('error', function(error) {
+    //   console.log("error");
+    //   console.error(error);
+    // });
+
+    Web3ServerActions.promotePlayer_SideB('transactionHash');
   },
   contractAddress: contractAddress,
   tokenContractAddress: tokenContractAddress,

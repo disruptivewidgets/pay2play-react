@@ -107,7 +107,20 @@ const Actions = {
 
     Web3API.takeSeat_SideB(index, params);
   },
+  promotePlayer_SideA(address, params) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_A,
+    });
 
+    Web3API.promotePlayer_SideA(address, params);
+  },
+  promotePlayer_SideB(address, params) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_B,
+    });
+
+    Web3API.promotePlayer_SideB(address, params);
+  },
   // Misc
   ping() {
     console.log('start wager');
