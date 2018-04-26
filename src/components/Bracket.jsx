@@ -142,6 +142,11 @@ function fill_SideB(playerCount, data)
   return grid;
 }
 
+var loading_captions = [
+  "Pending Payment...",
+  "Pending Confirmation..."
+]
+
 var Bracket = React.createClass({
   getInitialState: function() {
     return {
@@ -149,7 +154,8 @@ var Bracket = React.createClass({
       seatsData_SideB: BracketStore.getSeats_SideB()
     };
   },
-  componentWillMount: function() {
+  componentWillMount: function()
+  {
     var data_A = [
       '0',
       '0', '0',
@@ -175,21 +181,38 @@ var Bracket = React.createClass({
 
     this.setState({
       bracket_SideA: grid_SideA,
-      bracket_SideB: grid_SideB
+      bracket_SideB: grid_SideB,
+      loaded: false,
+      error: '',
+      loading_caption: loading_captions[0]
     });
 
     Web3Actions.getSeats_SideA();
     Web3Actions.getSeats_SideB();
   },
-  componentDidMount: function() {
+  componentDidMount: function()
+  {
     BracketStore.addChangeListener(this._onChange);
+
     BracketStore.addFetchSeatsSideAListener(this._onFetchSeats_SideA);
     BracketStore.addFetchSeatsSideBListener(this._onFetchSeats_SideB);
+
+    BracketStore.addTransactionHashListener(this.onEvent_TransactionHash);
+    BracketStore.addConfirmationListener(this.onEvent_Confirmation);
+    BracketStore.addReceiptListener(this.onEvent_Receipt);
+    BracketStore.addErrorListener(this.onEvent_Error);
   },
-  componentWillUnmount: function() {
+  componentWillUnmount: function()
+  {
     BracketStore.removeChangeListener(this._onChange);
+
     BracketStore.removeFetchSeatsSideAListener(this._onFetchSeats_SideA);
     BracketStore.removeFetchSeatsSideBListener(this._onFetchSeats_SideB);
+
+    BracketStore.removeTransactionHashListener(this.onEvent_TransactionHash);
+    BracketStore.removeConfirmationListener(this.onEvent_Confirmation);
+    BracketStore.removeReceiptListener(this.onEvent_Receipt);
+    BracketStore.removeErrorListener(this.onEvent_Error);
   },
   _onChange: function() {
     // console.log(BracketStore.getSeats_SideA());
@@ -204,6 +227,37 @@ var Bracket = React.createClass({
     //   bracket_SideA: grid_SideA,
     //   bracket_SideB: grid_SideB
     // });
+  },
+  onEvent_TransactionHash: function()
+  {
+    console.log("onEvent_TransactionHash");
+
+    // this.setState({
+    //     loading_caption: loading_captions[2]
+    // });
+  },
+  onEvent_Confirmation: function()
+  {
+    console.log("onEvent_Confirmation");
+
+    // this.setState({
+    //   loaded: true,
+    //   processing: true
+    // });
+  },
+  onEvent_Receipt: function()
+  {
+    console.log("onEvent_Receipt");
+  },
+  onEvent_Error: function()
+  {
+    console.log("onEvent_Error");
+
+    // this.setState({
+    //   loaded: true
+    // });
+    //
+    // this.forceUpdate();
   },
   _onFetchSeats_SideA: function() {
     console.log("AAA");
@@ -227,6 +281,7 @@ var Bracket = React.createClass({
       bracket_SideB: grid_SideB
     });
   },
+
   render: function() {
     const {bracket_SideA, bracket_SideB} = this.state;
 
@@ -267,6 +322,7 @@ var Bracket = React.createClass({
                       <BracketRow
                         key={item.index}
                         item={item.value}
+                        side="A"
                       />
                     ))}
                   </tbody>
@@ -279,6 +335,7 @@ var Bracket = React.createClass({
                       <BracketRow
                         key={item.index}
                         item={item.value}
+                        side="B"
                       />
                     ))}
                   </tbody>
@@ -294,13 +351,14 @@ var Bracket = React.createClass({
 });
 
 function BracketRow(props) {
-  const {item} = props;
+  const {item, side} = props;
   return (
     <tr>
       {item.map(item => (
         <BracketSlot
           key={Math.floor(Math.random() * 1000000)}
           item={item}
+          side={side}
         />
       ))}
     </tr>
@@ -308,7 +366,7 @@ function BracketRow(props) {
 }
 
 function BracketSlot(props) {
-  var {item} = props;
+  var {item, side} = props;
 
   var highlight = false;
 
@@ -348,7 +406,7 @@ function BracketSlot(props) {
   return (
 
     enabled ? (
-      <td className={style}><ActionLink index={index} /> {text}</td>
+      <td className={style}><ActionLink index={index} side={side} /> {text}</td>
     ) : (
       <td className={style}>{text}</td>
     )
@@ -358,15 +416,40 @@ function BracketSlot(props) {
 function ActionLink(props)
 {
   var index = props.index;
+  var side = props.side;
 
-  function handleClick(index, e)
+  function handleClick(side, index, e)
   {
     e.preventDefault();
+
     console.log(index);
+    console.log(side);
+
+    const amount = window.web3.utils.toWei("0.01", 'ether');
+    const gas = 650000;
+    const gasPrice = window.web3.utils.toWei("20", 'shannon');
+
+    var params = {
+      value: amount,
+      from: window.authorizedAccount,
+      gas: gas,
+      gasPrice: gasPrice
+    };
+
+    if (side == "A")
+    {
+      Web3Actions.takeSeat_SideA(index, params);
+    }
+
+    if (side == "B")
+    {
+      Web3Actions.takeSeat_SideB(index, params);
+    }
+
   }
 
   return (
-      <a href="#" onClick={(e) => handleClick(index, e)}>+</a>
+      <a href="#" onClick={(e) => handleClick(side, index, e)}>+</a>
   );
 }
 

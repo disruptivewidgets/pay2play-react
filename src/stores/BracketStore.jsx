@@ -14,6 +14,11 @@ var CHANGE_EVENT = 'change';
 var FETCH_SEATS_SIDE_A = 'FETCH_SEATS_SIDE_A';
 var FETCH_SEATS_SIDE_B = 'FETCH_SEATS_SIDE_B';
 
+var EVENT_TXN_HASH = 'transactionHash';
+var EVENT_CONFIRMATION = 'confirmation';
+var EVENT_RECEIPT = 'receipt';
+var EVENT_ERROR = 'error';
+
 var _store = {
   seats_SideA: [],
   seats_SideB: []
@@ -45,6 +50,56 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
     this.removeListener(FETCH_SEATS_SIDE_B, cb);
   },
 
+  // TRANSACTION LISTENING
+  // EVENT_TXN_HASH
+  addTransactionHashListener: function(cb)
+  {
+    this.on(EVENT_TXN_HASH, cb);
+  },
+
+  removeTransactionHashListener: function(cb)
+  {
+    this.removeListener(EVENT_TXN_HASH, cb);
+  },
+  // EVENT_TXN_HASH
+
+  // EVENT_CONFIRMATION
+  addConfirmationListener: function(cb)
+  {
+    this.on(EVENT_CONFIRMATION, cb);
+  },
+
+  removeConfirmationListener: function(cb)
+  {
+    this.removeListener(EVENT_CONFIRMATION, cb);
+  },
+  // EVENT_CONFIRMATION
+
+  // EVENT_RECEIPT
+  addReceiptListener: function(cb)
+  {
+    this.on(EVENT_RECEIPT, cb);
+  },
+
+  removeReceiptListener: function(cb)
+  {
+    this.removeListener(EVENT_RECEIPT, cb);
+  },
+  // EVENT_RECEIPT
+
+  // EVENT_ERROR
+  addErrorListener: function(cb)
+  {
+    this.on(EVENT_ERROR, cb);
+  },
+
+  removeErrorListener: function(cb)
+  {
+    this.removeListener(EVENT_ERROR, cb);
+  },
+  // EVENT_ERROR
+  // TRANSACTION LISTENING
+
   getList: function() {
     return _store;
   },
@@ -59,59 +114,68 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
 
 });
 
-AppDispatcher.register(function(payload) {
-
+AppDispatcher.register(function(payload)
+{
   var action = payload.action;
 
-  switch(action.actionType) {
+  switch(action.actionType)
+  {
     case Web3ActionTypes.GET_SEATS_SIDE_A_RESPONSE:
-
-        // var wagers = _.map(action.response, function(wager) {
-        //
-        //   const id = WagerCounter.increment();
-        //
-        //   return new Wager({
-        //     id,
-        //     index: wager.index,
-        //     state: wager.state,
-        //     date: wager.date.toString(),
-        //     startTimestamp: wager.startTimestamp,
-        //     amount: wager.amount,
-        //     players: wager.players,
-        //     referenceHash: wager.referenceHash
-        //   })
-        // });
-        //
-        // _store.list = wagers;
-
         _store.seats_SideA = action.response;
-        console.log("A");
+
         BracketStore.emit(FETCH_SEATS_SIDE_A);
         break;
+
     case Web3ActionTypes.GET_SEATS_SIDE_B_RESPONSE:
 
-        // var wagers = _.map(action.response, function(wager) {
-        //
-        //   const id = WagerCounter.increment();
-        //
-        //   return new Wager({
-        //     id,
-        //     index: wager.index,
-        //     state: wager.state,
-        //     date: wager.date.toString(),
-        //     startTimestamp: wager.startTimestamp,
-        //     amount: wager.amount,
-        //     players: wager.players,
-        //     referenceHash: wager.referenceHash
-        //   })
-        // });
-        //
-        // _store.list = wagers;
-
         _store.seats_SideB = action.response;
-        console.log("B");
         BracketStore.emit(FETCH_SEATS_SIDE_B);
         break;
+
+    case Web3ActionTypes.TAKE_SEAT_SIDE_A_RESPONSE:
+        console.log("TAKE_SEAT_SIDE_A_RESPONSE");
+
+        console.log(action.response);
+
+        switch(action.response)
+        {
+          case 'transactionHash':
+            BracketStore.emit(EVENT_TXN_HASH);
+            break;
+          case 'confirmation':
+            BracketStore.emit(EVENT_CONFIRMATION);
+            break;
+          case 'receipt':
+            BracketStore.emit(EVENT_RECEIPT);
+            break;
+          case 'error':
+            BracketStore.emit(EVENT_ERROR);
+            break;
+        }
+        break;
+
+    case Web3ActionTypes.TAKE_SEAT_SIDE_B_RESPONSE:
+        console.log("TAKE_SEAT_SIDE_B_RESPONSE");
+
+        console.log(action.response);
+
+        switch(action.response)
+        {
+          case 'transactionHash':
+            BracketStore.emit(EVENT_TXN_HASH);
+            break;
+          case 'confirmation':
+            BracketStore.emit(EVENT_CONFIRMATION);
+            break;
+          case 'receipt':
+            BracketStore.emit(EVENT_RECEIPT);
+            break;
+          case 'error':
+            BracketStore.emit(EVENT_ERROR);
+            break;
+        }
+        break;
+
     default:
       return true;
   }

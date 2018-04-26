@@ -93,6 +93,22 @@ const Actions = {
 
     Web3API.getSeats_SideB();
   },
+  takeSeat_SideA(index, params) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.TAKE_SEAT_SIDE_A,
+    });
+
+    Web3API.takeSeat_SideA(index, params);
+  },
+  takeSeat_SideB(index, params) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.TAKE_SEAT_SIDE_B,
+    });
+
+    Web3API.takeSeat_SideB(index, params);
+  },
+
+  // Misc
   ping() {
     console.log('start wager');
 

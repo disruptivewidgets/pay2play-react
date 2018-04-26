@@ -75,6 +75,19 @@ module.exports = {
       response: response
     });
   },
+  takeSeat_SideA(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.TAKE_SEAT_SIDE_A_RESPONSE,
+      response: response
+    });
+  },
+  takeSeat_SideB(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.TAKE_SEAT_SIDE_B_RESPONSE,
+      response: response
+    });
+  },
+  // Misc
   ping(response) {
     console.log("ping");
     AppDispatcher.handleViewAction({

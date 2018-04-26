@@ -99,6 +99,7 @@ AppDispatcher.register(function(payload) {
 
       Web3Store.emit(CHANGE_EVENT);
       break;
+      
     case Web3ActionTypes.START_WAGER_RESPONSE:
       console.log("START_WAGER_RESPONSE");
       console.log(action.response);
@@ -118,6 +119,7 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+
     case Web3ActionTypes.COUNTER_WAGER_AND_DEPOSIT_RESPONSE:
       console.log("COUNTER_WAGER_AND_DEPOSIT_RESPONSE");
       console.log(action.response);
@@ -137,6 +139,7 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+
     case Web3ActionTypes.SET_WAGER_WINNER_RESPONSE:
       console.log("SET_WAGER_WINNER_RESPONSE");
       console.log(action.response);
@@ -156,6 +159,7 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+
     case Web3ActionTypes.WITHDRAW_WINNINGS_RESPONSE:
       console.log("WITHDRAW_WINNINGS_RESPONSE");
       console.log(action.response);
@@ -175,6 +179,7 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+
     case Web3ActionTypes.SET_SECRET_RESPONSE:
       console.log("SET_SECRET_RESPONSE");
       console.log(action.response);
@@ -194,6 +199,7 @@ AppDispatcher.register(function(payload) {
           break;
       }
       break;
+
     case Web3ActionTypes.GET_SECRET_HASH_RESPONSE:
       console.log("GET_SECRET_HASH_RESPONSE");
       console.log(action.response);
@@ -201,26 +207,14 @@ AppDispatcher.register(function(payload) {
       window.secretHash = action.response;
 
       Web3Store.emit(SECRET_HASH);
-      // switch(action.response) {
-      //   case 'transactionHash':
-      //     Web3Store.emit(EVENT_TXN_HASH);
-      //     break;
-      //   case 'confirmation':
-      //     Web3Store.emit(EVENT_CONFIRMATION);
-      //     break;
-      //   case 'receipt':
-      //     Web3Store.emit(EVENT_RECEIPT);
-      //     break;
-      //   case 'error':
-      //     Web3Store.emit(EVENT_ERROR);
-      //     break;
-      // }
       break;
+
     case Web3ActionTypes.PING:
       console.log("PING");
 
       Web3Store.emit(CHANGE_EVENT);
       break;
+
     default:
       return true;
   }

@@ -443,6 +443,56 @@ module.exports = {
       Web3ServerActions.getSeats_SideB(result);
     });
   },
+  takeSeat_SideA: function(index, params) {
+    console.log("takeSeat_SideA: " + index);
+
+    window.bracketContract.methods.join_SideA(index).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log("confirmation: " + confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+    });
+  },
+  takeSeat_SideB: function(index, params) {
+    console.log("takeSeat_SideB: " + index);
+
+    window.bracketContract.methods.join_SideB(index).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log("confirmation: " + confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+    });
+  },
   contractAddress: contractAddress,
   tokenContractAddress: tokenContractAddress,
   bracketContractAddress: bracketContractAddress
