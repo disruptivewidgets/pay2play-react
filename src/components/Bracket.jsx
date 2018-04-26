@@ -315,6 +315,7 @@ function BracketSlot(props) {
   var style = "";
 
   var text = "X";
+  var index = "";
 
   // console.log(item);
 
@@ -334,12 +335,38 @@ function BracketSlot(props) {
     }
 
     text = item.index + " : " + text;
+    index = item.index;
   }
 
-  // var str = "0";
+  var enabled = false;
+
+  if (index != "")
+  {
+    enabled = true;
+  }
 
   return (
-    <td className={style}>{text}</td>
+
+    enabled ? (
+      <td className={style}><ActionLink index={index} /> {text}</td>
+    ) : (
+      <td className={style}>{text}</td>
+    )
+  );
+}
+
+function ActionLink(props)
+{
+  var index = props.index;
+
+  function handleClick(index, e)
+  {
+    e.preventDefault();
+    console.log(index);
+  }
+
+  return (
+      <a href="#" onClick={(e) => handleClick(index, e)}>+</a>
   );
 }
 
