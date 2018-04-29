@@ -148,7 +148,7 @@ var loading_captions = [
 var Bracket = React.createClass({
   getInitialState: function() {
     return {
-      playerCount: 32,
+      playerCount: BracketStore.getPlayerCount(),
       seatsData_SideA: BracketStore.getSeats_SideA(),
       seatsData_SideB: BracketStore.getSeats_SideB()
     };
@@ -188,10 +188,8 @@ var Bracket = React.createClass({
 
     Web3Actions.retrieveBrackets();
 
-    Web3Actions.retrieveBracket(0);
+    Web3Actions.retrieveBracket(this.props.match.params.id);
 
-    // Web3Actions.getSeats_SideA();
-    // Web3Actions.getSeats_SideB();
   },
   componentDidMount: function()
   {

@@ -223,11 +223,13 @@ class MistSite extends React.Component {
                 <Route exact path="/start" component={Start} />
                 <Route exact path="/session" component={Session} />
                 <Route exact path="/secret" component={Secret} />
-                <Route exact path="/bracket" component={Bracket} />
+                {/* <Route exact path="/bracket" component={Bracket} /> */}
 
                 <Route exact path={`/invites/:id`} component={Invite}/>
 
                 <Route exact path={`/wagers/:id`} component={Wager}/>
+
+                <Route exact path={`/brackets/:id`} component={Bracket}/>
 
                 <Web3Shim />
                 <Wagers />
