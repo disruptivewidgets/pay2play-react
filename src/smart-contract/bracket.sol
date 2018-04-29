@@ -6,6 +6,74 @@
 
 pragma solidity ^0.4.21;
 
+contract Registrar
+{
+  uint public registrarStartDate;
+  address public node;
+  address public tokenNode;
+
+  Tournament[] tournaments;
+  /* mapping (address => Tournament) public tournaments; */
+
+  constructor(address _tokenNode) public
+  {
+    registrarStartDate = now;
+    node = msg.sender;
+    tokenNode = _tokenNode;
+  }
+
+  event NewBracketDeployed(uint indexed index, uint numberOfParticipants);
+
+  function start(uint _numberOfParticipants) public
+  {
+    Tournament newTournament = (new Tournament)(_numberOfParticipants);
+
+    tournaments.push(newTournament);
+
+    uint index = tournaments.length - 1;
+
+    emit NewBracketDeployed(index, _numberOfParticipants);
+  }
+
+  function getTournamentContractAddress(uint _index) constant public returns (address)
+  {
+    return address(tournaments[_index]);
+  }
+
+  function getTournamentCount() constant public returns (uint)
+  {
+    return tournaments.length;
+  }
+
+  function getTournamentParticipantCount(uint _index) constant public returns (uint)
+  {
+    return tournaments[_index].numberOfParticipants();
+  }
+
+  // Getters
+  // Side A
+  function getSeats_SideA(uint _index) constant public returns (address[])
+  {
+    return tournaments[_index].getSeats_SideA();
+  }
+
+  function getPlayerSlot_SideA(uint _index, address _player) constant public returns (uint)
+  {
+    return tournaments[_index].getPlayerSlot_SideA(_player);
+  }
+
+  // Side B
+  function getSeats_SideB(uint _index) constant public returns (address[])
+  {
+    return tournaments[_index].getSeats_SideB();
+  }
+
+  function getPlayerSlot_SideB(uint _index, address _player) constant public returns (uint)
+  {
+    return tournaments[_index].getPlayerSlot_SideB(_player);
+  }
+}
+
 contract Tournament
 {
   bool public active;
@@ -55,6 +123,11 @@ contract Tournament
     }
   }
 
+  function getNumberOfParticipants() constant public returns (uint)
+  {
+    return numberOfParticipants;
+  }
+
   function getSeats_SideA() constant public returns (address[])
   {
       return (seats_SideA);
@@ -92,7 +165,7 @@ contract Tournament
     players_SideA[_player].slot = _slot;
   }
 
-  function containsPlayer_SideA(address _player) returns (bool)
+  function containsPlayer_SideA(address _player) constant public returns (bool)
   {
     return players_SideA[_player].exists;
   }
@@ -145,7 +218,7 @@ contract Tournament
     players_SideB[_player].slot = _slot;
   }
 
-  function containsPlayer_SideB(address _player) returns (bool)
+  function containsPlayer_SideB(address _player) constant public returns (bool)
   {
     return players_SideB[_player].exists;
   }

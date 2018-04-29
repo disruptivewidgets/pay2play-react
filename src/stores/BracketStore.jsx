@@ -21,7 +21,8 @@ var EVENT_ERROR = 'error';
 
 var _store = {
   seats_SideA: [],
-  seats_SideB: []
+  seats_SideB: [],
+  playerCount: 32
 };
 
 var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
@@ -100,6 +101,10 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
   // EVENT_ERROR
   // TRANSACTION LISTENING
 
+  getPlayerCount: function() {
+    return _store.playerCount;
+  },
+
   getList: function() {
     return _store;
   },
@@ -120,6 +125,11 @@ AppDispatcher.register(function(payload)
 
   switch(action.actionType)
   {
+    case Web3ActionTypes.RETRIEVE_BRACKET_COUNT_RESPONSE:
+        _store.playerCount = action.response;
+        BracketStore.emit(CHANGE_EVENT);
+        break;
+
     case Web3ActionTypes.GET_SEATS_SIDE_A_RESPONSE:
         _store.seats_SideA = action.response;
 

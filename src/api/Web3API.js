@@ -11,11 +11,13 @@ import interfaces from "../smart-contract/interfaces.js";
 var contractAddress = ""; // Ropsen Pay2Play
 var tokenContractAddress = ""; // Ropsen Pay2Play
 var bracketContractAddress = "";
+var bracketRegistrarContractAddress = "";
 
 // 2018-03-27
 tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
 contractAddress = "0xe018598af2954cb1717b2dff610e13a18587b044";
 bracketContractAddress = "0x0617cd7edde2714b57ecf774a1ed2b237405b25a";
+bracketRegistrarContractAddress = "0x48d494f0571387ece465acbd9d441bce8255844c";
 
 var fromBlock = '';
 var toBlock = '';
@@ -419,6 +421,62 @@ module.exports = {
     });
   },
   // BRACKET
+  retrieveBrackets: function() {
+    console.log("retrieveBrackets");
+
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
+
+    contract.methods.getTournamentCount().call({}, function(error, result) {
+      console.log("getTournamentCount: " + result);
+      // var index = result - 1;
+      //
+      // var wagerIndices = Array.from({length: result}, (v, k) => k);
+      // wagerIndices.reverse();
+      //
+      // function sort(wagers) {
+      //   var sorted = _.sortBy(wagers, function(wager) {
+      //     return - (wager.date.getTime());
+      //   });
+      //
+      //   Web3ServerActions.retrieveWagers(sorted);
+      // };
+      //
+      // eachAsync(wagerIndices, retrieveWager, sort);
+    });
+  },
+  retrieveBracket: function(index)
+  {
+    console.log("retrieveBracket: " + index);
+
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
+
+    contract.methods.getTournamentContractAddress(index).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
+
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.getNumberOfParticipants().call({}, function(error, result) {
+        console.log(result);
+
+        Web3ServerActions.getBracketCount(result);
+
+        tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
+          console.log(result);
+
+          Web3ServerActions.getSeats_SideA(result);
+        });
+
+        tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
+          console.log(result);
+
+          Web3ServerActions.getSeats_SideB(result);
+        });
+      });
+    });
+  },
   getSeats_SideA: function() {
     console.log("getSeats_SideA");
 

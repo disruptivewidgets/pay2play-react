@@ -79,6 +79,20 @@ const Actions = {
     Web3API.getSecretHash(address);
   },
   // Bracket
+  retrieveBrackets() {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.RETRIEVE_BRACKETS,
+    });
+
+    Web3API.retrieveBrackets();
+  },
+  retrieveBracket(index) {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.RETRIEVE_BRACKET,
+    });
+
+    Web3API.retrieveBracket(index);
+  },
   getSeats_SideA() {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.GET_SEATS_SIDE_A,

@@ -74,9 +74,7 @@ function fill_SideA(playerCount, data)
 
 function fill_SideB(playerCount, data)
 {
-  console.log("cacheSideB");
-
-  var playerCount = 32;
+  console.log("fill_SideB");
 
   var values = [];
 
@@ -150,6 +148,7 @@ var loading_captions = [
 var Bracket = React.createClass({
   getInitialState: function() {
     return {
+      playerCount: 32,
       seatsData_SideA: BracketStore.getSeats_SideA(),
       seatsData_SideB: BracketStore.getSeats_SideB()
     };
@@ -174,10 +173,10 @@ var Bracket = React.createClass({
       '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'
     ]
 
-    var playerCount = 32;
+    // var playerCount = 32;
 
-    var grid_SideA = fill_SideA(playerCount, data_A);
-    var grid_SideB = fill_SideB(playerCount, data_B);
+    var grid_SideA = fill_SideA(this.state.playerCount, data_A);
+    var grid_SideB = fill_SideB(this.state.playerCount, data_B);
 
     this.setState({
       bracket_SideA: grid_SideA,
@@ -187,8 +186,12 @@ var Bracket = React.createClass({
       loading_caption: loading_captions[0]
     });
 
-    Web3Actions.getSeats_SideA();
-    Web3Actions.getSeats_SideB();
+    Web3Actions.retrieveBrackets();
+
+    Web3Actions.retrieveBracket(0);
+
+    // Web3Actions.getSeats_SideA();
+    // Web3Actions.getSeats_SideB();
   },
   componentDidMount: function()
   {
@@ -215,18 +218,9 @@ var Bracket = React.createClass({
     BracketStore.removeErrorListener(this.onEvent_Error);
   },
   _onChange: function() {
-    // console.log(BracketStore.getSeats_SideA());
-    // console.log("AAAAAAAAAAAAAA");
-
-    // var playerCount = 32;
-    //
-    // var grid_SideA = fill_SideA(playerCount, BracketStore.getSeats_SideA());
-    // var grid_SideB = fill_SideB(playerCount, BracketStore.getSeats_SideB());
-    //
-    // this.setState({
-    //   bracket_SideA: grid_SideA,
-    //   bracket_SideB: grid_SideB
-    // });
+    this.setState({
+      playerCount: BracketStore.getPlayerCount()
+    });
   },
   onEvent_TransactionHash: function()
   {
@@ -262,9 +256,7 @@ var Bracket = React.createClass({
   _onFetchSeats_SideA: function() {
     console.log("AAA");
 
-    var playerCount = 32;
-
-    var grid_SideA = fill_SideA(playerCount, BracketStore.getSeats_SideA());
+    var grid_SideA = fill_SideA(this.state.playerCount, BracketStore.getSeats_SideA());
 
     this.setState({
       bracket_SideA: grid_SideA
@@ -273,9 +265,9 @@ var Bracket = React.createClass({
   _onFetchSeats_SideB: function() {
     console.log("BBB");
 
-    var playerCount = 32;
+    // var playerCount = 32;
 
-    var grid_SideB = fill_SideB(playerCount, BracketStore.getSeats_SideB());
+    var grid_SideB = fill_SideB(this.state.playerCount, BracketStore.getSeats_SideB());
 
     this.setState({
       bracket_SideB: grid_SideB
