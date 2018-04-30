@@ -189,7 +189,6 @@ var Bracket = React.createClass({
     Web3Actions.retrieveBrackets();
 
     Web3Actions.retrieveBracket(this.props.match.params.id);
-
   },
   componentDidMount: function()
   {
