@@ -3,6 +3,8 @@ import React from 'react';
 import BracketStore from '../stores/BracketStore';
 import Web3Actions from '../actions/Web3Actions';
 
+import WinnerSelector from '../components/WinnerSelector';
+
 import _ from 'lodash';
 
 function fill_SideA(playerCount, data)
@@ -181,6 +183,8 @@ var Bracket = React.createClass({
     this.setState({
       bracket_SideA: grid_SideA,
       bracket_SideB: grid_SideB,
+      winner_SideA: '',
+      winner_SideB: '',
       loaded: false,
       error: '',
       loading_caption: loading_captions[0]
@@ -254,10 +258,13 @@ var Bracket = React.createClass({
   _onFetchSeats_SideA: function() {
     console.log("AAA");
 
-    var grid_SideA = fill_SideA(this.state.playerCount, BracketStore.getSeats_SideA());
+    var seats = BracketStore.getSeats_SideA();
+
+    var grid_SideA = fill_SideA(this.state.playerCount, seats);
 
     this.setState({
-      bracket_SideA: grid_SideA
+      bracket_SideA: grid_SideA,
+      winner_SideA: seats[0]
     });
   },
   _onFetchSeats_SideB: function() {
@@ -265,15 +272,18 @@ var Bracket = React.createClass({
 
     // var playerCount = 32;
 
-    var grid_SideB = fill_SideB(this.state.playerCount, BracketStore.getSeats_SideB());
+    var seats = BracketStore.getSeats_SideB();
+
+    var grid_SideB = fill_SideB(this.state.playerCount, seats);
 
     this.setState({
-      bracket_SideB: grid_SideB
+      bracket_SideB: grid_SideB,
+      winner_SideB: seats[0]
     });
   },
 
   render: function() {
-    const {bracket_SideA, bracket_SideB} = this.state;
+    const {bracket_SideA, bracket_SideB, winner_SideA, winner_SideB} = this.state;
 
     var error = this.state.error;
     var loaded = this.state.loaded;
@@ -310,6 +320,14 @@ var Bracket = React.createClass({
       isModerator = true;
     }
 
+    var players = [
+      winner_SideA,
+      winner_SideB
+    ];
+
+    // console.log(bracket_SideA[0]);
+    // console.log(bracket_SideB[0]);
+    console.log(players);
 
     const onChange = (event) =>
     {
@@ -321,11 +339,16 @@ var Bracket = React.createClass({
       });
     };
 
-    const onSubmit = (event) => {
+    const onSubmit = (event) =>
+    {
 
       event.preventDefault();
 
-      console.log(this.state.input);
+      console.log(event.target.winner.value);
+
+      // console.log(this.state.input);
+
+      const winner = event.target.winner.value;
 
       this.setState({
         loaded: false,
@@ -333,9 +356,7 @@ var Bracket = React.createClass({
         loading_caption: loading_captions[1]
       });
 
-      var winner = this.state.input;
-
-      amount = window.web3.utils.toWei(amount.toString(), 'ether');
+      // amount = window.web3.utils.toWei(amount.toString(), 'ether');
       const gas = 650000;
       const gasPrice = window.web3.utils.toWei("20", 'shannon');
 
@@ -386,35 +407,28 @@ var Bracket = React.createClass({
             </tr>
           </tbody>
         </table>
+        <br />
 
         <div>
-          <br />
           Bracket Winner: {this.state.winner}
           <br />
         </div>
+        <br />
 
         {
           isModerator &&
             <form onSubmit={onSubmit}>
-              {/* <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} /> */}
 
-              <label>
-                <input type="text" placeholder="Winner Address" value={this.state.input} onChange={onChange} />
-              </label>
-              <br />
-              <br />
 
-              { error ? (
+              {
+                (winner_SideA != '' && winner_SideB != '') &&
                 <div>
-                  <div><input type="submit" value="Set Winner" /></div>
-                  <br />
-                  <div className="error">{this.state.error}</div>
-                </div>
-              ) : (
-                <div><input type="submit" value="Set Winner" /></div>
-              ) }
+                  <WinnerSelector onSelect={this.handleSelect} players={players} />
 
-              <br />
+                  <div><input type="submit" value="Set Winner" /></div>
+                </div>
+              }
+            <br />
             </form>
         }
       </div>

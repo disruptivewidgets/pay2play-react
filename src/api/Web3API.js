@@ -691,12 +691,12 @@ module.exports = {
       var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
       tournamentContract.options.address = result;
 
-      tournamentContract.methods.setBracketWinner(address).send(params)
+      tournamentContract.methods.setWinner(address).send(params)
       .on('transactionHash', function(hash) {
         console.log("transactionHash");
         console.log("txid: " + hash);
 
-        Web3ServerActions.promotePlayer_SideB('transactionHash');
+        Web3ServerActions.setBracketWinner('transactionHash');
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
@@ -705,20 +705,20 @@ module.exports = {
         if (confirmationNumber == 0)
         {
 
-          Web3ServerActions.promotePlayer_SideB('confirmation');
+          Web3ServerActions.setBracketWinner('confirmation');
         }
       })
       .on('receipt', function(receipt) {
         console.log("receipt");
         console.log(receipt)
 
-        Web3ServerActions.promotePlayer_SideB('receipt');
+        Web3ServerActions.setBracketWinner('receipt');
       })
       .on('error', function(error) {
         console.log("error");
         console.error(error);
 
-        Web3ServerActions.promotePlayer_SideB('error');
+        Web3ServerActions.setBracketWinner('error');
       });
     });
   },

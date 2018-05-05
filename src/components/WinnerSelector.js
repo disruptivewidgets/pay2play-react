@@ -25,6 +25,19 @@ var WinnerSelector = React.createClass({
 
     // GameActions.retrieveGames();
   },
+  componentWillReceiveProps: function() {
+    var options = _.map(this.props.players, function(player) {
+      var option = {
+        value: player,
+        label: player
+      };
+      return option;
+    });
+
+    this.setState({
+      options: options
+    });
+  },
   componentDidMount: function() {
     console.log("players: " + this.props.players);
 

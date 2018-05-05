@@ -203,7 +203,7 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.SET_BRACKET_WINNER_RESPONSE:
-      console.log("TAKE_SEAT_SIDE_B_RESPONSE");
+      console.log("SET_BRACKET_WINNER_RESPONSE");
 
       console.log(action.response);
       switch(action.response)
