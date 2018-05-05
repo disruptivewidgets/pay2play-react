@@ -216,7 +216,8 @@ var Bracket = React.createClass({
   },
   _onChange: function() {
     this.setState({
-      playerCount: BracketStore.getPlayerCount()
+      playerCount: BracketStore.getPlayerCount(),
+      winner: BracketStore.getBracketWinner()
     });
   },
   onEvent_TransactionHash: function()
@@ -274,6 +275,11 @@ var Bracket = React.createClass({
   render: function() {
     const {bracket_SideA, bracket_SideB} = this.state;
 
+    var error = this.state.error;
+    var loaded = this.state.loaded;
+
+    const bracketId = this.props.match.params.id;
+
     var rows_SideA = [];
 
     for (var i = 0; i < bracket_SideA.length; i += 1)
@@ -298,6 +304,51 @@ var Bracket = React.createClass({
       );
     }
 
+    var isModerator = false;
+    if (window.authorizedAccount == window.host_BracketRegistrar)
+    {
+      isModerator = true;
+    }
+
+
+    const onChange = (event) =>
+    {
+      // console.log(event.target.value);
+
+      this.setState({
+        input: event.target.value,
+        error: ''
+      });
+    };
+
+    const onSubmit = (event) => {
+
+      event.preventDefault();
+
+      console.log(this.state.input);
+
+      this.setState({
+        loaded: false,
+        error: '',
+        loading_caption: loading_captions[1]
+      });
+
+      var winner = this.state.input;
+
+      amount = window.web3.utils.toWei(amount.toString(), 'ether');
+      const gas = 650000;
+      const gasPrice = window.web3.utils.toWei("20", 'shannon');
+
+      var params = {
+        // value: amount,
+        from: window.authorizedAccount,
+        gas: gas,
+        gasPrice: gasPrice
+      };
+
+      Web3Actions.setBracketWinner(bracketId, winner, params);
+    };
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -311,6 +362,7 @@ var Bracket = React.createClass({
                       <BracketRow
                         key={item.index}
                         item={item.value}
+                        bracketId={bracketId}
                         side="A"
                       />
                     ))}
@@ -324,6 +376,7 @@ var Bracket = React.createClass({
                       <BracketRow
                         key={item.index}
                         item={item.value}
+                        bracketId={bracketId}
                         side="B"
                       />
                     ))}
@@ -333,13 +386,44 @@ var Bracket = React.createClass({
             </tr>
           </tbody>
         </table>
+
+        <div>
+          <br />
+          Bracket Winner: {this.state.winner}
+          <br />
+        </div>
+
+        {
+          isModerator &&
+            <form onSubmit={onSubmit}>
+              {/* <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} /> */}
+
+              <label>
+                <input type="text" placeholder="Winner Address" value={this.state.input} onChange={onChange} />
+              </label>
+              <br />
+              <br />
+
+              { error ? (
+                <div>
+                  <div><input type="submit" value="Set Winner" /></div>
+                  <br />
+                  <div className="error">{this.state.error}</div>
+                </div>
+              ) : (
+                <div><input type="submit" value="Set Winner" /></div>
+              ) }
+
+              <br />
+            </form>
+        }
       </div>
     );
   }
 });
 
 function BracketRow(props) {
-  const {item, side} = props;
+  const {item, side, bracketId} = props;
   return (
     <tr>
       {item.map(item => (
@@ -347,6 +431,7 @@ function BracketRow(props) {
           key={Math.floor(Math.random() * 1000000)}
           item={item}
           side={side}
+          bracketId={bracketId}
         />
       ))}
     </tr>
@@ -354,7 +439,7 @@ function BracketRow(props) {
 }
 
 function BracketSlot(props) {
-  var {item, side} = props;
+  var {item, side, bracketId} = props;
 
   var highlight = false;
 
@@ -384,6 +469,8 @@ function BracketSlot(props) {
     index = item.index;
   }
 
+  var address = item.value;
+
   var enabled = false;
 
   if (index != "")
@@ -391,26 +478,57 @@ function BracketSlot(props) {
     enabled = true;
   }
 
+  var isModerator = false;
+  if (window.authorizedAccount == window.host_BracketRegistrar)
+  {
+    isModerator = true;
+  }
+
   return (
 
     enabled ? (
-      <td className={style}><ActionLink index={index} side={side} /> {text}</td>
+      <td className={style}>
+        {
+          side == "A" &&
+            <div>
+              <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} />&nbsp;
+              {text}&nbsp;
+              {
+                isModerator &&
+                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
+              }
+            </div>
+        }
+
+        {
+          side == "B" &&
+            <div>
+              {
+                isModerator &&
+                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
+              }
+              &nbsp;{text}&nbsp;
+              <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} />
+            </div>
+        }
+      </td>
     ) : (
       <td className={style}>{text}</td>
     )
   );
 }
 
-function ActionLink(props)
+function ActionLink_FillSeat(props)
 {
-  var index = props.index;
+  var seat = props.seat;
   var side = props.side;
+  var bracketId = props.bracketId;
 
-  function handleClick(side, index, e)
+  function handleClick(bracketId, side, seat, e)
   {
     e.preventDefault();
 
-    console.log(index);
+    console.log(seat);
     console.log(side);
 
     const amount = window.web3.utils.toWei("0.01", 'ether');
@@ -426,18 +544,71 @@ function ActionLink(props)
 
     if (side == "A")
     {
-      Web3Actions.takeSeat_SideA(index, params);
+      Web3Actions.takeSeat_SideA(bracketId, seat, params);
     }
 
     if (side == "B")
     {
-      Web3Actions.takeSeat_SideB(index, params);
+      Web3Actions.takeSeat_SideB(bracketId, seat, params);
     }
-
   }
 
   return (
-      <a href="#" onClick={(e) => handleClick(side, index, e)}>+</a>
+      <a href="#" onClick={(e) => handleClick(bracketId, side, seat, e)}>+</a>
+  );
+}
+
+function ActionLink_PromoteSeat(props)
+{
+  // var seat = props.seat;
+  // var side = props.side;
+  // var bracketId = props.bracketId;
+
+  var {bracketId, side, seat, address} = props;
+
+  function handleClick(bracketId, side, seat, address, e)
+  {
+    e.preventDefault();
+
+    console.log(seat);
+    console.log(side);
+
+    const amount = window.web3.utils.toWei("0.01", 'ether');
+    const gas = 650000;
+    const gasPrice = window.web3.utils.toWei("20", 'shannon');
+
+    var params = {
+      // value: amount,
+      from: window.authorizedAccount,
+      gas: gas,
+      gasPrice: gasPrice
+    };
+
+    if (side == "A")
+    {
+      Web3Actions.promotePlayer_SideA(bracketId, seat, address, params);
+    }
+
+    if (side == "B")
+    {
+      Web3Actions.promotePlayer_SideB(bracketId, seat, address, params);
+    }
+  }
+
+  var button = ""
+
+  if (side == "A")
+  {
+    button = "-->";
+  }
+
+  if (side == "B")
+  {
+    button = "<--";
+  }
+
+  return (
+      <a href="#" onClick={(e) => handleClick(bracketId, side, seat, address, e)}>{button}</a>
   );
 }
 

@@ -243,4 +243,9 @@ contract Tournament
     seats_SideB[slot] = _player;
     players_SideB[_player].slot = slot;
   }
+
+  function setWinner(address _player) public
+  {
+    winner = _player;
+  }
 }

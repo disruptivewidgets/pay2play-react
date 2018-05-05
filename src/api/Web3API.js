@@ -17,7 +17,7 @@ var bracketRegistrarContractAddress = "";
 tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
 contractAddress = "0xe018598af2954cb1717b2dff610e13a18587b044";
 bracketContractAddress = "0x0617cd7edde2714b57ecf774a1ed2b237405b25a";
-bracketRegistrarContractAddress = "0x48d494f0571387ece465acbd9d441bce8255844c";
+bracketRegistrarContractAddress = "0x21dd5430b06a4a19ac34d8eee83bbe5f4907e521";
 
 var fromBlock = '';
 var toBlock = '';
@@ -458,21 +458,27 @@ module.exports = {
       var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
       tournamentContract.options.address = result;
 
+      var info = {};
+
       tournamentContract.methods.getNumberOfParticipants().call({}, function(error, result) {
-        console.log(result);
+        info['playerCount'] = result;
 
-        Web3ServerActions.getBracketCount(result);
+        tournamentContract.methods.winner().call({}, function(error, result) {
+          info['winner'] = result;
 
-        tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
-          console.log(result);
+          Web3ServerActions.getBracketInfo(info);
 
-          Web3ServerActions.getSeats_SideA(result);
-        });
+          tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
+            console.log(result);
 
-        tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
-          console.log(result);
+            Web3ServerActions.getSeats_SideA(result);
+          });
 
-          Web3ServerActions.getSeats_SideB(result);
+          tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
+            console.log(result);
+
+            Web3ServerActions.getSeats_SideB(result);
+          });
         });
       });
     });
@@ -501,115 +507,223 @@ module.exports = {
       Web3ServerActions.getSeats_SideB(result);
     });
   },
-  takeSeat_SideA: function(index, params) {
-    console.log("takeSeat_SideA: " + index);
+  takeSeat_SideA: function(bracketId, seat, params) {
+    console.log("takeSeat_SideA: " + seat);
 
-    window.bracketContract.methods.join_SideA(index).send(params)
-    .on('transactionHash', function(hash) {
-      console.log("transactionHash");
-      console.log("txid: " + hash);
-    })
-    .on('confirmation', function(confirmationNumber, receipt) {
-      console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
 
-      if (confirmationNumber == 0) {
+    contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
 
-      }
-    })
-    .on('receipt', function(receipt) {
-      console.log("receipt");
-      console.log(receipt)
-    })
-    .on('error', function(error) {
-      console.log("error");
-      console.error(error);
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.join_SideA(seat).send(params)
+      .on('transactionHash', function(hash) {
+        console.log("transactionHash");
+        console.log("txid: " + hash);
+
+        Web3ServerActions.takeSeat_SideA('transactionHash');
+      })
+      .on('confirmation', function(confirmationNumber, receipt) {
+        console.log("confirmation: " + confirmationNumber);
+        console.log(receipt);
+
+        if (confirmationNumber == 0)
+        {
+
+          Web3ServerActions.takeSeat_SideA('confirmation');
+        }
+      })
+      .on('receipt', function(receipt) {
+        console.log("receipt");
+        console.log(receipt)
+
+        Web3ServerActions.takeSeat_SideA('receipt');
+      })
+      .on('error', function(error) {
+        console.log("error");
+        console.error(error);
+
+        Web3ServerActions.takeSeat_SideA('error');
+      });
     });
-
-    Web3ServerActions.takeSeat_SideA('transactionHash');
   },
-  takeSeat_SideB: function(index, params) {
-    console.log("takeSeat_SideB: " + index);
+  takeSeat_SideB: function(bracketId, seat, params) {
+    console.log("takeSeat_SideB: " + seat);
 
-    window.bracketContract.methods.join_SideB(index).send(params)
-    .on('transactionHash', function(hash) {
-      console.log("transactionHash");
-      console.log("txid: " + hash);
-    })
-    .on('confirmation', function(confirmationNumber, receipt) {
-      console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
 
-      if (confirmationNumber == 0) {
+    contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
 
-      }
-    })
-    .on('receipt', function(receipt) {
-      console.log("receipt");
-      console.log(receipt)
-    })
-    .on('error', function(error) {
-      console.log("error");
-      console.error(error);
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.join_SideB(seat).send(params)
+      .on('transactionHash', function(hash) {
+        console.log("transactionHash");
+        console.log("txid: " + hash);
+
+        Web3ServerActions.takeSeat_SideB('transactionHash');
+      })
+      .on('confirmation', function(confirmationNumber, receipt) {
+        console.log("confirmation: " + confirmationNumber);
+        console.log(receipt);
+
+        if (confirmationNumber == 0)
+        {
+
+          Web3ServerActions.takeSeat_SideB('confirmation');
+        }
+      })
+      .on('receipt', function(receipt) {
+        console.log("receipt");
+        console.log(receipt);
+
+        Web3ServerActions.takeSeat_SideB('receipt');
+      })
+      .on('error', function(error) {
+        console.log("error");
+        console.error(error);
+
+        Web3ServerActions.takeSeat_SideB('error');
+      });
     });
-
-    Web3ServerActions.takeSeat_SideB('transactionHash');
   },
-  promotePlayer_SideA: function(address, params) {
+  promotePlayer_SideA: function(bracketId, seat, address, params) {
     console.log("promotePlayer_SideA: " + address);
 
-    // window.bracketContract.methods.join_SideA(index).send(params)
-    // .on('transactionHash', function(hash) {
-    //   console.log("transactionHash");
-    //   console.log("txid: " + hash);
-    // })
-    // .on('confirmation', function(confirmationNumber, receipt) {
-    //   console.log("confirmation: " + confirmationNumber);
-    //   console.log(receipt);
-    //
-    //   if (confirmationNumber == 0) {
-    //
-    //   }
-    // })
-    // .on('receipt', function(receipt) {
-    //   console.log("receipt");
-    //   console.log(receipt)
-    // })
-    // .on('error', function(error) {
-    //   console.log("error");
-    //   console.error(error);
-    // });
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
 
-    Web3ServerActions.promotePlayer_SideA('transactionHash');
+    contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
+
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.promotePlayer_SideA(address).send(params)
+      .on('transactionHash', function(hash) {
+        console.log("transactionHash");
+        console.log("txid: " + hash);
+
+        Web3ServerActions.promotePlayer_SideA('transactionHash');
+      })
+      .on('confirmation', function(confirmationNumber, receipt) {
+        console.log("confirmation: " + confirmationNumber);
+        console.log(receipt);
+
+        if (confirmationNumber == 0)
+        {
+
+          Web3ServerActions.promotePlayer_SideA('confirmation');
+        }
+      })
+      .on('receipt', function(receipt) {
+        console.log("receipt");
+        console.log(receipt)
+
+        Web3ServerActions.promotePlayer_SideA('receipt');
+      })
+      .on('error', function(error) {
+        console.log("error");
+        console.error(error);
+
+        Web3ServerActions.promotePlayer_SideA('error');
+      });
+    });
   },
-  promotePlayer_SideB: function(address, params) {
+  promotePlayer_SideB: function(bracketId, seat, address, params) {
     console.log("promotePlayer_SideB: " + address);
 
-    // window.bracketContract.methods.join_SideA(index).send(params)
-    // .on('transactionHash', function(hash) {
-    //   console.log("transactionHash");
-    //   console.log("txid: " + hash);
-    // })
-    // .on('confirmation', function(confirmationNumber, receipt) {
-    //   console.log("confirmation: " + confirmationNumber);
-    //   console.log(receipt);
-    //
-    //   if (confirmationNumber == 0) {
-    //
-    //   }
-    // })
-    // .on('receipt', function(receipt) {
-    //   console.log("receipt");
-    //   console.log(receipt)
-    // })
-    // .on('error', function(error) {
-    //   console.log("error");
-    //   console.error(error);
-    // });
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
 
-    Web3ServerActions.promotePlayer_SideB('transactionHash');
+    contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
+
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.promotePlayer_SideB(address).send(params)
+      .on('transactionHash', function(hash) {
+        console.log("transactionHash");
+        console.log("txid: " + hash);
+
+        Web3ServerActions.promotePlayer_SideB('transactionHash');
+      })
+      .on('confirmation', function(confirmationNumber, receipt) {
+        console.log("confirmation: " + confirmationNumber);
+        console.log(receipt);
+
+        if (confirmationNumber == 0)
+        {
+
+          Web3ServerActions.promotePlayer_SideB('confirmation');
+        }
+      })
+      .on('receipt', function(receipt) {
+        console.log("receipt");
+        console.log(receipt)
+
+        Web3ServerActions.promotePlayer_SideB('receipt');
+      })
+      .on('error', function(error) {
+        console.log("error");
+        console.error(error);
+
+        Web3ServerActions.promotePlayer_SideB('error');
+      });
+    });
+  },
+  setBracketWinner: function(bracketId, address, params) {
+    console.log("setBracketWinner: " + address);
+
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
+
+    contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
+      console.log("getTournamentContractAddress: " + result);
+
+      var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
+      tournamentContract.options.address = result;
+
+      tournamentContract.methods.setBracketWinner(address).send(params)
+      .on('transactionHash', function(hash) {
+        console.log("transactionHash");
+        console.log("txid: " + hash);
+
+        Web3ServerActions.promotePlayer_SideB('transactionHash');
+      })
+      .on('confirmation', function(confirmationNumber, receipt) {
+        console.log("confirmation: " + confirmationNumber);
+        console.log(receipt);
+
+        if (confirmationNumber == 0)
+        {
+
+          Web3ServerActions.promotePlayer_SideB('confirmation');
+        }
+      })
+      .on('receipt', function(receipt) {
+        console.log("receipt");
+        console.log(receipt)
+
+        Web3ServerActions.promotePlayer_SideB('receipt');
+      })
+      .on('error', function(error) {
+        console.log("error");
+        console.error(error);
+
+        Web3ServerActions.promotePlayer_SideB('error');
+      });
+    });
   },
   contractAddress: contractAddress,
   tokenContractAddress: tokenContractAddress,
-  bracketContractAddress: bracketContractAddress
+  bracketContractAddress: bracketContractAddress,
+  bracketRegistrarContractAddress: bracketRegistrarContractAddress
 };

@@ -69,6 +69,22 @@ module.exports = {
       response: response
     });
   },
+  getBracketWinner(response) {
+    console.log(response);
+
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.RETRIEVE_BRACKET_COUNT_RESPONSE,
+      response: response
+    });
+  },
+  getBracketInfo(response) {
+    console.log(response);
+
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.RETRIEVE_BRACKET_INFO_RESPONSE,
+      response: response
+    });
+  },
   getSeats_SideA(response) {
     AppDispatcher.handleServerAction({
       actionType: Web3ActionTypes.GET_SEATS_SIDE_A_RESPONSE,
@@ -102,6 +118,12 @@ module.exports = {
   promotePlayer_SideB(response) {
     AppDispatcher.handleServerAction({
       actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_B_RESPONSE,
+      response: response
+    });
+  },
+  setBracketWinner(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.SET_BRACKET_WINNER_RESPONSE,
       response: response
     });
   },

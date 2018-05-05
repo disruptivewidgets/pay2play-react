@@ -6,7 +6,12 @@ import ApiUtils from '../helpers/ApiUtils';
 
 import util from 'ethereumjs-util';
 
-import { contractAddress, tokenContractAddress, bracketContractAddress } from '../api/Web3API';
+import {
+  contractAddress,
+  tokenContractAddress,
+  bracketRegistrarContractAddress
+
+} from '../api/Web3API';
 
 import Web3Store from '../stores/Web3Store';
 
@@ -110,14 +115,20 @@ var Web3Shim = React.createClass({
     });
 
     window.contract.methods.node().call({}, function(error, result) {
-      window.hostNode = result;
+      window.host_WagerRegistrar = result;
     });
 
     window.tokenContract = new window.web3.eth.Contract(interfaces.tokenInterface);
     window.tokenContract.options.address = tokenContractAddress; // Ropsen Pay2Play
 
-    window.bracketContract = new window.web3.eth.Contract(interfaces.bracketInterface);
-    window.bracketContract.options.address = bracketContractAddress; // Ropsen Pay2Play
+    window.bracketRegistrarContract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    window.bracketRegistrarContract.options.address = bracketRegistrarContractAddress; // Ropsen Pay2Play
+
+    console.log(bracketRegistrarContractAddress);
+
+    window.bracketRegistrarContract.methods.node().call({}, function(error, result) {
+      window.host_BracketRegistrar = result;
+    });
 
     var shim = this;
 

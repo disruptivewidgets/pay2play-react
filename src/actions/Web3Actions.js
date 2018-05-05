@@ -107,33 +107,43 @@ const Actions = {
 
     Web3API.getSeats_SideB();
   },
-  takeSeat_SideA(index, params) {
+  takeSeat_SideA(bracketId, seat, params) {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.TAKE_SEAT_SIDE_A,
     });
 
-    Web3API.takeSeat_SideA(index, params);
+    Web3API.takeSeat_SideA(bracketId, seat, params);
   },
-  takeSeat_SideB(index, params) {
+  takeSeat_SideB(bracketId, seat, params) {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.TAKE_SEAT_SIDE_B,
     });
 
-    Web3API.takeSeat_SideB(index, params);
+    Web3API.takeSeat_SideB(bracketId, seat, params);
   },
-  promotePlayer_SideA(address, params) {
+  promotePlayer_SideA(bracketId, seat, address, params)
+  {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_A,
     });
 
-    Web3API.promotePlayer_SideA(address, params);
+    Web3API.promotePlayer_SideA(bracketId, seat, address, params);
   },
-  promotePlayer_SideB(address, params) {
+  promotePlayer_SideB(bracketId, seat, address, params)
+  {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.PROMOTE_PLAYER_SIDE_B,
     });
 
-    Web3API.promotePlayer_SideB(address, params);
+    Web3API.promotePlayer_SideB(bracketId, seat, address, params);
+  },
+  setBracketWinner(bracketId, address, params)
+  {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.SET_BRACKET_WINNER,
+    });
+
+    Web3API.setBracketWinner(bracketId, address, params);
   },
   // Misc
   ping() {

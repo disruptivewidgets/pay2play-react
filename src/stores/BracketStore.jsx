@@ -22,7 +22,8 @@ var EVENT_ERROR = 'error';
 var _store = {
   seats_SideA: [],
   seats_SideB: [],
-  playerCount: 32
+  playerCount: 32,
+  bracketWinner: ''
 };
 
 var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
@@ -105,6 +106,10 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
     return _store.playerCount;
   },
 
+  getBracketWinner: function() {
+    return _store.bracketWinner;
+  },
+
   getList: function() {
     return _store;
   },
@@ -127,6 +132,17 @@ AppDispatcher.register(function(payload)
   {
     case Web3ActionTypes.RETRIEVE_BRACKET_COUNT_RESPONSE:
         _store.playerCount = action.response;
+        BracketStore.emit(CHANGE_EVENT);
+        break;
+
+    case Web3ActionTypes.RETRIEVE_BRACKET_WINNER_RESPONSE:
+        _store.bracketWinner = action.response;
+        BracketStore.emit(CHANGE_EVENT);
+        break;
+
+    case Web3ActionTypes.RETRIEVE_BRACKET_INFO_RESPONSE:
+        _store.bracketWinner = action.response.winner;
+        _store.playerCount = action.response.playerCount;
         BracketStore.emit(CHANGE_EVENT);
         break;
 
@@ -186,6 +202,27 @@ AppDispatcher.register(function(payload)
         }
         break;
 
+    case Web3ActionTypes.SET_BRACKET_WINNER_RESPONSE:
+      console.log("TAKE_SEAT_SIDE_B_RESPONSE");
+
+      console.log(action.response);
+      switch(action.response)
+      {
+        case 'transactionHash':
+          BracketStore.emit(EVENT_TXN_HASH);
+          break;
+        case 'confirmation':
+          BracketStore.emit(EVENT_CONFIRMATION);
+          break;
+        case 'receipt':
+          BracketStore.emit(EVENT_RECEIPT);
+          break;
+        case 'error':
+          BracketStore.emit(EVENT_ERROR);
+          break;
+      }
+
+      break;
     default:
       return true;
   }

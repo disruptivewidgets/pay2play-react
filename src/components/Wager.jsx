@@ -228,7 +228,8 @@ var Wager = React.createClass({
     var processing = this.state.processing;
 
     var isModerator = false;
-    if (window.authorizedAccount == window.hostNode) {
+    if (window.authorizedAccount == window.host_WagerRegistrar)
+    {
       isModerator = true;
     }
 

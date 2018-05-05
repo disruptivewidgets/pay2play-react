@@ -196,7 +196,7 @@ class MistSite extends React.Component {
       // console.log("node");
       // console.log(error, result);
 
-      window.hostNode = result;
+      window.host_WagerRegistrar = result;
     });
   }
   render()
