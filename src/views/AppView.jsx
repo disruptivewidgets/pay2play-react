@@ -226,7 +226,6 @@ class MistSite extends React.Component {
                 <Route exact path="/start" component={Start} />
                 <Route exact path="/session" component={Session} />
                 <Route exact path="/secret" component={Secret} />
-                {/* <Route exact path="/bracket" component={Bracket} /> */}
 
                 <Route exact path={`/invites/:id`} component={Invite}/>
 
@@ -383,6 +382,8 @@ class MistSite extends React.Component {
 const Home = () => (
   <div>
     <StartButton to="/start" label="Start Wager" />
+    <br />
+    <StartButton to="/brackets" label="Start Bracket" />
     <br />
   </div>
 )

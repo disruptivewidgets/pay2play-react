@@ -285,7 +285,7 @@ var Bracket = React.createClass({
   },
 
   render: function() {
-    const {bracket_SideA, bracket_SideB, winner_SideA, winner_SideB} = this.state;
+    const {bracket_SideA, bracket_SideB, winner_SideA, winner_SideB, winner} = this.state;
 
     var error = this.state.error;
     var loaded = this.state.loaded;
@@ -320,6 +320,13 @@ var Bracket = React.createClass({
     if (window.authorizedAccount == window.host_BracketRegistrar)
     {
       isModerator = true;
+    }
+
+    var hasWinner = false;
+
+    if (winner != "0x0000000000000000000000000000000000000000")
+    {
+      hasWinner = true;
     }
 
     var players = [
@@ -414,7 +421,7 @@ var Bracket = React.createClass({
         <br />
 
         {
-          isModerator &&
+          isModerator && !hasWinner &&
             <form onSubmit={onSubmit}>
               {
                 (winner_SideA != '' && winner_SideB != '') &&

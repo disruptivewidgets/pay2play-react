@@ -80,6 +80,14 @@ const Actions = {
     Web3API.getSecretHash(address);
   },
   // Bracket
+  startBracket(numberOfParticipants, params)
+  {
+    AppDispatcher.handleViewAction({
+      actionType: Web3ActionTypes.START_BRACKET,
+    });
+
+    Web3API.startBracket(numberOfParticipants, params);
+  },
   retrieveBrackets() {
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.RETRIEVE_BRACKETS,

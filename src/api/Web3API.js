@@ -463,6 +463,77 @@ module.exports = {
     });
   },
   // BRACKET
+  startBracket: function(numberOfParticipants, params) {
+    console.log("startBracket");
+
+    var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+    contract.options.address = bracketRegistrarContractAddress;
+
+    contract.methods.start(numberOfParticipants).send(params)
+    .on('transactionHash', function(hash) {
+      console.log("transactionHash");
+      console.log("txid: " + hash);
+
+      // var transaction = {
+      //   id: hash,
+      //   status: "pending_block",
+      //   type: "start",
+      //   wagerId: -1
+      // }
+      //
+      // SessionHelper.storeTransaction(transaction);
+      // SessionHelper.listTransactions();
+
+      Web3ServerActions.startBracket('transactionHash');
+    })
+    .on('confirmation', function(confirmationNumber, receipt) {
+      console.log("confirmation: " + confirmationNumber);
+      console.log(receipt);
+
+      if (confirmationNumber == 0) {
+        // var events = receipt.events;
+        //
+        // var wagerId = events.WagerStarted.returnValues.index;
+        //
+        // console.log("wagerId: " + wagerId);
+        //
+        // var hash = receipt.transactionHash;
+        //
+        // SessionHelper.updateTransaction(hash, "status", "pending_start_receipt_review");
+        // SessionHelper.updateTransaction(hash, "wagerId", wagerId);
+        // SessionHelper.listTransactions();
+        //
+        // // //
+        // // window.component.setState({
+        // //   loaded: true,
+        // //   processing: true
+        // // });
+        // // //
+
+        Web3ServerActions.startBracket('confirmation');
+      }
+    })
+    .on('receipt', function(receipt) {
+      console.log("receipt");
+      console.log(receipt)
+
+      Web3ServerActions.startBracket('receipt');
+    })
+    .on('error', function(error) {
+      console.log("error");
+      console.error(error);
+
+      // //
+      // window.component.setState({
+      //   loaded: true
+      // });
+      //
+      // window.component.forceUpdate();
+      // //
+
+      Web3ServerActions.startBracket('error');
+    });
+  },
   retrieveBrackets: function() {
     console.log("retrieveBrackets");
 
@@ -480,6 +551,10 @@ module.exports = {
         // var sorted = _.sortBy(brackets, function(bracket) {
         //   return - (bracket.date.getTime());
         // });
+
+        var sorted = _.sortBy(brackets, function(bracket) {
+          return - (bracket.index);
+        });
 
         Web3ServerActions.retrieveBrackets(sorted);
       };
