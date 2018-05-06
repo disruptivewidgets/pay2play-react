@@ -88,9 +88,6 @@ var BracketBulkStore = ObjectAssign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function(payload)
 {
-
-  console.log("D");
-
   var action = payload.action;
 
   switch(action.actionType)
@@ -124,6 +121,10 @@ AppDispatcher.register(function(payload)
           return new Bracket({
             id,
             index: bracket.index,
+            startTimestamp: bracket.date.toString(),
+            playerCount: bracket.playerCount,
+            winner: bracket.winner,
+            owner: bracket.owner,
             seats: []
           })
         });

@@ -27,11 +27,6 @@ var data_B = [
 
 function fill_SideA(playerCount, data)
 {
-  console.log("fill_SideA");
-
-  console.log(playerCount);
-  console.log(data.length);
-
   var values = [];
 
   for (var i = 0; i < data.length; i += 1)
@@ -82,23 +77,17 @@ function fill_SideA(playerCount, data)
     );
 
     row = row.concat(shim);
-
-    console.log(row);
 
     grid.push(row);
   }
 
   var grid = _.zip.apply(_, grid);
 
-  console.log(grid);
-
   return grid;
 }
 
 function fill_SideB(playerCount, data)
 {
-  console.log("fill_SideB");
-
   var values = [];
 
   for (var i = 0; i < data.length; i += 1)
@@ -148,8 +137,6 @@ function fill_SideB(playerCount, data)
     );
 
     row = row.concat(shim);
-
-    console.log(row);
 
     grid.push(row);
   }
@@ -157,8 +144,6 @@ function fill_SideB(playerCount, data)
   grid = grid.reverse();
 
   var grid = _.zip.apply(_, grid);
-
-  console.log(grid);
 
   return grid;
 }
@@ -441,12 +426,17 @@ var Bracket = React.createClass({
 
 function BracketRow(props) {
   const {item, side, bracketId} = props;
+
+  var rowLength = item.length;
+
   return (
     <tr>
-      {item.map(item => (
+      {item.map((item, index) => (
         <BracketSlot
           key={Math.floor(Math.random() * 1000000)}
           item={item}
+          columnIndex={index}
+          rowLength={rowLength}
           side={side}
           bracketId={bracketId}
         />
@@ -456,7 +446,7 @@ function BracketRow(props) {
 }
 
 function BracketSlot(props) {
-  var {item, side, bracketId} = props;
+  var {item, columnIndex, rowLength, side, bracketId} = props;
 
   var highlight = false;
 
@@ -475,15 +465,48 @@ function BracketSlot(props) {
 
     if (text == "0x0...000")
     {
-      style = "highlight-creator";
+      if (side == "A")
+      {
+        style = "cell-side-a-player";
+      }
+      if (side == "B")
+      {
+        style = "cell-side-b-player";
+      }
     }
     else
     {
-      style = "highlight-player";
+      if (side == "A")
+      {
+        style = "cell-side-a-player-highlight";
+      }
+      if (side == "B")
+      {
+        style = "cell-side-b-player-highlight";
+      }
     }
 
     text = item.index + " : " + text;
     index = item.index;
+  }
+
+  var showJoinButton_SideA = false
+  var showJoinButton_SideB = false
+
+  if (side == "A")
+  {
+    if (columnIndex == 0)
+    {
+      showJoinButton_SideA = true
+    }
+  }
+
+  if (side == "B")
+  {
+    if (columnIndex == rowLength - 1)
+    {
+      showJoinButton_SideB = true
+    }
   }
 
   var address = item.value;
@@ -508,8 +531,11 @@ function BracketSlot(props) {
         {
           side == "A" &&
             <div>
-              <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} />&nbsp;
-              {text}&nbsp;
+              {
+                showJoinButton_SideA && !isModerator &&
+                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index}/>
+              }
+              &nbsp;{text}&nbsp;
               {
                 isModerator &&
                   <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
@@ -525,7 +551,10 @@ function BracketSlot(props) {
                   <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
               }
               &nbsp;{text}&nbsp;
-              <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} />
+              {
+                showJoinButton_SideB && !isModerator &&
+                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index}/>
+              }
             </div>
         }
       </td>
@@ -537,9 +566,7 @@ function BracketSlot(props) {
 
 function ActionLink_FillSeat(props)
 {
-  var seat = props.seat;
-  var side = props.side;
-  var bracketId = props.bracketId;
+  var {bracketId, side, seat} = props;
 
   function handleClick(bracketId, side, seat, e)
   {

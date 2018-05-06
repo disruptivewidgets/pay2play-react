@@ -10,14 +10,12 @@ import interfaces from "../smart-contract/interfaces.js";
 
 var contractAddress = ""; // Ropsen Pay2Play
 var tokenContractAddress = ""; // Ropsen Pay2Play
-var bracketContractAddress = "";
 var bracketRegistrarContractAddress = "";
 
 // 2018-03-27
-tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
 contractAddress = "0xe018598af2954cb1717b2dff610e13a18587b044";
-bracketContractAddress = "0x0617cd7edde2714b57ecf774a1ed2b237405b25a";
-bracketRegistrarContractAddress = "0x21dd5430b06a4a19ac34d8eee83bbe5f4907e521";
+tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
+bracketRegistrarContractAddress = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
 
 var fromBlock = '';
 var toBlock = '';
@@ -68,37 +66,20 @@ function retrieveBracket(index, callback) {
   var brackets = [];
 
   var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-  contract.options.address = bracketContractAddress; // Ropsen Pay2Play
+  contract.options.address = bracketRegistrarContractAddress; // Ropsen Pay2Play
 
-  contract.methods.getTournamentContractAddress(index.toString()).call({}, function(error, result)
+  contract.methods.getTournament(index.toString()).call({}, function(error, result)
   {
-    // var state = "open";
-    //
-    // var date = new Date(result[1] * 1000);
-    //
-    // switch(result[0].toString()) {
-    //   case "0":
-    //     state = "open";
-    //     break;
-    //   case "1":
-    //     state = "closed";
-    //     break;
-    //   case "2":
-    //     state = "finished";
-    //     break;
-    //   case "3":
-    //     state = "settled";
-    // }
+    console.log(result);
+
+    var date = new Date(result[1] * 1000);
 
     var bracket = {
-      index: index
-      // state: state,
-      // date: date,
-      // startTimestamp: result[1],
-      // amount: result[2].toString(),
-      // winner: result[3],
-      // players: result[4],
-      // referenceHash: result[5]
+      index: index,
+      date: date,
+      playerCount: result[2],
+      owner: result[3],
+      winner: result[4]
     };
 
     callback(bracket);
@@ -603,42 +584,14 @@ module.exports = {
           Web3ServerActions.getBracketInfo(info);
 
           tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
-            console.log(result);
-
             Web3ServerActions.getSeats_SideA(result);
           });
 
           tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
-            console.log(result);
-
             Web3ServerActions.getSeats_SideB(result);
           });
         });
       });
-    });
-  },
-  getSeats_SideA: function() {
-    console.log("getSeats_SideA");
-
-    var contract = new window.web3.eth.Contract(interfaces.bracketInterface);
-    contract.options.address = bracketContractAddress;
-
-    contract.methods.getSeats_SideA().call({}, function(error, result) {
-      console.log(result);
-
-      Web3ServerActions.getSeats_SideA(result);
-    });
-  },
-  getSeats_SideB: function() {
-    console.log("getSeats_SideB");
-
-    var contract = new window.web3.eth.Contract(interfaces.bracketInterface);
-    contract.options.address = bracketContractAddress;
-
-    contract.methods.getSeats_SideB().call({}, function(error, result) {
-      console.log(result);
-
-      Web3ServerActions.getSeats_SideB(result);
     });
   },
   takeSeat_SideA: function(bracketId, seat, params) {
@@ -858,6 +811,5 @@ module.exports = {
   },
   contractAddress: contractAddress,
   tokenContractAddress: tokenContractAddress,
-  bracketContractAddress: bracketContractAddress,
   bracketRegistrarContractAddress: bracketRegistrarContractAddress
 };

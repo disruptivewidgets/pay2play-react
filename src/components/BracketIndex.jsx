@@ -177,6 +177,18 @@ var BracketIndex = React.createClass({
               <td>
                 Id
               </td>
+              <td>
+                Start Date
+              </td>
+              <td>
+                Winner
+              </td>
+              <td>
+                Organizer
+              </td>
+              <td>
+                Player Count
+              </td>
             </tr>
           </thead>
           <tbody>
@@ -188,8 +200,7 @@ var BracketIndex = React.createClass({
             ))}
           </tbody>
         </table>
-
-
+        <br />
         <form onSubmit={onSubmit}>
           <label>
             <input type="text" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
@@ -223,6 +234,18 @@ function BracketItem(props) {
         <Link to={`/brackets/${item.index}`} replace>
           {item.index}
         </Link>
+      </td>
+      <td>
+        {item.startTimestamp}
+      </td>
+      <td>
+        {item.winner}
+      </td>
+      <td>
+        {item.owner}
+      </td>
+      <td>
+        {item.playerCount}
       </td>
     </tr>
   );

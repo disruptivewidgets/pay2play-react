@@ -9,6 +9,7 @@ pragma solidity ^0.4.21;
 contract Registrar
 {
   uint public registrarStartDate;
+
   address public node;
   address public tokenNode;
 
@@ -26,13 +27,19 @@ contract Registrar
 
   function start(uint _numberOfParticipants) public
   {
-    Tournament newTournament = (new Tournament)(_numberOfParticipants);
+    Tournament newTournament = (new Tournament)(_numberOfParticipants, msg.sender);
 
     tournaments.push(newTournament);
 
     uint index = tournaments.length - 1;
 
     emit NewBracketDeployed(index, _numberOfParticipants);
+  }
+
+  function getTournament(uint _index) constant public returns (uint, uint, uint, address, address)
+  {
+    Tournament tournament = tournaments[_index];
+    return (_index, tournament.creationDate(), tournament.numberOfParticipants(), tournament.organizer(), tournament.winner());
   }
 
   function getTournamentContractAddress(uint _index) constant public returns (address)
@@ -82,7 +89,9 @@ contract Tournament
 
   uint constant minPrice = 0.01 ether;
 
+  address public registrar;
   address public winner;
+  address public organizer;
 
   address[] seats_SideA;
   address[] seats_SideB;
@@ -98,13 +107,20 @@ contract Tournament
 
   struct range { uint start; uint finish; }
 
-  constructor(uint _numberOfParticipants) public
+  constructor(uint _numberOfParticipants, address _organizer) public
   {
     active = true;
     creationDate = now;
     numberOfParticipants = _numberOfParticipants;
+    organizer = _organizer;
 
     activate();
+  }
+
+  modifier onlyOrganizer
+  {
+      if (msg.sender != organizer) revert();
+      _;
   }
 
   // version 2
@@ -175,7 +191,7 @@ contract Tournament
     return players_SideA[_player].slot;
   }
 
-  function promotePlayer_SideA(address _player) public
+  function promotePlayer_SideA(address _player) onlyOrganizer public
   {
     uint slot = getPlayerSlot_SideA(_player);
     if (slot % 2 == 0)
@@ -228,7 +244,7 @@ contract Tournament
     return players_SideB[_player].slot;
   }
 
-  function promotePlayer_SideB(address _player) public
+  function promotePlayer_SideB(address _player) onlyOrganizer public
   {
     uint slot = getPlayerSlot_SideB(_player);
     if (slot % 2 == 0)
@@ -244,7 +260,7 @@ contract Tournament
     players_SideB[_player].slot = slot;
   }
 
-  function setWinner(address _player) public
+  function setWinner(address _player) onlyOrganizer public
   {
     winner = _player;
   }
