@@ -22,6 +22,7 @@ bracketRegistrarContractAddress = "0x21dd5430b06a4a19ac34d8eee83bbe5f4907e521";
 var fromBlock = '';
 var toBlock = '';
 
+// Wager
 function retrieveWager(index, callback) {
   var wagers = [];
 
@@ -60,6 +61,47 @@ function retrieveWager(index, callback) {
     };
 
     callback(wager);
+  });
+}
+// Bracket
+function retrieveBracket(index, callback) {
+  var brackets = [];
+
+  var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
+  contract.options.address = bracketContractAddress; // Ropsen Pay2Play
+
+  contract.methods.getTournamentContractAddress(index.toString()).call({}, function(error, result)
+  {
+    // var state = "open";
+    //
+    // var date = new Date(result[1] * 1000);
+    //
+    // switch(result[0].toString()) {
+    //   case "0":
+    //     state = "open";
+    //     break;
+    //   case "1":
+    //     state = "closed";
+    //     break;
+    //   case "2":
+    //     state = "finished";
+    //     break;
+    //   case "3":
+    //     state = "settled";
+    // }
+
+    var bracket = {
+      index: index
+      // state: state,
+      // date: date,
+      // startTimestamp: result[1],
+      // amount: result[2].toString(),
+      // winner: result[3],
+      // players: result[4],
+      // referenceHash: result[5]
+    };
+
+    callback(bracket);
   });
 }
 function eachAsync(array, f, callback) {
@@ -110,7 +152,7 @@ module.exports = {
   },
   retrieveWager: function(id)
   {
-
+    console.log("C");
     function parse(wager)
     {
       Web3ServerActions.receivedWager(wager);
@@ -428,22 +470,39 @@ module.exports = {
     contract.options.address = bracketRegistrarContractAddress;
 
     contract.methods.getTournamentCount().call({}, function(error, result) {
-      console.log("getTournamentCount: " + result);
-      // var index = result - 1;
-      //
-      // var wagerIndices = Array.from({length: result}, (v, k) => k);
-      // wagerIndices.reverse();
-      //
-      // function sort(wagers) {
-      //   var sorted = _.sortBy(wagers, function(wager) {
-      //     return - (wager.date.getTime());
-      //   });
-      //
-      //   Web3ServerActions.retrieveWagers(sorted);
-      // };
-      //
-      // eachAsync(wagerIndices, retrieveWager, sort);
+      var index = result - 1;
+
+      var bracketIndices = Array.from({length: result}, (v, k) => k);
+      bracketIndices.reverse();
+
+      function sort(brackets) {
+        var sorted = brackets;
+        // var sorted = _.sortBy(brackets, function(bracket) {
+        //   return - (bracket.date.getTime());
+        // });
+
+        Web3ServerActions.retrieveBrackets(sorted);
+      };
+
+      eachAsync(bracketIndices, retrieveBracket, sort);
     });
+
+    // contract.methods.getWagerCount().call({}, function(error, result) {
+    //   var index = result - 1;
+    //
+    //   var wagerIndices = Array.from({length: result}, (v, k) => k);
+    //   wagerIndices.reverse();
+    //
+    //   function sort(wagers) {
+    //     var sorted = _.sortBy(wagers, function(wager) {
+    //       return - (wager.date.getTime());
+    //     });
+    //
+    //     Web3ServerActions.retrieveWagers(sorted);
+    //   };
+    //
+    //   eachAsync(wagerIndices, retrieveWager, sort);
+    // });
   },
   retrieveBracket: function(index)
   {

@@ -63,6 +63,12 @@ module.exports = {
     });
   },
   // Bracket
+  retrieveBrackets(response) {
+    AppDispatcher.handleServerAction({
+      actionType: Web3ActionTypes.RETRIEVE_BRACKETS_RESPONSE,
+      response: response
+    });
+  },
   getBracketCount(response) {
     AppDispatcher.handleServerAction({
       actionType: Web3ActionTypes.RETRIEVE_BRACKET_COUNT_RESPONSE,

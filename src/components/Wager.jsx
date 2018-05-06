@@ -31,6 +31,7 @@ var Wager = React.createClass({
     return WagerStore.get();
   },
   componentWillMount: function() {
+    console.log("YO");
     this.setState(WagerStore.get());
 
     Web3Actions.retrieveWager(this.props.match.params.id);

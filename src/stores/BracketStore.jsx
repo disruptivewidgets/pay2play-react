@@ -141,8 +141,10 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.RETRIEVE_BRACKET_INFO_RESPONSE:
+      console.log("D");
         _store.bracketWinner = action.response.winner;
         _store.playerCount = action.response.playerCount;
+
         BracketStore.emit(CHANGE_EVENT);
         break;
 

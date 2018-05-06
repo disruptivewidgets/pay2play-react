@@ -11,6 +11,7 @@ const Actions = {
     Web3API.retrieveWagers();
   },
   retrieveWager(id) {
+    console.log("B");
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.RETRIEVE_WAGER,
     });

@@ -7,7 +7,10 @@ import ImgLogo from '../../images/logo.png';
 
 import Start from '../components/Start';
 import Session from '../components/Session';
+
 import Bracket from '../components/Bracket';
+import BracketIndex from '../components/BracketIndex';
+
 import Secret from '../components/Secret';
 import Invite from '../components/Invite';
 import Wager from '../components/Wager';
@@ -229,6 +232,7 @@ class MistSite extends React.Component {
 
                 <Route exact path={`/wagers/:id`} component={Wager}/>
 
+                <Route exact path={`/brackets`} component={BracketIndex}/>
                 <Route exact path={`/brackets/:id`} component={Bracket}/>
 
                 <Web3Shim />
