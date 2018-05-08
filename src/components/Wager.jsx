@@ -27,19 +27,17 @@ var loading_captions = [
 ]
 
 var Wager = React.createClass({
-  getInitialState: function() {
+  getInitialState: function()
+  {
     return WagerStore.get();
   },
-  componentWillMount: function() {
-    console.log("YO");
+  componentWillMount: function()
+  {
     this.setState(WagerStore.get());
 
     Web3Actions.retrieveWager(this.props.match.params.id);
 
     var transaction = SessionHelper.hasTransactionsWithWagerId(this.props.match.params.id);
-
-    console.log("TRANSACTION");
-    console.log(transaction);
 
     if (transaction) {
       if(transaction.status == "pending_counter_receipt_review") {
@@ -53,7 +51,8 @@ var Wager = React.createClass({
       }
     }
   },
-  componentDidMount: function() {
+  componentDidMount: function()
+  {
     this.setState({
       loaded: true
     });
@@ -65,7 +64,8 @@ var Wager = React.createClass({
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
   },
-  componentWillUnmount: function() {
+  componentWillUnmount: function()
+  {
     WagerStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
@@ -73,7 +73,8 @@ var Wager = React.createClass({
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   },
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps)
+  {
     console.log("componentWillReceiveProps");
 
     this.setState({
@@ -135,7 +136,8 @@ var Wager = React.createClass({
 
     this.forceUpdate();
   },
-  render: function() {
+  render: function()
+  {
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const isWagerClosed = (this.state.wager.state === 'closed');
     const isWagerFinished = (this.state.wager.state === 'finished');

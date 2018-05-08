@@ -159,7 +159,8 @@ var loading_captions = [
 ]
 
 var Bracket = React.createClass({
-  getInitialState: function() {
+  getInitialState: function()
+  {
     return {
       playerCount: 32,
       seatsData_SideA: BracketStore.getSeats_SideA(),
@@ -168,7 +169,6 @@ var Bracket = React.createClass({
   },
   componentWillMount: function()
   {
-    // var playerCount = 32;
     var grid_SideA = fill_SideA(this.state.playerCount, data_A);
     var grid_SideB = fill_SideB(this.state.playerCount, data_B);
 
@@ -212,7 +212,8 @@ var Bracket = React.createClass({
     BracketStore.removeReceiptListener(this.onEvent_Receipt);
     BracketStore.removeErrorListener(this.onEvent_Error);
   },
-  _onChange: function() {
+  _onChange: function()
+  {
     this.setState({
       playerCount: BracketStore.getPlayerCount(),
       winner: BracketStore.getBracketWinner()
@@ -249,7 +250,8 @@ var Bracket = React.createClass({
     //
     // this.forceUpdate();
   },
-  _onFetchSeats_SideA: function() {
+  _onFetchSeats_SideA: function()
+  {
     var seats = BracketStore.getSeats_SideA();
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
@@ -264,7 +266,8 @@ var Bracket = React.createClass({
       });
     }, 1000);
   },
-  _onFetchSeats_SideB: function() {
+  _onFetchSeats_SideB: function()
+  {
     var seats = BracketStore.getSeats_SideB();
 
     var grid_SideB = fill_SideB(this.state.playerCount, seats);
@@ -280,7 +283,8 @@ var Bracket = React.createClass({
     }, 1000);
   },
 
-  render: function() {
+  render: function()
+  {
     const {
       bracket_SideA,
       bracket_SideB,
@@ -358,12 +362,7 @@ var Bracket = React.createClass({
 
     const onSubmit = (event) =>
     {
-
       event.preventDefault();
-
-      console.log(event.target.winner.value);
-
-      // console.log(this.state.input);
 
       const winner = event.target.winner.value;
 
@@ -466,8 +465,13 @@ var Bracket = React.createClass({
   }
 });
 
-function BracketRow(props) {
-  const {item, side, bracketId} = props;
+function BracketRow(props)
+{
+  const {
+    item,
+    side,
+    bracketId
+  } = props;
 
   var rowLength = item.length;
 
@@ -487,8 +491,15 @@ function BracketRow(props) {
   );
 }
 
-function BracketSlot(props) {
-  var {item, columnIndex, rowLength, side, bracketId} = props;
+function BracketSlot(props)
+{
+  var {
+    item,
+    columnIndex,
+    rowLength,
+    side,
+    bracketId
+  } = props;
 
   var highlight = false;
 
@@ -608,7 +619,11 @@ function BracketSlot(props) {
 
 function ActionLink_FillSeat(props)
 {
-  var {bracketId, side, seat} = props;
+  var {
+    bracketId,
+    side,
+    seat
+  } = props;
 
   function handleClick(bracketId, side, seat, e)
   {
@@ -646,11 +661,12 @@ function ActionLink_FillSeat(props)
 
 function ActionLink_PromoteSeat(props)
 {
-  // var seat = props.seat;
-  // var side = props.side;
-  // var bracketId = props.bracketId;
-
-  var {bracketId, side, seat, address} = props;
+  var {
+    bracketId,
+    side,
+    seat,
+    address
+  } = props;
 
   function handleClick(bracketId, side, seat, address, e)
   {

@@ -65,12 +65,12 @@ table.wagers
 
 .cell-side-a-player-highlight
 {
-  background-color: #fcb239;
+  background-color: #b66ba3;
   color: white;
 }
 .cell-side-b-player-highlight
 {
-  background-color: #fcb239;
+  background-color: #b66ba3;
   color: white;
 }
 .cell-side-a-player
@@ -96,4 +96,8 @@ table.bracket-side-a
 table.bracket-side-b
 {
   width: 100%;
+}
+
+table.bracket a {
+  color: #fcb239;
 }
