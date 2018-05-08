@@ -5,6 +5,10 @@ import Web3Actions from '../actions/Web3Actions';
 
 import WinnerSelector from '../components/WinnerSelector';
 
+import { Intent, Spinner } from "@blueprintjs/core/dist";
+
+import "@blueprintjs/core/dist/blueprint.css";
+
 import _ from 'lodash';
 
 var data_A = [
@@ -149,6 +153,7 @@ function fill_SideB(playerCount, data)
 }
 
 var loading_captions = [
+  "Pending Bracket Data...",
   "Pending Payment...",
   "Pending Confirmation..."
 ]
@@ -173,6 +178,8 @@ var Bracket = React.createClass({
       winner_SideA: '',
       winner_SideB: '',
       loaded: false,
+      hasSeatData_SideA: false,
+      hasSeatData_SideB: false,
       error: '',
       loading_caption: loading_captions[0]
     });
@@ -243,37 +250,57 @@ var Bracket = React.createClass({
     // this.forceUpdate();
   },
   _onFetchSeats_SideA: function() {
-    console.log("AAA");
-
     var seats = BracketStore.getSeats_SideA();
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
 
-    this.setState({
-      bracket_SideA: grid_SideA,
-      winner_SideA: seats[0]
-    });
+    var that = this;
+
+    setTimeout(function() {
+      that.setState({
+        bracket_SideA: grid_SideA,
+        hasSeatData_SideA: true,
+        winner_SideA: seats[0]
+      });
+    }, 1000);
   },
   _onFetchSeats_SideB: function() {
-    console.log("BBB");
-
-    // var playerCount = 32;
-
     var seats = BracketStore.getSeats_SideB();
 
     var grid_SideB = fill_SideB(this.state.playerCount, seats);
 
-    this.setState({
-      bracket_SideB: grid_SideB,
-      winner_SideB: seats[0]
-    });
+    var that = this;
+
+    setTimeout(function() {
+      that.setState({
+        bracket_SideB: grid_SideB,
+        hasSeatData_SideB: true,
+        winner_SideB: seats[0]
+      });
+    }, 1000);
   },
 
   render: function() {
-    const {bracket_SideA, bracket_SideB, winner_SideA, winner_SideB, winner} = this.state;
+    const {
+      bracket_SideA,
+      bracket_SideB,
+      winner_SideA,
+      winner_SideB,
+      winner,
+      hasSeatData_SideA,
+      hasSeatData_SideB
+    } = this.state;
+
+    let {
+      loaded
+    } = this.state;
 
     var error = this.state.error;
-    var loaded = this.state.loaded;
+
+    if (hasSeatData_SideA && hasSeatData_SideB)
+    {
+      loaded = true;
+    }
 
     const bracketId = this.props.match.params.id;
 
@@ -363,61 +390,76 @@ var Bracket = React.createClass({
     return (
       <div>
         <p className="highlighted">Bracket</p>
-        <table className="bracket">
-          <tbody>
-            <tr>
-              <td>
-                <table className="bracket-side-a">
-                  <tbody>
-                    {rows_SideA.map(item => (
-                      <BracketRow
-                        key={item.index}
-                        item={item.value}
-                        bracketId={bracketId}
-                        side="A"
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </td>
-              <td>
-                <table className="bracket-side-b">
-                  <tbody>
-                    {rows_SideB.map(item => (
-                      <BracketRow
-                        key={item.index}
-                        item={item.value}
-                        bracketId={bracketId}
-                        side="B"
-                      />
-                    ))}
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <br />
-
-        <div>
-          Bracket Winner: {this.state.winner}
-          <br />
-        </div>
-        <br />
 
         {
-          isModerator && !hasWinner &&
-            <form onSubmit={onSubmit}>
-              {
-                (winner_SideA != '' && winner_SideB != '') &&
-                <div>
-                  <WinnerSelector onSelect={this.handleSelect} players={players} />
+          loaded &&
+            <div>
+              <table className="bracket">
+                <tbody>
+                  <tr>
+                    <td>
+                      <table className="bracket-side-a">
+                        <tbody>
+                          {rows_SideA.map(item => (
+                            <BracketRow
+                              key={item.index}
+                              item={item.value}
+                              bracketId={bracketId}
+                              side="A"
+                            />
+                          ))}
+                        </tbody>
+                      </table>
+                    </td>
+                    <td>
+                      <table className="bracket-side-b">
+                        <tbody>
+                          {rows_SideB.map(item => (
+                            <BracketRow
+                              key={item.index}
+                              item={item.value}
+                              bracketId={bracketId}
+                              side="B"
+                            />
+                          ))}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <br />
 
-                  <div><input type="submit" value="Set Winner" /></div>
-                </div>
+              <div>
+                Bracket Winner: {this.state.winner}
+                <br />
+              </div>
+              <br />
+
+              {
+                isModerator && !hasWinner &&
+                  <form onSubmit={onSubmit}>
+                    {
+                      (winner_SideA != '' && winner_SideB != '') &&
+                      <div>
+                        <WinnerSelector onSelect={this.handleSelect} players={players} />
+
+                        <div><input type="submit" value="Set Winner" /></div>
+                      </div>
+                    }
+                  <br />
+                  </form>
               }
-            <br />
-            </form>
+            </div>
+        }
+
+        {
+          !loaded &&
+            <div>
+              <Spinner intent={Intent.PRIMARY} />
+              <div>{this.state.loading_caption}</div>
+              <br />
+            </div>
         }
       </div>
     );
