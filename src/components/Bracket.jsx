@@ -177,7 +177,8 @@ var Bracket = React.createClass({
       bracket_SideB: grid_SideB,
       winner_SideA: '',
       winner_SideB: '',
-      loaded: false,
+      pending_Bracket: false,
+      pending_Payment: false,
       hasSeatData_SideA: false,
       hasSeatData_SideB: false,
       error: '',
@@ -244,11 +245,11 @@ var Bracket = React.createClass({
   {
     console.log("onEvent_Error");
 
-    // this.setState({
-    //   loaded: true
-    // });
+    this.setState({
+      pending_Payment: false
+    });
     //
-    // this.forceUpdate();
+    this.forceUpdate();
   },
   _onFetchSeats_SideA: function()
   {
@@ -296,14 +297,22 @@ var Bracket = React.createClass({
     } = this.state;
 
     let {
-      loaded
+      pending_Bracket,
+      pending_Payment
     } = this.state;
 
     var error = this.state.error;
 
+    var loaded = false;
+
     if (hasSeatData_SideA && hasSeatData_SideB)
     {
       loaded = true;
+    }
+
+    if (pending_Payment)
+    {
+      loaded = false;
     }
 
     const bracketId = this.props.match.params.id;
@@ -386,6 +395,81 @@ var Bracket = React.createClass({
       Web3Actions.setBracketWinner(bracketId, winner, params);
     };
 
+    const handleClickFor_FillSeat = (bracketId, side, seat, e) =>
+    {
+      e.preventDefault();
+
+      console.log("handleClickFor_FillSeat");
+
+      this.setState({
+        pending_Payment: true,
+        loading_caption: loading_captions[1]
+      });
+
+      console.log(bracketId);
+      console.log(side);
+      console.log(seat);
+
+      const amount = window.web3.utils.toWei("0.01", 'ether');
+      const gas = 650000;
+      const gasPrice = window.web3.utils.toWei("20", 'shannon');
+
+      var params = {
+        value: amount,
+        from: window.authorizedAccount,
+        gas: gas,
+        gasPrice: gasPrice
+      };
+
+      if (side == "A")
+      {
+        Web3Actions.takeSeat_SideA(bracketId, seat, params);
+      }
+
+      if (side == "B")
+      {
+        Web3Actions.takeSeat_SideB(bracketId, seat, params);
+      }
+    }
+
+    const handleClickFor_PromoteSeat = (bracketId, side, seat, address, e) =>
+    {
+      e.preventDefault();
+
+      console.log("handleClickFor_PromoteSeat");
+
+      this.setState({
+        pending_Payment: true,
+        loading_caption: loading_captions[1]
+      });
+
+      console.log(bracketId);
+      console.log(side);
+      console.log(seat);
+      console.log(address);
+
+      const amount = window.web3.utils.toWei("0.01", 'ether');
+      const gas = 650000;
+      const gasPrice = window.web3.utils.toWei("20", 'shannon');
+
+      var params = {
+        // value: amount,
+        from: window.authorizedAccount,
+        gas: gas,
+        gasPrice: gasPrice
+      };
+
+      if (side == "A")
+      {
+        Web3Actions.promotePlayer_SideA(bracketId, seat, address, params);
+      }
+
+      if (side == "B")
+      {
+        Web3Actions.promotePlayer_SideB(bracketId, seat, address, params);
+      }
+    }
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -405,6 +489,8 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               side="A"
+                              handleClickFor_FillSeat={handleClickFor_FillSeat}
+                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
                             />
                           ))}
                         </tbody>
@@ -419,6 +505,8 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               side="B"
+                              handleClickFor_FillSeat={handleClickFor_FillSeat}
+                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
                             />
                           ))}
                         </tbody>
@@ -470,7 +558,9 @@ function BracketRow(props)
   const {
     item,
     side,
-    bracketId
+    bracketId,
+    handleClickFor_FillSeat,
+    handleClickFor_PromoteSeat
   } = props;
 
   var rowLength = item.length;
@@ -485,6 +575,8 @@ function BracketRow(props)
           rowLength={rowLength}
           side={side}
           bracketId={bracketId}
+          handleClickFor_FillSeat={handleClickFor_FillSeat}
+          handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
         />
       ))}
     </tr>
@@ -498,7 +590,9 @@ function BracketSlot(props)
     columnIndex,
     rowLength,
     side,
-    bracketId
+    bracketId,
+    handleClickFor_FillSeat,
+    handleClickFor_PromoteSeat
   } = props;
 
   var highlight = false;
@@ -507,8 +601,6 @@ function BracketSlot(props)
 
   var text = "X";
   var index = "";
-
-  // console.log(item);
 
   if (typeof item === 'object')
   {
@@ -586,12 +678,12 @@ function BracketSlot(props)
             <div>
               {
                 showJoinButton_SideA && !isModerator &&
-                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index}/>
+                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
               &nbsp;{text}&nbsp;
               {
                 isModerator &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
+                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
             </div>
         }
@@ -601,12 +693,12 @@ function BracketSlot(props)
             <div>
               {
                 isModerator &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} />
+                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
               &nbsp;{text}&nbsp;
               {
                 showJoinButton_SideB && !isModerator &&
-                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index}/>
+                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
             </div>
         }
@@ -622,36 +714,13 @@ function ActionLink_FillSeat(props)
   var {
     bracketId,
     side,
-    seat
+    seat,
+    handleClickFor_FillSeat
   } = props;
 
   function handleClick(bracketId, side, seat, e)
   {
-    e.preventDefault();
-
-    console.log(seat);
-    console.log(side);
-
-    const amount = window.web3.utils.toWei("0.01", 'ether');
-    const gas = 650000;
-    const gasPrice = window.web3.utils.toWei("20", 'shannon');
-
-    var params = {
-      value: amount,
-      from: window.authorizedAccount,
-      gas: gas,
-      gasPrice: gasPrice
-    };
-
-    if (side == "A")
-    {
-      Web3Actions.takeSeat_SideA(bracketId, seat, params);
-    }
-
-    if (side == "B")
-    {
-      Web3Actions.takeSeat_SideB(bracketId, seat, params);
-    }
+    handleClickFor_FillSeat(bracketId, side, seat, e)
   }
 
   return (
@@ -665,36 +734,13 @@ function ActionLink_PromoteSeat(props)
     bracketId,
     side,
     seat,
-    address
+    address,
+    handleClickFor_PromoteSeat
   } = props;
 
   function handleClick(bracketId, side, seat, address, e)
   {
-    e.preventDefault();
-
-    console.log(seat);
-    console.log(side);
-
-    const amount = window.web3.utils.toWei("0.01", 'ether');
-    const gas = 650000;
-    const gasPrice = window.web3.utils.toWei("20", 'shannon');
-
-    var params = {
-      // value: amount,
-      from: window.authorizedAccount,
-      gas: gas,
-      gasPrice: gasPrice
-    };
-
-    if (side == "A")
-    {
-      Web3Actions.promotePlayer_SideA(bracketId, seat, address, params);
-    }
-
-    if (side == "B")
-    {
-      Web3Actions.promotePlayer_SideB(bracketId, seat, address, params);
-    }
+    handleClickFor_PromoteSeat(bracketId, side, seat, address, e);
   }
 
   var button = ""

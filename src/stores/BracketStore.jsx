@@ -204,6 +204,50 @@ AppDispatcher.register(function(payload)
         }
         break;
 
+    case Web3ActionTypes.PROMOTE_PLAYER_SIDE_A_RESPONSE:
+        console.log("PROMOTE_PLAYER_SIDE_A_RESPONSE");
+
+        console.log(action.response);
+
+        switch(action.response)
+        {
+          case 'transactionHash':
+            BracketStore.emit(EVENT_TXN_HASH);
+            break;
+          case 'confirmation':
+            BracketStore.emit(EVENT_CONFIRMATION);
+            break;
+          case 'receipt':
+            BracketStore.emit(EVENT_RECEIPT);
+            break;
+          case 'error':
+            BracketStore.emit(EVENT_ERROR);
+            break;
+        }
+        break;
+
+    case Web3ActionTypes.PROMOTE_PLAYER_SIDE_B_RESPONSE:
+        console.log("PROMOTE_PLAYER_SIDE_B_RESPONSE");
+
+        console.log(action.response);
+
+        switch(action.response)
+        {
+          case 'transactionHash':
+            BracketStore.emit(EVENT_TXN_HASH);
+            break;
+          case 'confirmation':
+            BracketStore.emit(EVENT_CONFIRMATION);
+            break;
+          case 'receipt':
+            BracketStore.emit(EVENT_RECEIPT);
+            break;
+          case 'error':
+            BracketStore.emit(EVENT_ERROR);
+            break;
+        }
+        break;
+
     case Web3ActionTypes.SET_BRACKET_WINNER_RESPONSE:
       console.log("SET_BRACKET_WINNER_RESPONSE");
 
