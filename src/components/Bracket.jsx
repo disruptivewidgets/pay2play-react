@@ -224,18 +224,17 @@ var Bracket = React.createClass({
   {
     console.log("onEvent_TransactionHash");
 
-    // this.setState({
-    //     loading_caption: loading_captions[2]
-    // });
+    this.setState({
+      loading_caption: loading_captions[2]
+    });
   },
   onEvent_Confirmation: function()
   {
     console.log("onEvent_Confirmation");
 
-    // this.setState({
-    //   loaded: true,
-    //   processing: true
-    // });
+    this.setState({
+      pending_Payment: false
+    });
   },
   onEvent_Receipt: function()
   {
@@ -248,7 +247,7 @@ var Bracket = React.createClass({
     this.setState({
       pending_Payment: false
     });
-    //
+
     this.forceUpdate();
   },
   _onFetchSeats_SideA: function()
@@ -376,7 +375,7 @@ var Bracket = React.createClass({
       const winner = event.target.winner.value;
 
       this.setState({
-        loaded: false,
+        pending_Payment: true,
         error: '',
         loading_caption: loading_captions[1]
       });

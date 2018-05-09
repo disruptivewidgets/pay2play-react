@@ -14,6 +14,10 @@ import 'moment-duration-format';
 
 var validator = require('validator');
 
+import { Intent, Spinner } from "@blueprintjs/core/dist";
+
+import "@blueprintjs/core/dist/blueprint.css";
+
 var loading_captions = [
   "Pending Payment...",
   "Pending Confirmation..."
@@ -28,6 +32,7 @@ var BracketIndex = React.createClass({
     this.setState(BracketBulkStore.getList());
 
     this.setState({
+      pending_Payment: false,
       error: '',
       size: ''
     });
@@ -60,18 +65,17 @@ var BracketIndex = React.createClass({
   {
     console.log("onEvent_TransactionHash");
 
-    // this.setState({
-    //     loading_caption: loading_captions[2]
-    // });
+    this.setState({
+      loading_caption: loading_captions[1]
+    });
   },
   onEvent_Confirmation: function()
   {
     console.log("onEvent_Confirmation");
 
-    // this.setState({
-    //   loaded: true,
-    //   processing: true
-    // });
+    this.setState({
+      pending_Payment: false
+    });
   },
   onEvent_Receipt: function()
   {
@@ -81,9 +85,9 @@ var BracketIndex = React.createClass({
   {
     console.log("onEvent_Error");
 
-    // this.setState({
-    //   loaded: true
-    // });
+    this.setState({
+      pending_Payment: false
+    });
 
     this.forceUpdate();
   },
@@ -96,7 +100,16 @@ var BracketIndex = React.createClass({
     this.setState(BracketBulkStore.getList());
   },
   render: function() {
-    const {error} = this.state;
+    const {
+      error,
+      pending_Payment
+    } = this.state;
+
+    var loaded = true;
+    if (pending_Payment)
+    {
+      loaded = false;
+    }
 
     const onChange = (event) =>
     {
@@ -115,7 +128,7 @@ var BracketIndex = React.createClass({
       console.log(this.state.size);
 
       this.setState({
-        loaded: false,
+        pending_Payment: true,
         error: '',
         loading_caption: loading_captions[1]
       });
@@ -126,14 +139,28 @@ var BracketIndex = React.createClass({
         console.log("Incorrect bracket size");
 
         this.setState({
-          loaded: true,
-          error: 'Please enter correct size.'
+          pending_Payment: false,
+          error: 'Please enter correct bracket size (4, 8, 16 or 32).'
         });
 
         return;
       }
 
+
+
       size = Number(size);
+
+      console.log(size);
+
+      if (size != 4 && size != 8 && size && 16 && size != 32)
+      {
+        this.setState({
+          pending_Payment: false,
+          error: 'Please enter correct bracket size (4, 8, 16 or 32).'
+        });
+
+        return;
+      }
 
       // if (amount < 0.01) {
       //   console.log("Minimum bet is 0.01");
@@ -148,7 +175,7 @@ var BracketIndex = React.createClass({
 
       if (window.authorizedAccount === undefined) {
         this.setState({
-          loaded: true,
+          pending_Payment: false,
           error: 'Please connect an account with balance first.'
         });
         return;
@@ -201,25 +228,41 @@ var BracketIndex = React.createClass({
           </tbody>
         </table>
         <br />
-        <form onSubmit={onSubmit}>
-          <label>
-            <input type="text" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
-          </label>
-          <br />
-          <br />
 
-          { error ? (
-            <div>
-              <div><input type="submit" value="Start Bracket" /></div>
+        {
+          loaded &&
+            <form onSubmit={onSubmit}>
+              <label>
+                <input type="text" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
+              </label>
               <br />
-              <div className="error">{this.state.error}</div>
-            </div>
-          ) : (
-            <div><input type="submit" value="Start Bracket" /></div>
-          ) }
+              <br />
 
-          <br />
-        </form>
+              {
+                error ? (
+                  <div>
+                    <div><input type="submit" value="Start Bracket" /></div>
+                    <br />
+                    <div className="error">{this.state.error}</div>
+                  </div>
+                ) : (
+                  <div><input type="submit" value="Start Bracket" /></div>
+                )
+              }
+
+              <br />
+            </form>
+        }
+
+        {
+          !loaded &&
+            <div>
+              <Spinner intent={Intent.PRIMARY} />
+              <div>{this.state.loading_caption}</div>
+              <br />
+            </div>
+        }
+
       </div>
     );
   }
