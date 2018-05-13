@@ -146,11 +146,7 @@ var BracketIndex = React.createClass({
         return;
       }
 
-
-
       size = Number(size);
-
-      console.log(size);
 
       if (size != 4 && size != 8 && size && 16 && size != 32)
       {
@@ -293,92 +289,5 @@ function BracketItem(props) {
     </tr>
   );
 }
-
-// function BracketItem(props) {
-//   const {item} = props;
-//
-//   var isOpen = true;
-//   var isClosed = false;
-//
-//   if (item.state != "open")
-//   {
-//       isOpen = false;
-//   }
-//
-//   if (item.state == "closed")
-//   {
-//       isClosed = true;
-//   }
-//
-//   var isCreator = (item.players[0] === window.authorizedAccount && window.authorizedAccount != undefined);
-//   var isCounter = (item.players[1] === window.authorizedAccount && window.authorizedAccount != undefined);
-//
-//   // console.log(window.authorizedAccount);
-//
-//   var style = "";
-//
-//   if (isCreator)
-//   {
-//     style = "highlight-creator";
-//   }
-//
-//   if (isCounter)
-//   {
-//     style = "highlight-player";
-//   }
-//
-//   return (
-//     <tr className={style}>
-//       <td>
-//         {
-//           isOpen ?
-//           (
-//               <Link to={`/invites/${item.index}`} replace>
-//                 {item.index}
-//               </Link>
-//           )
-//           :
-//           (
-//               <Link to={`/wagers/${item.index}`} replace>
-//                 {item.index}
-//               </Link>
-//           )
-//         }
-//       </td>
-//       <td>
-//         <div>
-//           { isClosed ? (
-//             <div>
-//               {
-//                 isCreator || isCounter ? (
-//                   <div>
-//                     funded
-//                   </div>
-//                 ) : (
-//                   <div>
-//                     { item.state }
-//                   </div>
-//                 )
-//               }
-//             </div>
-//           ) : (
-//             <div>
-//               { item.state }
-//             </div>
-//           )}
-//         </div>
-//       </td>
-//       <td>
-//         {item.players[0]}
-//       </td>
-//       <td>
-//         {item.date}
-//       </td>
-//       <td>
-//         {item.amount / 1000000000000000000}
-//       </td>
-//     </tr>
-//   );
-// }
 
 module.exports = BracketIndex;

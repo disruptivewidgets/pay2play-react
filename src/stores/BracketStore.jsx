@@ -19,7 +19,8 @@ var EVENT_CONFIRMATION = 'confirmation';
 var EVENT_RECEIPT = 'receipt';
 var EVENT_ERROR = 'error';
 
-var _store = {
+var _store =
+{
   seats_SideA: [],
   seats_SideB: [],
   playerCount: 32,
@@ -28,27 +29,33 @@ var _store = {
 
 var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
 
-  addChangeListener: function(cb) {
+  addChangeListener: function(cb)
+  {
     this.on(CHANGE_EVENT, cb);
   },
 
-  removeChangeListener: function(cb) {
+  removeChangeListener: function(cb)
+  {
     this.removeListener(CHANGE_EVENT, cb);
   },
 
-  addFetchSeatsSideAListener: function(cb) {
+  addFetchSeatsSideAListener: function(cb)
+  {
     this.on(FETCH_SEATS_SIDE_A, cb);
   },
 
-  removeFetchSeatsSideAListener: function(cb) {
+  removeFetchSeatsSideAListener: function(cb)
+  {
     this.removeListener(FETCH_SEATS_SIDE_A, cb);
   },
 
-  addFetchSeatsSideBListener: function(cb) {
+  addFetchSeatsSideBListener: function(cb)
+  {
     this.on(FETCH_SEATS_SIDE_B, cb);
   },
 
-  removeFetchSeatsSideBListener: function(cb) {
+  removeFetchSeatsSideBListener: function(cb)
+  {
     this.removeListener(FETCH_SEATS_SIDE_B, cb);
   },
 
@@ -102,23 +109,28 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
   // EVENT_ERROR
   // TRANSACTION LISTENING
 
-  getPlayerCount: function() {
+  getPlayerCount: function()
+  {
     return _store.playerCount;
   },
 
-  getBracketWinner: function() {
+  getBracketWinner: function()
+  {
     return _store.bracketWinner;
   },
 
-  getList: function() {
+  getList: function()
+  {
     return _store;
   },
 
-  getSeats_SideA: function() {
+  getSeats_SideA: function()
+  {
     return _store.seats_SideA;
   },
 
-  getSeats_SideB: function() {
+  getSeats_SideB: function()
+  {
     return _store.seats_SideB;
   }
 
@@ -257,18 +269,22 @@ AppDispatcher.register(function(payload)
         case 'transactionHash':
           BracketStore.emit(EVENT_TXN_HASH);
           break;
+
         case 'confirmation':
           BracketStore.emit(EVENT_CONFIRMATION);
           break;
+
         case 'receipt':
           BracketStore.emit(EVENT_RECEIPT);
           break;
+
         case 'error':
           BracketStore.emit(EVENT_ERROR);
           break;
-      }
 
+      }
       break;
+
     default:
       return true;
   }

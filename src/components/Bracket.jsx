@@ -152,7 +152,18 @@ function fill_SideB(playerCount, data)
   return grid;
 }
 
-var loading_captions = [
+var ACTION_NONE = "none";
+
+var ACTION_FILL_SEAT_SIDE_A = 'fillSeat_SideA';
+var ACTION_FILL_SEAT_SIDE_B = 'fillSeat_SideB';
+
+var ACTION_PROMOTE_PLAYER_SIDE_A = 'promotePlayer_SideA';
+var ACTION_PROMOTE_PLAYER_SIDE_B = 'promotePlayer_SideB';
+
+var ACTION_SET_WINNER = 'setWinner';
+
+var loading_captions =
+[
   "Pending Bracket Data...",
   "Pending Payment...",
   "Pending Confirmation..."
@@ -164,7 +175,8 @@ var Bracket = React.createClass({
     return {
       playerCount: 32,
       seatsData_SideA: BracketStore.getSeats_SideA(),
-      seatsData_SideB: BracketStore.getSeats_SideB()
+      seatsData_SideB: BracketStore.getSeats_SideB(),
+      userAction: ACTION_NONE
     };
   },
   componentWillMount: function()
@@ -224,6 +236,25 @@ var Bracket = React.createClass({
   {
     console.log("onEvent_TransactionHash");
 
+    switch(this.state.userAction)
+    {
+      case ACTION_FILL_SEAT_SIDE_A:
+        break;
+
+      case ACTION_FILL_SEAT_SIDE_B:
+        break;
+
+      case ACTION_PROMOTE_PLAYER_SIDE_A:
+        break;
+
+      case ACTION_PROMOTE_PLAYER_SIDE_B:
+        break;
+
+      case ACTION_SET_WINNER:
+        break;
+
+    }
+
     this.setState({
       loading_caption: loading_captions[2]
     });
@@ -233,7 +264,8 @@ var Bracket = React.createClass({
     console.log("onEvent_Confirmation");
 
     this.setState({
-      pending_Payment: false
+      pending_Payment: false,
+      userAction: ACTION_NONE
     });
   },
   onEvent_Receipt: function()
@@ -245,7 +277,8 @@ var Bracket = React.createClass({
     console.log("onEvent_Error");
 
     this.setState({
-      pending_Payment: false
+      pending_Payment: false,
+      userAction: ACTION_NONE
     });
 
     this.forceUpdate();
@@ -353,7 +386,8 @@ var Bracket = React.createClass({
       hasWinner = true;
     }
 
-    var players = [
+    var players =
+    [
       winner_SideA,
       winner_SideB
     ];
@@ -377,7 +411,8 @@ var Bracket = React.createClass({
       this.setState({
         pending_Payment: true,
         error: '',
-        loading_caption: loading_captions[1]
+        loading_caption: loading_captions[1],
+        userAction: ACTION_SET_WINNER
       });
 
       // amount = window.web3.utils.toWei(amount.toString(), 'ether');
@@ -400,11 +435,6 @@ var Bracket = React.createClass({
 
       console.log("handleClickFor_FillSeat");
 
-      this.setState({
-        pending_Payment: true,
-        loading_caption: loading_captions[1]
-      });
-
       console.log(bracketId);
       console.log(side);
       console.log(seat);
@@ -422,11 +452,23 @@ var Bracket = React.createClass({
 
       if (side == "A")
       {
+        this.setState({
+          pending_Payment: true,
+          loading_caption: loading_captions[1],
+          userAction: ACTION_FILL_SEAT_SIDE_A
+        });
+
         Web3Actions.takeSeat_SideA(bracketId, seat, params);
       }
 
       if (side == "B")
       {
+        this.setState({
+          pending_Payment: true,
+          loading_caption: loading_captions[1],
+          userAction: ACTION_FILL_SEAT_SIDE_B
+        });
+
         Web3Actions.takeSeat_SideB(bracketId, seat, params);
       }
     }
@@ -436,11 +478,6 @@ var Bracket = React.createClass({
       e.preventDefault();
 
       console.log("handleClickFor_PromoteSeat");
-
-      this.setState({
-        pending_Payment: true,
-        loading_caption: loading_captions[1]
-      });
 
       console.log(bracketId);
       console.log(side);
@@ -460,11 +497,23 @@ var Bracket = React.createClass({
 
       if (side == "A")
       {
+        this.setState({
+          pending_Payment: true,
+          loading_caption: loading_captions[1],
+          userAction: ACTION_PROMOTE_PLAYER_SIDE_A
+        });
+
         Web3Actions.promotePlayer_SideA(bracketId, seat, address, params);
       }
 
       if (side == "B")
       {
+        this.setState({
+          pending_Payment: true,
+          loading_caption: loading_captions[1],
+          userAction: ACTION_PROMOTE_PLAYER_SIDE_B
+        });
+
         Web3Actions.promotePlayer_SideB(bracketId, seat, address, params);
       }
     }
