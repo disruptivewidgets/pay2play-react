@@ -241,7 +241,7 @@ class MistSite extends React.Component {
               </div>
             ) : (
               <div>
-                <div className="highlighted-red">Pay2Play is currently available on Ropsten only. Please configure your Mist/MetaMask installation accordingly.</div>
+                <div className="highlighted-red">Pay2Play is currently available on Ropsten only. Please enable Ropsten network setting in your Mist/MetaMask installation.</div>
                 <br />
                 <div>For more information on how to get it setup, see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial.</a></div>
                 <br />

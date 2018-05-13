@@ -87,12 +87,15 @@ var Wager = React.createClass({
 
     var transaction = SessionHelper.hasTransactionsWithWagerId(nextProps.match.params.id.toString());
 
-    if (transaction) {
-      if(transaction.status == "pending_start_receipt_review") {
+    if (transaction)
+    {
+      if(transaction.status == "pending_start_receipt_review")
+      {
         SessionHelper.updateTransaction(transaction.id, "status", "finished_start_receipt_review");
       }
 
-      if (transaction.status == "pending_counter_receipt_review") {
+      if (transaction.status == "pending_counter_receipt_review")
+      {
         this.setState({
           processing: true
         });

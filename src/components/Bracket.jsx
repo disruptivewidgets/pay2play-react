@@ -653,7 +653,7 @@ function BracketSlot(props)
   if (typeof item === 'object')
   {
     var head = item.value.substring(0, 3);
-    var tail = item.value.substring(item.value.length - 4, item.value.length - 1);
+    var tail = item.value.substring(item.value.length - 3, item.value.length);
     text = head + '...' + tail;
 
     if (text == "0x0...000")

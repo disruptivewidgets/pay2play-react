@@ -99,35 +99,45 @@ var Session = React.createClass({
         { loaded ? (
           <div>
             <p className="highlighted">Cached Records</p>
-            <table className="wagers">
-              <thead>
-                <tr>
-                  <td>
-                    Id
-                  </td>
-                  <td>
-                    TxId
-                  </td>
-                  <td>
-                    Status
-                  </td>
-                  <td>
-                    Type
-                  </td>
-                  <td>
-                    WagerId
-                  </td>
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.list.map(item => (
-                  <CacheRecordItem
-                    key={item.id}
-                    item={item}
-                  />
-                ))}
-              </tbody>
-            </table>
+
+            {
+              this.state.list.length > 0 &&
+                <table className="wagers">
+                  <thead>
+                    <tr>
+                      <td>
+                        Id
+                      </td>
+                      <td>
+                        TxId
+                      </td>
+                      <td>
+                        Status
+                      </td>
+                      <td>
+                        Type
+                      </td>
+                      <td>
+                        WagerId
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.list.map(item => (
+                      <CacheRecordItem
+                        key={item.id}
+                        item={item}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+            }
+
+            {
+              this.state.list.length == 0 &&
+                <div> No records</div>
+            }
+
             <br />
           </div>
         ) : (

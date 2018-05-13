@@ -219,15 +219,9 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
-      console.error(error);
 
-      // //
-      // window.component.setState({
-      //   loaded: true
-      // });
-      //
-      // window.component.forceUpdate();
-      // //
+      console.log(error);
+      console.error(error);
 
       Web3ServerActions.startWager('error');
     });
@@ -279,13 +273,9 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
-      console.error(error);
 
-      // window.component.setState({
-      //   loaded: true
-      // });
-      //
-      // window.component.forceUpdate();
+      console.log(error);
+      console.error(error);
 
       Web3ServerActions.counterWagerAndDeposit('error');
     });
@@ -338,13 +328,9 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
-      console.error(error);
 
-      // window.component.setState({
-      //   loaded: true
-      // });
-      //
-      // window.component.forceUpdate();
+      console.log(error);
+      console.error(error);
 
       Web3ServerActions.setWagerWinner('error');
     });
@@ -397,15 +383,9 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
-      console.error(error);
-      console.log(error.name);
-      console.log(error.message);
 
-      // window.component.setState({
-      //   loaded: true
-      // });
-      //
-      // window.component.forceUpdate();
+      console.log(error);
+      console.error(error);
 
       Web3ServerActions.withdrawWinnings('error');
     });
@@ -438,6 +418,8 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
+
+      console.log(error);
       console.error(error);
 
       Web3ServerActions.setSecret('error');
@@ -502,15 +484,9 @@ module.exports = {
     })
     .on('error', function(error) {
       console.log("error");
-      console.error(error);
 
-      // //
-      // window.component.setState({
-      //   loaded: true
-      // });
-      //
-      // window.component.forceUpdate();
-      // //
+      console.log(error);
+      console.error(error);
 
       Web3ServerActions.startBracket('error');
     });
@@ -631,6 +607,8 @@ module.exports = {
       })
       .on('error', function(error) {
         console.log("error");
+
+        console.log(error);
         console.error(error);
 
         Web3ServerActions.takeSeat_SideA('error');
@@ -674,6 +652,8 @@ module.exports = {
       })
       .on('error', function(error) {
         console.log("error");
+
+        console.log(error);
         console.error(error);
 
         Web3ServerActions.takeSeat_SideB('error');
@@ -717,6 +697,8 @@ module.exports = {
       })
       .on('error', function(error) {
         console.log("error");
+
+        console.log(error);
         console.error(error);
 
         Web3ServerActions.promotePlayer_SideA('error');
@@ -760,6 +742,8 @@ module.exports = {
       })
       .on('error', function(error) {
         console.log("error");
+
+        console.log(error);
         console.error(error);
 
         Web3ServerActions.promotePlayer_SideB('error');
@@ -803,6 +787,8 @@ module.exports = {
       })
       .on('error', function(error) {
         console.log("error");
+
+        console.log(error);
         console.error(error);
 
         Web3ServerActions.setBracketWinner('error');

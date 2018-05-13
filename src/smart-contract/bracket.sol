@@ -117,6 +117,8 @@ contract Tournament
     activate();
   }
 
+  event PlayerExists(uint indexed slot);
+
   modifier onlyOrganizer
   {
       if (msg.sender != organizer) revert();
@@ -155,7 +157,7 @@ contract Tournament
   }
 
   // SIDE A
-  function join_SideA(uint slot) payable public
+  function join_SideA(uint _slot) payable public
   {
     /* if (msg.value < minPrice) revert(); */
 
@@ -163,12 +165,19 @@ contract Tournament
     uint finish = 2 * (numberOfParticipants - 1);
 
     // can only join periphery
-    if (slot < start && slot > finish) revert();
+    if (_slot < start && _slot > finish)
+    {
+      revert();
+    }
 
-    if (containsPlayer_SideA(msg.sender)) revert();
+    if (containsPlayer_SideA(msg.sender))
+    {
+      emit PlayerExists(_slot);
+      revert();
+    }
 
-    seats_SideA[slot] = msg.sender;
-    addPlayer_SideA(msg.sender, slot);
+    seats_SideA[_slot] = msg.sender;
+    addPlayer_SideA(msg.sender, _slot);
   }
 
   function addPlayer_SideA(address _player, uint _slot) private
@@ -208,7 +217,7 @@ contract Tournament
   }
 
   // SIDE B
-  function join_SideB(uint slot) payable public
+  function join_SideB(uint _slot) payable public
   {
     /* if (msg.value < minPrice) revert(); */
 
@@ -216,12 +225,19 @@ contract Tournament
     uint finish = 2 * (numberOfParticipants - 1);
 
     // can only join periphery
-    if (slot < start && slot > finish) revert();
+    if (_slot < start && _slot > finish)
+    {
+      revert();
+    }
 
-    if (containsPlayer_SideB(msg.sender)) revert();
+    if (containsPlayer_SideB(msg.sender))
+    {
+      emit PlayerExists(_slot);
+      revert();
+    }
 
-    seats_SideB[slot] = msg.sender;
-    addPlayer_SideB(msg.sender, slot);
+    seats_SideB[_slot] = msg.sender;
+    addPlayer_SideB(msg.sender, _slot);
   }
 
   function addPlayer_SideB(address _player, uint _slot) private
