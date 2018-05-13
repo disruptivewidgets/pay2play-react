@@ -549,25 +549,51 @@ module.exports = {
       var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
       tournamentContract.options.address = result;
 
-      var info = {};
+      contract.methods.getTournament(index.toString()).call({}, function(error, result)
+      {
+        console.log(result);
 
-      tournamentContract.methods.getNumberOfParticipants().call({}, function(error, result) {
-        info['playerCount'] = result;
+        var date = new Date(result[1] * 1000);
 
-        tournamentContract.methods.winner().call({}, function(error, result) {
-          info['winner'] = result;
+        var bracket = {
+          index: index,
+          date: date,
+          playerCount: result[2],
+          owner: result[3],
+          winner: result[4]
+        };
 
-          Web3ServerActions.getBracketInfo(info);
+        Web3ServerActions.getBracketInfo(bracket);
 
-          tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
-            Web3ServerActions.getSeats_SideA(result);
-          });
-
-          tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
-            Web3ServerActions.getSeats_SideB(result);
-          });
+        tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
+          Web3ServerActions.getSeats_SideA(result);
         });
+
+        tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
+          Web3ServerActions.getSeats_SideB(result);
+        });
+
       });
+
+      // var info = {};
+      // tournamentContract.methods.getNumberOfParticipants().call({}, function(error, result) {
+      //   info['playerCount'] = result;
+      //
+      //   tournamentContract.methods.winner().call({}, function(error, result) {
+      //     info['winner'] = result;
+      //
+      //     Web3ServerActions.getBracketInfo(info);
+      //
+      //     tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
+      //       Web3ServerActions.getSeats_SideA(result);
+      //     });
+      //
+      //     tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
+      //       Web3ServerActions.getSeats_SideB(result);
+      //     });
+      //   });
+      // });
+
     });
   },
   takeSeat_SideA: function(bracketId, seat, params) {

@@ -229,7 +229,8 @@ var Bracket = React.createClass({
   {
     this.setState({
       playerCount: BracketStore.getPlayerCount(),
-      winner: BracketStore.getBracketWinner()
+      winner: BracketStore.getBracketWinner(),
+      owner: BracketStore.getBracketOwner()
     });
   },
   onEvent_TransactionHash: function()
@@ -566,7 +567,8 @@ var Bracket = React.createClass({
               <br />
 
               <div>
-                Bracket Winner: {this.state.winner}
+                Bracket Winner: {this.state.winner} <br />
+                Bracket Moderator: {this.state.owner}
                 <br />
               </div>
               <br />

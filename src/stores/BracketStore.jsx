@@ -24,7 +24,8 @@ var _store =
   seats_SideA: [],
   seats_SideB: [],
   playerCount: 32,
-  bracketWinner: ''
+  bracketWinner: '',
+  bracketOwner: ''
 };
 
 var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
@@ -119,6 +120,11 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
     return _store.bracketWinner;
   },
 
+  getBracketOwner: function()
+  {
+    return _store.bracketOwner;
+  },
+
   getList: function()
   {
     return _store;
@@ -153,8 +159,8 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.RETRIEVE_BRACKET_INFO_RESPONSE:
-      console.log("D");
         _store.bracketWinner = action.response.winner;
+        _store.bracketOwner = action.response.owner;
         _store.playerCount = action.response.playerCount;
 
         BracketStore.emit(CHANGE_EVENT);
