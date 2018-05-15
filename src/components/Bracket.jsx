@@ -197,7 +197,7 @@ var Bracket = React.createClass({
       loading_caption: loading_captions[0]
     });
 
-    Web3Actions.retrieveBrackets();
+    // Web3Actions.retrieveBrackets();
 
     Web3Actions.retrieveBracket(this.props.match.params.id);
   },
@@ -257,6 +257,7 @@ var Bracket = React.createClass({
     }
 
     this.setState({
+      // pending_Bracket: true,
       loading_caption: loading_captions[2]
     });
   },
@@ -268,6 +269,13 @@ var Bracket = React.createClass({
       pending_Payment: false,
       userAction: ACTION_NONE
     });
+
+    // if (this.state.pending_Bracket)
+    // {
+    //   this.forceUpdate();
+    // }
+
+    this.forceUpdate();
   },
   onEvent_Receipt: function()
   {
@@ -286,6 +294,8 @@ var Bracket = React.createClass({
   },
   _onFetchSeats_SideA: function()
   {
+    console.log("_onFetchSeats_SideA");
+
     var seats = BracketStore.getSeats_SideA();
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
@@ -302,6 +312,8 @@ var Bracket = React.createClass({
   },
   _onFetchSeats_SideB: function()
   {
+    console.log("_onFetchSeats_SideB");
+
     var seats = BracketStore.getSeats_SideB();
 
     var grid_SideB = fill_SideB(this.state.playerCount, seats);
@@ -316,7 +328,25 @@ var Bracket = React.createClass({
       });
     }, 1000);
   },
-
+  // forceUpdate()
+  // {
+  //   console.log('forceUpdate');
+  //
+  //   this.setState({
+  //     pending_Bracket: false,
+  //     hasSeatData_SideA: false,
+  //     hasSeatData_SideB: false,
+  //     error: '',
+  //     loading_caption: loading_captions[0]
+  //   });
+  //
+  //   // Web3Actions.retrieveBrackets();
+  //   console.log("HERE");
+  //   console.log(this.state);
+  //   console.log(this.props.match.params.id);
+  //
+  //   Web3Actions.retrieveBracket(this.props.match.params.id);
+  // },
   render: function()
   {
     const {
@@ -325,6 +355,7 @@ var Bracket = React.createClass({
       winner_SideA,
       winner_SideB,
       winner,
+      owner,
       hasSeatData_SideA,
       hasSeatData_SideB
     } = this.state;
@@ -375,7 +406,7 @@ var Bracket = React.createClass({
     }
 
     var isModerator = false;
-    if (window.authorizedAccount == window.host_BracketRegistrar)
+    if (window.authorizedAccount == owner)
     {
       isModerator = true;
     }
@@ -537,6 +568,7 @@ var Bracket = React.createClass({
                               key={item.index}
                               item={item.value}
                               bracketId={bracketId}
+                              owner={owner}
                               side="A"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -553,6 +585,7 @@ var Bracket = React.createClass({
                               key={item.index}
                               item={item.value}
                               bracketId={bracketId}
+                              owner={owner}
                               side="B"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -609,6 +642,7 @@ function BracketRow(props)
     item,
     side,
     bracketId,
+    owner,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -625,6 +659,7 @@ function BracketRow(props)
           rowLength={rowLength}
           side={side}
           bracketId={bracketId}
+          owner={owner}
           handleClickFor_FillSeat={handleClickFor_FillSeat}
           handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
         />
@@ -641,6 +676,7 @@ function BracketSlot(props)
     rowLength,
     side,
     bracketId,
+    owner,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -714,7 +750,7 @@ function BracketSlot(props)
   }
 
   var isModerator = false;
-  if (window.authorizedAccount == window.host_BracketRegistrar)
+  if (window.authorizedAccount == owner)
   {
     isModerator = true;
   }
@@ -728,12 +764,12 @@ function BracketSlot(props)
             <div>
               {
                 showJoinButton_SideA && !isModerator &&
-                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
               &nbsp;{text}&nbsp;
               {
                 isModerator &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
             </div>
         }
@@ -743,12 +779,12 @@ function BracketSlot(props)
             <div>
               {
                 isModerator &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
               &nbsp;{text}&nbsp;
               {
                 showJoinButton_SideB && !isModerator &&
-                  <ActionLink_FillSeat bracketId={bracketId} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
             </div>
         }
@@ -763,6 +799,7 @@ function ActionLink_FillSeat(props)
 {
   var {
     bracketId,
+    owner,
     side,
     seat,
     handleClickFor_FillSeat
@@ -782,6 +819,7 @@ function ActionLink_PromoteSeat(props)
 {
   var {
     bracketId,
+    owner,
     side,
     seat,
     address,

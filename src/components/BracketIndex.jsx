@@ -148,7 +148,7 @@ var BracketIndex = React.createClass({
 
       size = Number(size);
 
-      if (size != 4 && size != 8 && size && 16 && size != 32)
+      if (size != 4 && size != 8 && size != 16 && size != 32)
       {
         this.setState({
           pending_Payment: false,

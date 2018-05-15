@@ -286,7 +286,7 @@ module.exports = {
     window.contract.methods.setWagerWinner(wagerId, winner).send(params)
     .on('transactionHash', function(hash) {
       console.log("transactionHash");
-      console.log("txid: " + hash);
+      console.log("txida: " + hash);
 
       SessionHelper.removeTransaction("wagerId", wagerId);
 
