@@ -237,25 +237,6 @@ var Bracket = React.createClass({
   {
     console.log("onEvent_TransactionHash");
 
-    switch(this.state.userAction)
-    {
-      case ACTION_FILL_SEAT_SIDE_A:
-        break;
-
-      case ACTION_FILL_SEAT_SIDE_B:
-        break;
-
-      case ACTION_PROMOTE_PLAYER_SIDE_A:
-        break;
-
-      case ACTION_PROMOTE_PLAYER_SIDE_B:
-        break;
-
-      case ACTION_SET_WINNER:
-        break;
-
-    }
-
     this.setState({
       // pending_Bracket: true,
       loading_caption: loading_captions[2]
@@ -267,19 +248,50 @@ var Bracket = React.createClass({
 
     this.setState({
       pending_Payment: false,
-      userAction: ACTION_NONE
+      pending_Bracket: true,
+      loading_caption: loading_captions[0]
     });
-
-    // if (this.state.pending_Bracket)
-    // {
-    //   this.forceUpdate();
-    // }
 
     this.forceUpdate();
   },
   onEvent_Receipt: function()
   {
     console.log("onEvent_Receipt");
+
+    switch(this.state.userAction)
+    {
+      case ACTION_FILL_SEAT_SIDE_A:
+        console.log("A");
+        break;
+
+      case ACTION_FILL_SEAT_SIDE_B:
+        console.log("B");
+        break;
+
+      case ACTION_PROMOTE_PLAYER_SIDE_A:
+        break;
+
+      case ACTION_PROMOTE_PLAYER_SIDE_B:
+        break;
+
+      case ACTION_SET_WINNER:
+        break;
+    }
+
+    console.log(this.state.userAction);
+
+    this.setState({
+      hasSeatData_SideA: false,
+      hasSeatData_SideB: false,
+      pending_Bracket: false,
+      userAction: ACTION_NONE
+    });
+
+    var bracketId = this.props.match.params.id;
+    setTimeout(function() {
+      console.log("C");
+      Web3Actions.retrieveBracket(bracketId);
+    }, 1);
   },
   onEvent_Error: function()
   {
@@ -299,6 +311,12 @@ var Bracket = React.createClass({
     var seats = BracketStore.getSeats_SideA();
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
+
+    console.log(seats);
+    console.log(grid_SideA);
+    console.log(_.countBy(seats));
+
+    console.log(_.zip.apply(null, grid_SideA));
 
     var that = this;
 
@@ -328,25 +346,6 @@ var Bracket = React.createClass({
       });
     }, 1000);
   },
-  // forceUpdate()
-  // {
-  //   console.log('forceUpdate');
-  //
-  //   this.setState({
-  //     pending_Bracket: false,
-  //     hasSeatData_SideA: false,
-  //     hasSeatData_SideB: false,
-  //     error: '',
-  //     loading_caption: loading_captions[0]
-  //   });
-  //
-  //   // Web3Actions.retrieveBrackets();
-  //   console.log("HERE");
-  //   console.log(this.state);
-  //   console.log(this.props.match.params.id);
-  //
-  //   Web3Actions.retrieveBracket(this.props.match.params.id);
-  // },
   render: function()
   {
     const {
@@ -688,13 +687,16 @@ function BracketSlot(props)
   var text = "X";
   var index = "";
 
+  var isPromoActionProhibited = false;
+  var isJoinActionProhibited = false;
+
   if (typeof item === 'object')
   {
-    var head = item.value.substring(0, 3);
-    var tail = item.value.substring(item.value.length - 3, item.value.length);
+    var head = item.value.substring(0, 5);
+    var tail = item.value.substring(item.value.length - 5, item.value.length);
     text = head + '...' + tail;
 
-    if (text == "0x0...000")
+    if (text == "0x000...00000")
     {
       if (side == "A")
       {
@@ -704,6 +706,8 @@ function BracketSlot(props)
       {
         style = "cell-side-b-player";
       }
+
+      isPromoActionProhibited = true;
     }
     else
     {
@@ -715,6 +719,7 @@ function BracketSlot(props)
       {
         style = "cell-side-b-player-highlight";
       }
+      isJoinActionProhibited = true;
     }
 
     text = item.index + " : " + text;
@@ -763,12 +768,12 @@ function BracketSlot(props)
           side == "A" &&
             <div>
               {
-                showJoinButton_SideA && !isModerator &&
+                showJoinButton_SideA && !isModerator && !isJoinActionProhibited &&
                   <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
               &nbsp;{text}&nbsp;
               {
-                isModerator &&
+                isModerator && !isPromoActionProhibited &&
                   <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
             </div>
@@ -778,12 +783,12 @@ function BracketSlot(props)
           side == "B" &&
             <div>
               {
-                isModerator &&
+                isModerator && !isPromoActionProhibited &&
                   <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
               }
               &nbsp;{text}&nbsp;
               {
-                showJoinButton_SideB && !isModerator &&
+                showJoinButton_SideB && !isModerator && !isJoinActionProhibited &&
                   <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
               }
             </div>

@@ -99,7 +99,8 @@ var BracketIndex = React.createClass({
   {
     this.setState(BracketBulkStore.getList());
   },
-  render: function() {
+  render: function()
+  {
     const {
       error,
       pending_Payment

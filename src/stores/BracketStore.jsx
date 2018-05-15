@@ -179,9 +179,7 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.TAKE_SEAT_SIDE_A_RESPONSE:
-        console.log("TAKE_SEAT_SIDE_A_RESPONSE");
-
-        console.log(action.response);
+        // console.log("TAKE_SEAT_SIDE_A_RESPONSE");
 
         switch(action.response)
         {
@@ -201,9 +199,9 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.TAKE_SEAT_SIDE_B_RESPONSE:
-        console.log("TAKE_SEAT_SIDE_B_RESPONSE");
+        // console.log("TAKE_SEAT_SIDE_B_RESPONSE");
 
-        console.log(action.response);
+        // console.log(action.response);
 
         switch(action.response)
         {

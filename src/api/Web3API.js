@@ -186,9 +186,11 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
+
         var events = receipt.events;
 
         var wagerId = events.WagerStarted.returnValues.index;
@@ -249,9 +251,11 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
+
         var hash = receipt.transactionHash;
 
         SessionHelper.updateTransaction(hash, "status", "pending_counter_receipt_review");
@@ -304,9 +308,11 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
+
         var hash = receipt.transactionHash;
 
         SessionHelper.updateTransaction(hash, "status", "pending_winner_receipt_review");
@@ -359,9 +365,10 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
         var hash = receipt.transactionHash;
 
         SessionHelper.updateTransaction(hash, "status", "pending_withrawal_receipt_review");
@@ -402,9 +409,10 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
         var hash = receipt.transactionHash;
 
         Web3ServerActions.setSecret('confirmation');
@@ -451,9 +459,10 @@ module.exports = {
     })
     .on('confirmation', function(confirmationNumber, receipt) {
       console.log("confirmation: " + confirmationNumber);
-      console.log(receipt);
 
-      if (confirmationNumber == 0) {
+      if (confirmationNumber == 0)
+      {
+        console.log(receipt);
         // var events = receipt.events;
         //
         // var wagerId = events.WagerStarted.returnValues.index;
@@ -617,11 +626,10 @@ module.exports = {
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
-        console.log(receipt);
 
         if (confirmationNumber == 0)
         {
-
+          console.log(receipt);
           Web3ServerActions.takeSeat_SideA('confirmation');
         }
       })
@@ -662,11 +670,10 @@ module.exports = {
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
-        console.log(receipt);
 
         if (confirmationNumber == 0)
         {
-
+          console.log(receipt);
           Web3ServerActions.takeSeat_SideB('confirmation');
         }
       })
@@ -707,10 +714,10 @@ module.exports = {
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
-        console.log(receipt);
 
         if (confirmationNumber == 0)
         {
+          console.log(receipt);
 
           Web3ServerActions.promotePlayer_SideA('confirmation');
         }
@@ -752,10 +759,10 @@ module.exports = {
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
-        console.log(receipt);
 
         if (confirmationNumber == 0)
         {
+          console.log(receipt);
 
           Web3ServerActions.promotePlayer_SideB('confirmation');
         }
@@ -797,11 +804,10 @@ module.exports = {
       })
       .on('confirmation', function(confirmationNumber, receipt) {
         console.log("confirmation: " + confirmationNumber);
-        console.log(receipt);
 
         if (confirmationNumber == 0)
         {
-
+          console.log(receipt);
           Web3ServerActions.setBracketWinner('confirmation');
         }
       })
