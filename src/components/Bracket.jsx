@@ -316,7 +316,46 @@ var Bracket = React.createClass({
     console.log(grid_SideA);
     console.log(_.countBy(seats));
 
-    console.log(_.zip.apply(null, grid_SideA));
+    console.log("AAA");
+    console.log();
+
+    //
+    var transpose = _.zip.apply(null, grid_SideA);
+    console.log(transpose);
+
+    var length = transpose.length;
+    var address = "";
+    var counts = {};
+
+    for (var n = 0; n < transpose[0].length; n += 1)
+    {
+      address = transpose[0][n].value;
+
+      if (address != "0x0000000000000000000000000000000000000000")
+      {
+          counts[address] = 0;
+      }
+
+      for (var i = 1; i < length; i += 1)
+      {
+        if (address != "0x0000000000000000000000000000000000000000")
+        {
+          var matches = _.filter(transpose[i], function(match) {
+            return match.value == address;
+          });
+
+          console.log(matches);
+
+          if (matches.length > 0)
+          {
+            counts[address] += 1;
+          }
+        }
+      }
+    }
+
+    console.log("counts", counts);
+    //
 
     var that = this;
 

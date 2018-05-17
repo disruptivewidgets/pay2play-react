@@ -268,8 +268,17 @@ var BracketIndex = React.createClass({
 function BracketItem(props) {
   const {item} = props;
 
+  var isCreator = (item.owner === window.authorizedAccount && window.authorizedAccount != undefined);
+
+  var style = "";
+  
+  if (isCreator)
+  {
+    style = "highlight-creator";
+  }
+
   return (
-    <tr>
+    <tr className={style}>
       <td>
         <Link to={`/brackets/${item.index}`} replace>
           {item.index}
