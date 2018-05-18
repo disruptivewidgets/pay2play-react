@@ -152,6 +152,86 @@ function fill_SideB(playerCount, data)
   return grid;
 }
 
+function count_SideA(grid)
+{
+  var transpose = _.zip.apply(null, grid);
+
+  console.log(transpose);
+
+  var length = transpose.length;
+  var address = "";
+  var counts = {};
+
+  for (var n = 0; n < transpose[0].length; n += 1)
+  {
+    address = transpose[0][n].value;
+
+    if (address != "0x0000000000000000000000000000000000000000")
+    {
+        counts[address] = 0;
+    }
+
+    for (var i = 0; i < length; i += 1)
+    {
+      if (address != "0x0000000000000000000000000000000000000000")
+      {
+        var matches = _.filter(transpose[i], function(match) {
+          return match.value == address;
+        });
+
+        if (matches.length > 0)
+        {
+          counts[address] += 1;
+        }
+      }
+    }
+  }
+
+  console.log("counts", counts);
+
+  return counts;
+}
+
+function count_SideB(grid)
+{
+  var transpose = _.zip.apply(null, grid);
+
+  console.log(transpose);
+
+  var length = transpose.length;
+  var address = "";
+  var counts = {};
+
+  for (var n = transpose[length - 1].length - 1; n >= 0; n -= 1)
+  {
+    address = transpose[length - 1][n].value;
+
+    if (address != "0x0000000000000000000000000000000000000000")
+    {
+        counts[address] = 0;
+    }
+
+    for (var i = length - 1; i >= 0; i -= 1)
+    {
+      if (address != "0x0000000000000000000000000000000000000000")
+      {
+        var matches = _.filter(transpose[i], function(match) {
+          return match.value == address;
+        });
+
+        if (matches.length > 0)
+        {
+          counts[address] += 1;
+        }
+      }
+    }
+  }
+
+  console.log("counts", counts);
+
+  return counts;
+}
+
 var ACTION_NONE = "none";
 
 var ACTION_FILL_SEAT_SIDE_A = 'fillSeat_SideA';
@@ -189,6 +269,8 @@ var Bracket = React.createClass({
       bracket_SideB: grid_SideB,
       winner_SideA: '',
       winner_SideB: '',
+      counts_SideA: {},
+      counts_SideB: {},
       pending_Bracket: false,
       pending_Payment: false,
       hasSeatData_SideA: false,
@@ -312,50 +394,78 @@ var Bracket = React.createClass({
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
 
-    console.log(seats);
-    console.log(grid_SideA);
-    console.log(_.countBy(seats));
-
-    console.log("AAA");
-    console.log();
-
     //
+    console.log("-----");
     var transpose = _.zip.apply(null, grid_SideA);
+
     console.log(transpose);
 
-    var length = transpose.length;
-    var address = "";
-    var counts = {};
-
-    for (var n = 0; n < transpose[0].length; n += 1)
+    function setPromo(index, n)
     {
-      address = transpose[0][n].value;
+      console.log("=== setPromo");
 
-      if (address != "0x0000000000000000000000000000000000000000")
-      {
-          counts[address] = 0;
-      }
+      var row = transpose[index];
 
-      for (var i = 1; i < length; i += 1)
+      for (var i = 0; i < row.length; i += n)
       {
-        if (address != "0x0000000000000000000000000000000000000000")
+        if (row[i].value != "0x0000000000000000000000000000000000000000")
         {
-          var matches = _.filter(transpose[i], function(match) {
-            return match.value == address;
-          });
+          row[i].promo = true;
 
-          console.log(matches);
-
-          if (matches.length > 0)
-          {
-            counts[address] += 1;
-          }
+          // clear promo for previous rows
+          clearPromo(index, i);
         }
+      }
+      return row;
+    }
+
+    function clearPromo(n, i)
+    {
+      console.log("=== clearPromo ", i);
+
+      // n = row index
+      // i = apex
+
+      n -= 1;
+      while (n >= 0)
+      {
+        // row below apex
+        var row = transpose[n];
+
+        // points adjacent to apex
+
+
+
+        // transpose[n].promo = false;
+
+
+        console.log(row, n, 2**n);
+
+        n -= 1;
       }
     }
 
-    console.log("counts", counts);
+    for (var n = 0; n < grid_SideA[0].length; n += 1 )
+    {
+      // console.log(transpose[n], n, 2**n);
+
+      transpose[n] = setPromo(n, 2**n);
+
+      console.log(transpose[n], n, 2**n);
+
+      // recusively clear previous rows
+    }
+
+    // console.log("+");
     //
+    // for (var n = grid_SideA[0].length - 1; n >= 0; n -= 1 )
+    // {
+    //   console.log(transpose[n], n, 2**n);
+    // }
+    console.log("-----");
+    //
+
+    var counts = count_SideA(grid_SideA);
 
     var that = this;
 
@@ -363,7 +473,8 @@ var Bracket = React.createClass({
       that.setState({
         bracket_SideA: grid_SideA,
         hasSeatData_SideA: true,
-        winner_SideA: seats[0]
+        winner_SideA: seats[0],
+        counts_SideA: counts
       });
     }, 1000);
   },
@@ -375,13 +486,37 @@ var Bracket = React.createClass({
 
     var grid_SideB = fill_SideB(this.state.playerCount, seats);
 
+    //
+    console.log("-----");
+    var transpose = _.zip.apply(null, grid_SideB);
+
+    console.log(transpose);
+
+    // for (var n = grid_SideB[0].length - 1; n >= 0; n -= 1 )
+    // {
+    //   console.log(transpose[n], n, 2**n);
+    // }
+    //
+    // console.log("+");
+
+    for (var n = 0; n < grid_SideB[0].length; n += 1 )
+    {
+      console.log(transpose[n], n, 2**n);
+    }
+
+    console.log("-----");
+    //
+
+    var counts = count_SideB(grid_SideB);
+
     var that = this;
 
     setTimeout(function() {
       that.setState({
         bracket_SideB: grid_SideB,
         hasSeatData_SideB: true,
-        winner_SideB: seats[0]
+        winner_SideB: seats[0],
+        counts_SideB: counts
       });
     }, 1000);
   },
@@ -392,10 +527,13 @@ var Bracket = React.createClass({
       bracket_SideB,
       winner_SideA,
       winner_SideB,
+      counts_SideA,
+      counts_SideB,
       winner,
       owner,
       hasSeatData_SideA,
-      hasSeatData_SideB
+      hasSeatData_SideB,
+      playerCount
     } = this.state;
 
     let {
@@ -431,6 +569,8 @@ var Bracket = React.createClass({
       );
     }
 
+    // console.log(rows_SideA);
+
     var rows_SideB = [];
 
     for (var i = 0; i < bracket_SideB.length; i += 1)
@@ -442,6 +582,8 @@ var Bracket = React.createClass({
         }
       );
     }
+
+    // console.log(rows_SideB);
 
     var isModerator = false;
     if (window.authorizedAccount == owner)
@@ -607,6 +749,7 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
+                              counts={counts_SideA}
                               side="A"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -624,6 +767,7 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
+                              counts={counts_SideB}
                               side="B"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -681,6 +825,7 @@ function BracketRow(props)
     side,
     bracketId,
     owner,
+    counts,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -698,6 +843,7 @@ function BracketRow(props)
           side={side}
           bracketId={bracketId}
           owner={owner}
+          counts={counts}
           handleClickFor_FillSeat={handleClickFor_FillSeat}
           handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
         />
@@ -715,6 +861,7 @@ function BracketSlot(props)
     side,
     bracketId,
     owner,
+    counts,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -797,6 +944,17 @@ function BracketSlot(props)
   if (window.authorizedAccount == owner)
   {
     isModerator = true;
+  }
+
+  if (address && address != "0x0000000000000000000000000000000000000000")
+  {
+    // if (counts[address])
+    // {
+    //   console.log("--------");
+    //   console.log(counts[address]);
+    //   console.log(address);
+    //   console.log(columnIndex);
+    // }
   }
 
   return (
