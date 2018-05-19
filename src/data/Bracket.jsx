@@ -7,6 +7,7 @@ const Bracket = Immutable.Record({
   playerCount: 0,
   winner: '',
   owner: '',
+  address: '',
   seats: []
 });
 

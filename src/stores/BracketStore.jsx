@@ -25,7 +25,8 @@ var _store =
   seats_SideB: [],
   playerCount: 32,
   bracketWinner: '',
-  bracketOwner: ''
+  bracketOwner: '',
+  bracketAddress: ''
 };
 
 var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
@@ -125,6 +126,11 @@ var BracketStore = ObjectAssign({}, EventEmitter.prototype, {
     return _store.bracketOwner;
   },
 
+  getBracketContractAddress: function()
+  {
+    return _store.bracketAddress;
+  },
+
   getList: function()
   {
     return _store;
@@ -162,6 +168,7 @@ AppDispatcher.register(function(payload)
         _store.bracketWinner = action.response.winner;
         _store.bracketOwner = action.response.owner;
         _store.playerCount = action.response.playerCount;
+        _store.bracketAddress = action.response.address;
 
         BracketStore.emit(CHANGE_EVENT);
         break;
@@ -179,8 +186,6 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.TAKE_SEAT_SIDE_A_RESPONSE:
-        // console.log("TAKE_SEAT_SIDE_A_RESPONSE");
-
         switch(action.response)
         {
           case 'transactionHash':
@@ -199,10 +204,6 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.TAKE_SEAT_SIDE_B_RESPONSE:
-        // console.log("TAKE_SEAT_SIDE_B_RESPONSE");
-
-        // console.log(action.response);
-
         switch(action.response)
         {
           case 'transactionHash':
@@ -221,10 +222,6 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.PROMOTE_PLAYER_SIDE_A_RESPONSE:
-        console.log("PROMOTE_PLAYER_SIDE_A_RESPONSE");
-
-        console.log(action.response);
-
         switch(action.response)
         {
           case 'transactionHash':
@@ -243,10 +240,6 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.PROMOTE_PLAYER_SIDE_B_RESPONSE:
-        console.log("PROMOTE_PLAYER_SIDE_B_RESPONSE");
-
-        console.log(action.response);
-
         switch(action.response)
         {
           case 'transactionHash':
@@ -265,9 +258,6 @@ AppDispatcher.register(function(payload)
         break;
 
     case Web3ActionTypes.SET_BRACKET_WINNER_RESPONSE:
-      console.log("SET_BRACKET_WINNER_RESPONSE");
-
-      console.log(action.response);
       switch(action.response)
       {
         case 'transactionHash':

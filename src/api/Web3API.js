@@ -552,11 +552,11 @@ module.exports = {
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
     contract.options.address = bracketRegistrarContractAddress;
 
-    contract.methods.getTournamentContractAddress(index).call({}, function(error, result) {
-      console.log("getTournamentContractAddress: " + result);
+    contract.methods.getTournamentContractAddress(index).call({}, function(error, address) {
+      console.log("getTournamentContractAddress: " + address);
 
       var tournamentContract = new window.web3.eth.Contract(interfaces.bracketInterface);
-      tournamentContract.options.address = result;
+      tournamentContract.options.address = address;
 
       contract.methods.getTournament(index.toString()).call({}, function(error, result)
       {
@@ -569,7 +569,8 @@ module.exports = {
           date: date,
           playerCount: result[2],
           owner: result[3],
-          winner: result[4]
+          winner: result[4],
+          address: address
         };
 
         Web3ServerActions.getBracketInfo(bracket);
@@ -583,26 +584,7 @@ module.exports = {
         });
 
       });
-
-      // var info = {};
-      // tournamentContract.methods.getNumberOfParticipants().call({}, function(error, result) {
-      //   info['playerCount'] = result;
-      //
-      //   tournamentContract.methods.winner().call({}, function(error, result) {
-      //     info['winner'] = result;
-      //
-      //     Web3ServerActions.getBracketInfo(info);
-      //
-      //     tournamentContract.methods.getSeats_SideA().call({}, function(error, result) {
-      //       Web3ServerActions.getSeats_SideA(result);
-      //     });
-      //
-      //     tournamentContract.methods.getSeats_SideB().call({}, function(error, result) {
-      //       Web3ServerActions.getSeats_SideB(result);
-      //     });
-      //   });
-      // });
-
+      
     });
   },
   takeSeat_SideA: function(bracketId, seat, params) {

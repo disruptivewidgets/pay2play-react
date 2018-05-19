@@ -232,7 +232,8 @@ var Bracket = React.createClass({
     this.setState({
       playerCount: BracketStore.getPlayerCount(),
       winner: BracketStore.getBracketWinner(),
-      owner: BracketStore.getBracketOwner()
+      owner: BracketStore.getBracketOwner(),
+      bracketAddress: BracketStore.getBracketContractAddress()
     });
   },
   onEvent_TransactionHash: function()
@@ -507,6 +508,7 @@ var Bracket = React.createClass({
       winner_SideB,
       winner,
       owner,
+      bracketAddress,
       hasSeatData_SideA,
       hasSeatData_SideB,
       playerCount
@@ -714,6 +716,8 @@ var Bracket = React.createClass({
       }
     }
 
+    var url = "https://" + 'ropsten' + ".etherscan.io/address/" + bracketAddress;
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -772,6 +776,9 @@ var Bracket = React.createClass({
               </div>
               <div>
                 Bracket Moderator: <span className={style}>{this.state.owner}</span>
+              </div>
+              <div>
+                Bracket Address: <a href={url}>{this.state.bracketAddress}</a>
               </div>
               <br />
 
