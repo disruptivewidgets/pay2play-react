@@ -54,12 +54,12 @@ table.wagers
 }
 .highlight-player
 {
-  background-color: #fcb239;
+  background-color: #b66ba3;
   color: white;
 }
 .highlight-creator
 {
-  background-color: #b66ba3;
+  background-color: #fcb239;
   color: white;
 }
 
@@ -81,6 +81,11 @@ table.wagers
 .cell-side-b-player
 {
   background-color: #6d5b97;
+  color: white;
+}
+.highlight-authorized
+{
+  background-color: #fcb239;
   color: white;
 }
 

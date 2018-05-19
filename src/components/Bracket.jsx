@@ -152,86 +152,6 @@ function fill_SideB(playerCount, data)
   return grid;
 }
 
-// function count_SideA(grid)
-// {
-//   var transpose = _.zip.apply(null, grid);
-//
-//   // console.log(transpose);
-//
-//   var length = transpose.length;
-//   var address = "";
-//   var counts = {};
-//
-//   for (var n = 0; n < transpose[0].length; n += 1)
-//   {
-//     address = transpose[0][n].value;
-//
-//     if (address != "0x0000000000000000000000000000000000000000")
-//     {
-//         counts[address] = 0;
-//     }
-//
-//     for (var i = 0; i < length; i += 1)
-//     {
-//       if (address != "0x0000000000000000000000000000000000000000")
-//       {
-//         var matches = _.filter(transpose[i], function(match) {
-//           return match.value == address;
-//         });
-//
-//         if (matches.length > 0)
-//         {
-//           counts[address] += 1;
-//         }
-//       }
-//     }
-//   }
-//
-//   // console.log("counts", counts);
-//
-//   return counts;
-// }
-//
-// function count_SideB(grid)
-// {
-//   var transpose = _.zip.apply(null, grid);
-//
-//   // console.log(transpose);
-//
-//   var length = transpose.length;
-//   var address = "";
-//   var counts = {};
-//
-//   for (var n = transpose[length - 1].length - 1; n >= 0; n -= 1)
-//   {
-//     address = transpose[length - 1][n].value;
-//
-//     if (address != "0x0000000000000000000000000000000000000000")
-//     {
-//         counts[address] = 0;
-//     }
-//
-//     for (var i = length - 1; i >= 0; i -= 1)
-//     {
-//       if (address != "0x0000000000000000000000000000000000000000")
-//       {
-//         var matches = _.filter(transpose[i], function(match) {
-//           return match.value == address;
-//         });
-//
-//         if (matches.length > 0)
-//         {
-//           counts[address] += 1;
-//         }
-//       }
-//     }
-//   }
-//
-//   // console.log("counts", counts);
-//
-//   return counts;
-// }
-
 var ACTION_NONE = "none";
 
 var ACTION_FILL_SEAT_SIDE_A = 'fillSeat_SideA';
@@ -267,10 +187,10 @@ var Bracket = React.createClass({
     this.setState({
       bracket_SideA: grid_SideA,
       bracket_SideB: grid_SideB,
+      bracket_SideA_Transpose: _.zip.apply(null, grid_SideA),
+      bracket_SideB_Transpose: _.zip.apply(null, grid_SideB),
       winner_SideA: '',
       winner_SideB: '',
-      // counts_SideA: {},
-      // counts_SideB: {},
       pending_Bracket: false,
       pending_Payment: false,
       hasSeatData_SideA: false,
@@ -469,13 +389,12 @@ var Bracket = React.createClass({
     console.log("-----");
     //
 
-    // var counts = count_SideA(grid_SideA);
-
     var that = this;
 
     setTimeout(function() {
       that.setState({
         bracket_SideA: grid_SideA,
+        bracket_SideA_Transpose: transpose,
         hasSeatData_SideA: true,
         winner_SideA: seats[0],
         // counts_SideA: counts
@@ -562,21 +481,18 @@ var Bracket = React.createClass({
 
     console.log("-----");
     console.log("out", transpose);
-    // console.log(grid_SideB);
     console.log("SIDE_B");
     console.log("-----");
     //
-
-    // var counts = count_SideB(grid_SideB);
 
     var that = this;
 
     setTimeout(function() {
       that.setState({
         bracket_SideB: grid_SideB,
+        bracket_SideB_Transpose: transpose,
         hasSeatData_SideB: true,
-        winner_SideB: seats[0],
-        // counts_SideB: counts
+        winner_SideB: seats[0]
       });
     }, 1000);
   },
@@ -585,10 +501,10 @@ var Bracket = React.createClass({
     const {
       bracket_SideA,
       bracket_SideB,
+      bracket_SideA_Transpose,
+      bracket_SideB_Transpose,
       winner_SideA,
       winner_SideB,
-      // counts_SideA,
-      // counts_SideB,
       winner,
       owner,
       hasSeatData_SideA,
@@ -648,11 +564,15 @@ var Bracket = React.createClass({
     }
 
     // console.log(rows_SideB);
+    // console.log(bracket_SideB);
+
+    var style = "";
 
     var isModerator = false;
     if (window.authorizedAccount == owner)
     {
       isModerator = true;
+      style = "highlight-creator";
     }
 
     var hasWinner = false;
@@ -813,7 +733,8 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
-                              // counts={counts_SideA}
+                              bracketData={bracket_SideA}
+                              bracketData_Transpose={bracket_SideA_Transpose}
                               side="A"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -831,7 +752,8 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
-                              // counts={counts_SideB}
+                              bracketData={bracket_SideB}
+                              bracketData_Transpose={bracket_SideB_Transpose}
                               side="B"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -846,9 +768,10 @@ var Bracket = React.createClass({
               <br />
 
               <div>
-                Bracket Winner: {this.state.winner} <br />
-                Bracket Moderator: {this.state.owner}
-                <br />
+                Bracket Winner: {this.state.winner}
+              </div>
+              <div>
+                Bracket Moderator: <span className={style}>{this.state.owner}</span>
               </div>
               <br />
 
@@ -889,7 +812,8 @@ function BracketRow(props)
     side,
     bracketId,
     owner,
-    // counts,
+    bracketData,
+    bracketData_Transpose,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -907,7 +831,8 @@ function BracketRow(props)
           side={side}
           bracketId={bracketId}
           owner={owner}
-          // counts={counts}
+          bracketData={bracketData}
+          bracketData_Transpose={bracketData_Transpose}
           handleClickFor_FillSeat={handleClickFor_FillSeat}
           handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
         />
@@ -925,7 +850,8 @@ function BracketSlot(props)
     side,
     bracketId,
     owner,
-    // counts,
+    bracketData,
+    bracketData_Transpose,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -969,6 +895,12 @@ function BracketSlot(props)
       {
         style = "cell-side-b-player-highlight";
       }
+
+      if (item.value == window.window.authorizedAccount)
+      {
+        style = "highlight-authorized";
+      }
+
       isJoinActionProhibited = true;
     }
 
@@ -988,7 +920,16 @@ function BracketSlot(props)
   {
     if (columnIndex == 0)
     {
-      showJoinButton_SideA = true
+      showJoinButton_SideA = true;
+
+      var column = bracketData_Transpose[columnIndex];
+
+      var records = _.filter(column, {value: window.authorizedAccount});
+
+      if (records.length > 0)
+      {
+        showJoinButton_SideA = false;
+      }
     }
   }
 
@@ -997,6 +938,15 @@ function BracketSlot(props)
     if (columnIndex == rowLength - 1)
     {
       showJoinButton_SideB = true
+
+      var column = bracketData_Transpose[columnIndex];
+
+      var records = _.filter(column, {value: window.authorizedAccount});
+
+      if (records.length > 0)
+      {
+        showJoinButton_SideB = false;
+      }
     }
   }
 
@@ -1013,17 +963,6 @@ function BracketSlot(props)
   if (window.authorizedAccount == owner)
   {
     isModerator = true;
-  }
-
-  if (address && address != "0x0000000000000000000000000000000000000000")
-  {
-    // if (counts[address])
-    // {
-    //   console.log("--------");
-    //   console.log(counts[address]);
-    //   console.log(address);
-    //   console.log(columnIndex);
-    // }
   }
 
   return (
