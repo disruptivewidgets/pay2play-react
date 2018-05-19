@@ -156,7 +156,7 @@ function count_SideA(grid)
 {
   var transpose = _.zip.apply(null, grid);
 
-  console.log(transpose);
+  // console.log(transpose);
 
   var length = transpose.length;
   var address = "";
@@ -187,7 +187,7 @@ function count_SideA(grid)
     }
   }
 
-  console.log("counts", counts);
+  // console.log("counts", counts);
 
   return counts;
 }
@@ -196,7 +196,7 @@ function count_SideB(grid)
 {
   var transpose = _.zip.apply(null, grid);
 
-  console.log(transpose);
+  // console.log(transpose);
 
   var length = transpose.length;
   var address = "";
@@ -227,7 +227,7 @@ function count_SideB(grid)
     }
   }
 
-  console.log("counts", counts);
+  // console.log("counts", counts);
 
   return counts;
 }
@@ -390,78 +390,82 @@ var Bracket = React.createClass({
   {
     console.log("_onFetchSeats_SideA");
 
+    const playerCount = this.state.playerCount;
+
     var seats = BracketStore.getSeats_SideA();
 
     var grid_SideA = fill_SideA(this.state.playerCount, seats);
 
-    //
-    console.log("-----");
     var transpose = _.zip.apply(null, grid_SideA);
 
-    console.log(transpose);
+    //
+    console.log("-----");
+    console.log("SIDE_A");
+    console.log("in", transpose);
+    console.log("-----");
 
-    function setPromo(index, n)
+    function setPromo(index, chunk)
     {
-      console.log("=== setPromo");
+      // console.log("=== setPromo", index);
 
       var row = transpose[index];
 
-      for (var i = 0; i < row.length; i += n)
+      for (var i = 0; i < row.length; i += chunk)
       {
         if (row[i].value != "0x0000000000000000000000000000000000000000")
         {
           row[i].promo = true;
-
-          // clear promo for previous rows
           clearPromo(index, i);
         }
       }
       return row;
     }
 
-    function clearPromo(n, i)
+    function clearPromo(column, apex)
     {
-      console.log("=== clearPromo ", i);
+      // console.log("=== clearPromo ", "column", column, "apex", apex);
 
-      // n = row index
-      // i = apex
-
-      n -= 1;
-      while (n >= 0)
+      column -= 1;
+      while (column >= 0)
       {
-        // row below apex
-        var row = transpose[n];
+        const chunk = 2**column;
+        // console.log(transpose[column], "row", column, "chunk_size", chunk);
 
-        // points adjacent to apex
+        const clone = _.clone(transpose[column]);
 
+        _.each(clone, function (item, index) {
+          if (typeof item === 'object')
+          {
+            if (index == apex || index == (apex + chunk))
+            {
+              item.promo = false;
 
+              if (column - 1 > 0)
+              {
+                clearPromo(column - 1, index);
+              }
+            }
 
-        // transpose[n].promo = false;
+            clone[index] = item;
+          }
+        });
 
+        transpose[column] = clone;
 
-        console.log(row, n, 2**n);
+        // console.log("=>", clone);
 
-        n -= 1;
+        column -= 1;
       }
     }
 
     for (var n = 0; n < grid_SideA[0].length; n += 1 )
     {
-      // console.log(transpose[n], n, 2**n);
-
       transpose[n] = setPromo(n, 2**n);
-
-      console.log(transpose[n], n, 2**n);
-
-      // recusively clear previous rows
     }
 
-    // console.log("+");
-    //
-    // for (var n = grid_SideA[0].length - 1; n >= 0; n -= 1 )
-    // {
-    //   console.log(transpose[n], n, 2**n);
-    // }
+    console.log("-----");
+    console.log("out", transpose);
+    console.log("SIDE_A");
     console.log("-----");
     //
 
@@ -482,28 +486,83 @@ var Bracket = React.createClass({
   {
     console.log("_onFetchSeats_SideB");
 
+    const playerCount = this.state.playerCount;
+
     var seats = BracketStore.getSeats_SideB();
 
     var grid_SideB = fill_SideB(this.state.playerCount, seats);
 
-    //
-    console.log("-----");
     var transpose = _.zip.apply(null, grid_SideB);
 
-    console.log(transpose);
-
-    // for (var n = grid_SideB[0].length - 1; n >= 0; n -= 1 )
-    // {
-    //   console.log(transpose[n], n, 2**n);
-    // }
     //
-    // console.log("+");
+    console.log("-----");
+    console.log("SIDE_B");
+    console.log("in", transpose);
+    console.log("-----");
+
+    function setPromo(index, chunk)
+    {
+      // console.log("=== setPromo", index);
+
+      var row = transpose[index];
+
+      for (var i = 0; i < row.length; i += chunk)
+      {
+        if (row[i].value != "0x0000000000000000000000000000000000000000")
+        {
+          row[i].promo = true;
+          clearPromo(index, i);
+        }
+      }
+      return row;
+    }
+
+    function clearPromo(column, apex)
+    {
+      // console.log("=== clearPromo ", "column", column, "apex", apex);
+
+      column += 1;
+      while (column < transpose.length)
+      {
+        const chunk = 2**((transpose.length - 1) - column);
+        // console.log(transpose[column], "row", column, "chunk_size", chunk);
+
+        const clone = _.clone(transpose[column]);
+
+        _.each(clone, function (item, index) {
+          if (typeof item === 'object')
+          {
+            if (index == apex || index == (apex + chunk))
+            {
+              item.promo = false;
+
+              if (column + 1 < transpose.length)
+              {
+                clearPromo(column + 1, index);
+              }
+            }
+
+            clone[index] = item;
+          }
+        });
+
+        transpose[column] = clone;
+
+        // console.log("=>", clone);
+
+        column += 1;
+      }
+    }
 
     for (var n = 0; n < grid_SideB[0].length; n += 1 )
     {
-      console.log(transpose[n], n, 2**n);
+      // console.log(transpose[n], n, 2**n);
+      transpose[(transpose.length - 1) - n] = setPromo(((transpose.length - 1) - n), 2**n);
     }
 
+    console.log("-----");
+    console.log("out", transpose);
+    console.log("SIDE_B");
     console.log("-----");
     //
 
