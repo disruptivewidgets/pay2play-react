@@ -152,85 +152,85 @@ function fill_SideB(playerCount, data)
   return grid;
 }
 
-function count_SideA(grid)
-{
-  var transpose = _.zip.apply(null, grid);
-
-  // console.log(transpose);
-
-  var length = transpose.length;
-  var address = "";
-  var counts = {};
-
-  for (var n = 0; n < transpose[0].length; n += 1)
-  {
-    address = transpose[0][n].value;
-
-    if (address != "0x0000000000000000000000000000000000000000")
-    {
-        counts[address] = 0;
-    }
-
-    for (var i = 0; i < length; i += 1)
-    {
-      if (address != "0x0000000000000000000000000000000000000000")
-      {
-        var matches = _.filter(transpose[i], function(match) {
-          return match.value == address;
-        });
-
-        if (matches.length > 0)
-        {
-          counts[address] += 1;
-        }
-      }
-    }
-  }
-
-  // console.log("counts", counts);
-
-  return counts;
-}
-
-function count_SideB(grid)
-{
-  var transpose = _.zip.apply(null, grid);
-
-  // console.log(transpose);
-
-  var length = transpose.length;
-  var address = "";
-  var counts = {};
-
-  for (var n = transpose[length - 1].length - 1; n >= 0; n -= 1)
-  {
-    address = transpose[length - 1][n].value;
-
-    if (address != "0x0000000000000000000000000000000000000000")
-    {
-        counts[address] = 0;
-    }
-
-    for (var i = length - 1; i >= 0; i -= 1)
-    {
-      if (address != "0x0000000000000000000000000000000000000000")
-      {
-        var matches = _.filter(transpose[i], function(match) {
-          return match.value == address;
-        });
-
-        if (matches.length > 0)
-        {
-          counts[address] += 1;
-        }
-      }
-    }
-  }
-
-  // console.log("counts", counts);
-
-  return counts;
-}
+// function count_SideA(grid)
+// {
+//   var transpose = _.zip.apply(null, grid);
+//
+//   // console.log(transpose);
+//
+//   var length = transpose.length;
+//   var address = "";
+//   var counts = {};
+//
+//   for (var n = 0; n < transpose[0].length; n += 1)
+//   {
+//     address = transpose[0][n].value;
+//
+//     if (address != "0x0000000000000000000000000000000000000000")
+//     {
+//         counts[address] = 0;
+//     }
+//
+//     for (var i = 0; i < length; i += 1)
+//     {
+//       if (address != "0x0000000000000000000000000000000000000000")
+//       {
+//         var matches = _.filter(transpose[i], function(match) {
+//           return match.value == address;
+//         });
+//
+//         if (matches.length > 0)
+//         {
+//           counts[address] += 1;
+//         }
+//       }
+//     }
+//   }
+//
+//   // console.log("counts", counts);
+//
+//   return counts;
+// }
+//
+// function count_SideB(grid)
+// {
+//   var transpose = _.zip.apply(null, grid);
+//
+//   // console.log(transpose);
+//
+//   var length = transpose.length;
+//   var address = "";
+//   var counts = {};
+//
+//   for (var n = transpose[length - 1].length - 1; n >= 0; n -= 1)
+//   {
+//     address = transpose[length - 1][n].value;
+//
+//     if (address != "0x0000000000000000000000000000000000000000")
+//     {
+//         counts[address] = 0;
+//     }
+//
+//     for (var i = length - 1; i >= 0; i -= 1)
+//     {
+//       if (address != "0x0000000000000000000000000000000000000000")
+//       {
+//         var matches = _.filter(transpose[i], function(match) {
+//           return match.value == address;
+//         });
+//
+//         if (matches.length > 0)
+//         {
+//           counts[address] += 1;
+//         }
+//       }
+//     }
+//   }
+//
+//   // console.log("counts", counts);
+//
+//   return counts;
+// }
 
 var ACTION_NONE = "none";
 
@@ -269,8 +269,8 @@ var Bracket = React.createClass({
       bracket_SideB: grid_SideB,
       winner_SideA: '',
       winner_SideB: '',
-      counts_SideA: {},
-      counts_SideB: {},
+      // counts_SideA: {},
+      // counts_SideB: {},
       pending_Bracket: false,
       pending_Payment: false,
       hasSeatData_SideA: false,
@@ -404,7 +404,7 @@ var Bracket = React.createClass({
     console.log("in", transpose);
     console.log("-----");
 
-    function setPromo(index, chunk)
+    var setPromo = function(index, chunk)
     {
       // console.log("=== setPromo", index);
 
@@ -421,7 +421,7 @@ var Bracket = React.createClass({
       return row;
     }
 
-    function clearPromo(column, apex)
+    var clearPromo = function(column, apex)
     {
       // console.log("=== clearPromo ", "column", column, "apex", apex);
 
@@ -469,7 +469,7 @@ var Bracket = React.createClass({
     console.log("-----");
     //
 
-    var counts = count_SideA(grid_SideA);
+    // var counts = count_SideA(grid_SideA);
 
     var that = this;
 
@@ -478,7 +478,7 @@ var Bracket = React.createClass({
         bracket_SideA: grid_SideA,
         hasSeatData_SideA: true,
         winner_SideA: seats[0],
-        counts_SideA: counts
+        // counts_SideA: counts
       });
     }, 1000);
   },
@@ -500,7 +500,7 @@ var Bracket = React.createClass({
     console.log("in", transpose);
     console.log("-----");
 
-    function setPromo(index, chunk)
+    var setPromo = function(index, chunk)
     {
       // console.log("=== setPromo", index);
 
@@ -517,7 +517,7 @@ var Bracket = React.createClass({
       return row;
     }
 
-    function clearPromo(column, apex)
+    var clearPromo = function(column, apex)
     {
       // console.log("=== clearPromo ", "column", column, "apex", apex);
 
@@ -562,11 +562,12 @@ var Bracket = React.createClass({
 
     console.log("-----");
     console.log("out", transpose);
+    // console.log(grid_SideB);
     console.log("SIDE_B");
     console.log("-----");
     //
 
-    var counts = count_SideB(grid_SideB);
+    // var counts = count_SideB(grid_SideB);
 
     var that = this;
 
@@ -575,7 +576,7 @@ var Bracket = React.createClass({
         bracket_SideB: grid_SideB,
         hasSeatData_SideB: true,
         winner_SideB: seats[0],
-        counts_SideB: counts
+        // counts_SideB: counts
       });
     }, 1000);
   },
@@ -586,8 +587,8 @@ var Bracket = React.createClass({
       bracket_SideB,
       winner_SideA,
       winner_SideB,
-      counts_SideA,
-      counts_SideB,
+      // counts_SideA,
+      // counts_SideB,
       winner,
       owner,
       hasSeatData_SideA,
@@ -616,6 +617,8 @@ var Bracket = React.createClass({
 
     const bracketId = this.props.match.params.id;
 
+    //
+    // rows_SideA
     var rows_SideA = [];
 
     for (var i = 0; i < bracket_SideA.length; i += 1)
@@ -630,6 +633,8 @@ var Bracket = React.createClass({
 
     // console.log(rows_SideA);
 
+    //
+    // rows_SideB
     var rows_SideB = [];
 
     for (var i = 0; i < bracket_SideB.length; i += 1)
@@ -808,7 +813,7 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
-                              counts={counts_SideA}
+                              // counts={counts_SideA}
                               side="A"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -826,7 +831,7 @@ var Bracket = React.createClass({
                               item={item.value}
                               bracketId={bracketId}
                               owner={owner}
-                              counts={counts_SideB}
+                              // counts={counts_SideB}
                               side="B"
                               handleClickFor_FillSeat={handleClickFor_FillSeat}
                               handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
@@ -884,7 +889,7 @@ function BracketRow(props)
     side,
     bracketId,
     owner,
-    counts,
+    // counts,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -902,7 +907,7 @@ function BracketRow(props)
           side={side}
           bracketId={bracketId}
           owner={owner}
-          counts={counts}
+          // counts={counts}
           handleClickFor_FillSeat={handleClickFor_FillSeat}
           handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
         />
@@ -920,7 +925,7 @@ function BracketSlot(props)
     side,
     bracketId,
     owner,
-    counts,
+    // counts,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -969,6 +974,11 @@ function BracketSlot(props)
 
     text = item.index + " : " + text;
     index = item.index;
+  }
+
+  if (!item.promo)
+  {
+    isPromoActionProhibited = true;
   }
 
   var showJoinButton_SideA = false
