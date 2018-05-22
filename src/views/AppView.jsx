@@ -124,6 +124,23 @@ class MistSite extends React.Component {
         });
       }
 
+      if (window.web3.currentProvider.isTrust === true) {
+        console.log("TrustWallent detected");
+
+        window.web3.eth.net.getId().then(netId => {
+          this.setState({
+            netId: netId
+          });
+        })
+
+        this.setupWeb3();
+
+        this.setState({
+          hasTrustWallet: true
+        });
+      }
+
+
       if (typeof(mist) !== "undefined") {
         console.log("Mist browser detected");
 
@@ -164,13 +181,17 @@ class MistSite extends React.Component {
     // }
 
   }
-  setupWeb3() {
+  setupWeb3()
+  {
     // console.log("Ropsen Pay2Play: ");
     // console.log(contractAddress);
 
-    if (window.web3.eth.currentProvider.isConnected()) {
+    if (window.web3.eth.currentProvider.isConnected())
+    {
       console.log("web3 connected");
-    } else {
+    }
+    else
+    {
       console.log("web3 not connected");
     }
 
@@ -204,9 +225,12 @@ class MistSite extends React.Component {
   }
   render()
   {
-    const hasMistBrowser = this.state.hasMist;
-    const hasMetamask = this.state.hasMetamask;
-    const netId = this.state.netId;
+    const {
+      hasMistBrowser,
+      hasMetamask,
+      hasTrustWallet,
+      netId
+    } = this.state;
 
     var isSelectedNetworkSupported = false;
 
@@ -217,7 +241,7 @@ class MistSite extends React.Component {
 
     return (
       <div>
-        { hasMistBrowser || hasMetamask ? (
+        { hasMistBrowser || hasMetamask || hasTrustWallet ? (
           <div>
 
           { isSelectedNetworkSupported ? (
