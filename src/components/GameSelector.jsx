@@ -77,10 +77,21 @@ var GameSelector = React.createClass({
 
 function GameItem(props) {
   const {item} = props;
+
+  let referenceHash = item.referenceHash;
+
+  if (referenceHash)
+  {
+    var head = referenceHash.substring(0, 5);
+    var tail = referenceHash.substring(referenceHash.length - 5, referenceHash.length);
+    referenceHash = head + '...' + tail;
+  }
+
+
   return (
     <div>
       <label>
-        Rules Hash: {item.referenceHash}
+        Rules Hash: {referenceHash}
       </label>
       <br />
       <label>

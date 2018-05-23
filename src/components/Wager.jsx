@@ -21,6 +21,13 @@ import {
   withRouter
 } from 'react-router-dom'
 
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
 var loading_captions = [
   "Pending Payment...",
   "Pending Confirmation..."

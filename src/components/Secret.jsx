@@ -12,7 +12,14 @@ var validator = require('validator');
 import {
   Link,
   withRouter
-} from 'react-router-dom'
+} from 'react-router-dom';
+
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 import _ from 'lodash';
 
@@ -161,18 +168,35 @@ var Secret = React.createClass({
 
     };
 
+    let secretHash = this.state.secretHash;
+
+    if (secretHash)
+    {
+      var head = secretHash.substring(0, 5);
+      var tail = secretHash.substring(secretHash.length - 5, secretHash.length);
+      secretHash = head + '...' + tail;
+    }
+
     return (
       <div>
         <div className="highlighted">Network Access</div>
         <br />
-        <div>Secret Hash: {this.state.secretHash}</div>
+        <div>Secret Hash: {secretHash}</div>
         <br />
 
         { loaded ? (
           <div>
             <form onSubmit={onSubmit}>
               <label>
-                <input type="text" placeholder="Secret Word" value={this.state.secret} onChange={onChange} />
+
+                <BrowserView device={isBrowser}>
+                  <input type="text" placeholder="Secret Word" value={this.state.secret} onChange={onChange} />
+                </BrowserView>
+
+                <MobileView device={isMobile}>
+                  <input type="text" className="mobile" placeholder="Secret Word" value={this.state.secret} onChange={onChange} />
+                </MobileView>
+
               </label>
               <br />
               <br />

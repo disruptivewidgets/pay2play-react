@@ -24,6 +24,13 @@ import {
   withRouter
 } from 'react-router-dom'
 
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
 import _ from 'lodash';
 
 var loading_captions = [
@@ -256,7 +263,13 @@ var Start = React.createClass({
                 <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} />
 
                 <label>
-                  <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                  <BrowserView device={isBrowser}>
+                    <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                  </BrowserView>
+
+                  <MobileView device={isMobile}>
+                    <input type="text" className="mobile" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                  </MobileView>
                 </label>
                 <br />
                 <br />

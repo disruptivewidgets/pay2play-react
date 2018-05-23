@@ -22,6 +22,13 @@ import Web3 from 'web3';
 import { contractAddress } from '../api/Web3API.js';
 import interfaces from "../smart-contract/interfaces.js";
 
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
 // import { Helmet } from "react-helmet";
 
 import {
@@ -65,6 +72,12 @@ const Logo = withRouter(({ history }) => (
   </div>
 ))
 
+const Logo_Mobile = withRouter(({ history }) => (
+  <div onClick={() => history.replace('/')}>
+    <img src={ImgLogo} className="logo-mobile"  />
+  </div>
+))
+
 const AppView = () => (
   <div>
     {/* <Meta /> */}
@@ -72,7 +85,13 @@ const AppView = () => (
       <div>
         <br />
 
-        <Logo />
+        <BrowserView device={isBrowser}>
+            <Logo />
+        </BrowserView>
+        <MobileView device={isMobile}>
+            <Logo_Mobile />
+        </MobileView>
+
         <br />
         <div>Competitive Entertainment Suite</div>
         <div>Smart Wagers and Tournament Bracket with Ethereum Blockchain</div>
@@ -90,7 +109,8 @@ class MistSite extends React.Component {
 
     this.handleLoad = this.handleLoad.bind(this);
   }
-  componentWillMount() {
+  componentWillMount()
+  {
     // if (window.web3.currentProvider.isMetaMask === true) {
     //   console.log("MetaMask detected");
     // }
@@ -102,28 +122,31 @@ class MistSite extends React.Component {
     });
 
   }
-  componentDidMount() {
+  componentDidMount()
+  {
     window.addEventListener('load', this.handleLoad);
   }
-  componentWillUnmount() {
+  componentWillUnmount()
+  {
     window.removeEventListener('load', this.handleLoad);
   }
-  handleLoad(e) {
+  handleLoad(e)
+  {
     console.log("handle load");
     console.log(e);
 
     if (typeof web3 !== 'undefined') {
       console.log("web3", window.web3);
 
-      // region 1
-      try {
-        throw "";
-      } catch (ex) {
-          // console.log(ex);
-          logException(JSON.stringify(window.web3.currentProvider.isTrust));
-      }
-      //
-//
+      // // region 1
+      // try {
+      //   throw "";
+      // } catch (ex) {
+      //     // console.log(ex);
+      //     logException(JSON.stringify(window.web3.currentProvider.isTrust));
+      // }
+      // //
+
       // version 2
       var provider = window.web3.currentProvider;
       window.web3 = new Web3(provider);
@@ -432,9 +455,9 @@ class MistSite extends React.Component {
 
 const Home = () => (
   <div>
-    <StartButton to="/start" label="Start Wager" />
+    <StartButton to="/start" label="Wagers" />
     <br />
-    <StartButton to="/brackets" label="Start Bracket" />
+    <StartButton to="/brackets" label="Brackets" />
     <br />
   </div>
 )

@@ -28,6 +28,18 @@ input[type="text"] {
     box-shadow: none;
     border-radius: none;
 }
+
+input[type="text"].mobile {
+  text-align: center;
+    margin: 0;
+    width: 100%;
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 1em;
+    appearance: none;
+    box-shadow: none;
+    border-radius: none;
+}
+
 input[type="text"]:focus {
   outline: none;
 }

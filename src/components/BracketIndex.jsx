@@ -14,7 +14,17 @@ import 'moment-duration-format';
 
 var validator = require('validator');
 
-import { Intent, Spinner } from "@blueprintjs/core/dist";
+import {
+  Intent,
+  Spinner
+} from "@blueprintjs/core/dist";
+
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 import "@blueprintjs/core/dist/blueprint.css";
 
@@ -195,42 +205,63 @@ var BracketIndex = React.createClass({
     return (
       <div>
         <p className="highlighted">Brackets</p>
-        <table className="wagers">
-          <thead>
-            <tr>
-              <td>
-                Id
-              </td>
-              <td>
-                Start Date
-              </td>
-              <td>
-                Winner
-              </td>
-              <td>
-                Organizer
-              </td>
-              <td>
-                Player Count
-              </td>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.list.map(item => (
-              <BracketItem
+
+        <BrowserView device={isBrowser}>
+          <table className="wagers">
+            <thead>
+              <tr>
+                <td>
+                  Id
+                </td>
+                <td>
+                  Start Date
+                </td>
+                <td>
+                  Winner
+                </td>
+                <td>
+                  Organizer
+                </td>
+                <td>
+                  Player Count
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.list.map(item => (
+                <BracketItem
+                  key={item.id}
+                  item={item}
+                />
+              ))}
+            </tbody>
+          </table>
+        </BrowserView>
+
+        <MobileView device={isMobile}>
+          {
+            this.state.list.map(item => (
+              <BracketItem_Mobile
                 key={item.id}
                 item={item}
               />
-            ))}
-          </tbody>
-        </table>
+            ))
+          }
+        </MobileView>
+
         <br />
 
         {
           loaded &&
             <form onSubmit={onSubmit}>
               <label>
-                <input type="text" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
+                <BrowserView device={isBrowser}>
+                  <input type="text" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
+                </BrowserView>
+
+                <MobileView device={isMobile}>
+                  <input type="text" className="mobile" placeholder="Bracket Size (4, 8, 16, 32)" value={this.state.size} onChange={onChange} />
+                </MobileView>
               </label>
               <br />
               <br />
@@ -271,7 +302,7 @@ function BracketItem(props) {
   var isCreator = (item.owner === window.authorizedAccount && window.authorizedAccount != undefined);
 
   var style = "";
-  
+
   if (isCreator)
   {
     style = "highlight-creator";
@@ -299,5 +330,53 @@ function BracketItem(props) {
     </tr>
   );
 }
+
+function BracketItem_Mobile(props) {
+  const {item} = props;
+
+  var isCreator = (item.owner === window.authorizedAccount && window.authorizedAccount != undefined);
+
+  var style = "";
+
+  if (isCreator)
+  {
+    style = "highlight-creator";
+  }
+
+  let creator = item.owner[0];
+  var head = creator.substring(0, 5);
+  var tail = creator.substring(creator.length - 5, creator.length);
+  creator = head + '...' + tail;
+
+  let winner = item.winner;
+  var head = winner.substring(0, 5);
+  var tail = winner.substring(winner.length - 5, winner.length);
+  winner = head + '...' + tail;
+
+  return (
+    <div className={style}>
+      <div>
+        Id:&nbsp;
+        <Link to={`/brackets/${item.index}`} replace>
+          {item.index}
+        </Link>
+      </div>
+      <div>
+        Date:&nbsp;{item.startTimestamp}
+      </div>
+      <div>
+        Winner:&nbsp;{winner}
+      </div>
+      <div>
+        Organizer:&nbsp;{creator}
+      </div>
+      <div>
+        Size:&nbsp;{item.playerCount}
+      </div>
+      <br />
+    </div>
+  );
+}
+
 
 module.exports = BracketIndex;
