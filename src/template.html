@@ -23,6 +23,15 @@
   <meta name="msapplication-TileImage" content="./icons/ms-icon-144x144.png" />
   <meta name="theme-color" content="#ffffff" />
 
+  <script src="https://cdn.ravenjs.com/3.4.0/raven.min.js"></script>
+
+  <script>
+   Raven.config('https://053aff73416d4d0f9fe212d0e1e3ac8a@sentry.io/1211554', {
+     release: '0-0-0',
+     environment: 'development-test',
+   }).install()
+  </script>
+
 </head>
 <body>
   <div class="container">

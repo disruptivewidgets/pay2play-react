@@ -34,73 +34,74 @@ var Web3Shim = React.createClass({
   componentWillMount() {
     console.log("componentWillMount Web3Shim");
 
-    if (typeof web3 !== 'undefined') {
-      // Use Mist/MetaMask's provider
-      window.web3 = new Web3(web3.currentProvider);
-    } else {
-      console.log('No web3? You should consider trying MetaMask!');
-      // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-      window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-    }
+    // if (typeof web3 !== 'undefined') {
+    //   // Use Mist/MetaMask's provider
+    //   window.web3 = new Web3(window.web3.currentProvider);
+    //   // window.web3 = new Web3(web3.currentProvider);
+    // } else {
+    //   console.log('No web3? You should consider trying MetaMask!');
+    //   // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
+    //   window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    // }
 
     console.log("Ropsen Pay2Play: ");
     console.log("contractAddress: " + contractAddress);
     console.log("tokenContractAddress: " + tokenContractAddress);
 
-    if (window.web3.eth.currentProvider.isConnected()) {
-      console.log("web3 connected");
-
-      // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result) {
-      //   console.log(result);
-      //
-      //     if (!error)
-      //         console.log(error);
-      // })
-      // .on("data", function(blockHeader) {
-      //   console.log("HERE");
-      // });
-
-      // var subscription = window.web3.eth.subscribe('syncing', function(error, sync){
-      //     if (!error)
-      //         console.log(sync);
-      // })
-      // .on("data", function(sync){
-      //     // show some syncing stats
-      //     console.log(sync);
-      // })
-      // .on("changed", function(isSyncing){
-      //     if(isSyncing) {
-      //         // stop app operation
-      //         console.log("A");
-      //     } else {
-      //         // regain app operation
-      //         console.log("B");
-      //     }
-      // });
-
-      // // unsubscribes the subscription
-      // subscription.unsubscribe(function(error, success){
-      //     if(success)
-      //         console.log('Successfully unsubscribed!');
-      // });
-
-      // Retrive wagers start
-      var topic1 = util.bufferToHex(util.setLengthLeft(parseInt(1), 32));
-
-      window.web3.eth.getPastLogs({
-        address: contractAddress,
-        fromBlock: "0",
-        topics: ["0x52b3086eb00fd2639eeb5190527da3e1c4c1400ee550073dde793315159cfe77"]
-      }).then( value => {
-        console.log(value); // Success!
-      }, reason => {
-        console.log(reason); // Error!
-      } );
-      // end
-
-    } else {
-      console.log("web3 not connected");
-    }
+    // if (window.web3.eth.currentProvider.isConnected()) {
+    //   console.log("web3 connected");
+    //
+    //   // var subscription = window.web3.eth.subscribe('newBlockHeaders', function(error, result) {
+    //   //   console.log(result);
+    //   //
+    //   //     if (!error)
+    //   //         console.log(error);
+    //   // })
+    //   // .on("data", function(blockHeader) {
+    //   //   console.log("HERE");
+    //   // });
+    //
+    //   // var subscription = window.web3.eth.subscribe('syncing', function(error, sync){
+    //   //     if (!error)
+    //   //         console.log(sync);
+    //   // })
+    //   // .on("data", function(sync){
+    //   //     // show some syncing stats
+    //   //     console.log(sync);
+    //   // })
+    //   // .on("changed", function(isSyncing){
+    //   //     if(isSyncing) {
+    //   //         // stop app operation
+    //   //         console.log("A");
+    //   //     } else {
+    //   //         // regain app operation
+    //   //         console.log("B");
+    //   //     }
+    //   // });
+    //
+    //   // // unsubscribes the subscription
+    //   // subscription.unsubscribe(function(error, success){
+    //   //     if(success)
+    //   //         console.log('Successfully unsubscribed!');
+    //   // });
+    //
+    //   // Retrive wagers start
+    //   var topic1 = util.bufferToHex(util.setLengthLeft(parseInt(1), 32));
+    //
+    //   window.web3.eth.getPastLogs({
+    //     address: contractAddress,
+    //     fromBlock: "0",
+    //     topics: ["0x52b3086eb00fd2639eeb5190527da3e1c4c1400ee550073dde793315159cfe77"]
+    //   }).then( value => {
+    //     console.log(value); // Success!
+    //   }, reason => {
+    //     console.log(reason); // Error!
+    //   } );
+    //   // end
+    //
+    // } else {
+    //   console.log("web3 not connected");
+    // }
 
     this.setState({version: window.web3.version});
 

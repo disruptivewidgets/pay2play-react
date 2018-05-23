@@ -43,6 +43,14 @@ import {
 //   }
 // });
 
+function logException(ex, context) {
+  Raven.captureException(ex, {
+    extra: context
+  });
+  /*eslint no-console:0*/
+  window.console && console.error && console.error(ex);
+}
+
 const StartButton = withRouter(({ history, label, to }) => (
   <div>
     <button type="button" className="btn-secondary" onClick={() => history.replace(to)} >
@@ -89,6 +97,7 @@ class MistSite extends React.Component {
     this.setState({
       hasMetamask: false,
       hasMist: false,
+      hasTrustWallet: false,
       netId: -1
     });
 
@@ -104,8 +113,26 @@ class MistSite extends React.Component {
     console.log(e);
 
     if (typeof web3 !== 'undefined') {
-      var provider = web3.currentProvider;
-      window.web3 = new Web3(web3.currentProvider);
+      console.log("web3", window.web3);
+
+      // region 1
+      try {
+        throw "";
+      } catch (ex) {
+          // console.log(ex);
+          logException(JSON.stringify(window.web3.currentProvider.isTrust));
+      }
+      //
+//
+      // version 2
+      var provider = window.web3.currentProvider;
+      window.web3 = new Web3(provider);
+      //
+
+      // version 1
+      // var provider = web3.currentProvider;
+      // window.web3 = new Web3(web3.currentProvider);
+      //
 
       console.log('Web3 detected');
       if (window.web3.currentProvider.isMetaMask === true) {
@@ -125,7 +152,7 @@ class MistSite extends React.Component {
       }
 
       if (window.web3.currentProvider.isTrust === true) {
-        console.log("TrustWallent detected");
+        console.log("TrustWallet detected");
 
         window.web3.eth.net.getId().then(netId => {
           this.setState({
@@ -186,14 +213,14 @@ class MistSite extends React.Component {
     // console.log("Ropsen Pay2Play: ");
     // console.log(contractAddress);
 
-    if (window.web3.eth.currentProvider.isConnected())
-    {
-      console.log("web3 connected");
-    }
-    else
-    {
-      console.log("web3 not connected");
-    }
+    // if (window.web3.eth.currentProvider.isConnected())
+    // {
+    //   console.log("web3 connected");
+    // }
+    // else
+    // {
+    //   console.log("web3 not connected");
+    // }
 
     this.setState({version: window.web3.version});
 

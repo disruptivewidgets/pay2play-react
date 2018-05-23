@@ -13,3 +13,5 @@
 * Verify transfer
 * balanceOf ("0xe018598af2954cb1717b2dff610e13a18587b044") [B]
 * set secret
+
+https://www.lucidchart.com/documents/edit/97345075-c27f-4b6a-8dc9-b5c7429d919e/0
