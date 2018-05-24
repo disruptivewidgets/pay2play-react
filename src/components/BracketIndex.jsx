@@ -35,8 +35,15 @@ var loading_captions = [
 
 export default class BracketIndex extends Component
 {
-  getInitialState() {
-    return BracketBulkStore.getList();
+  constructor(props)
+  {
+    super(props);
+    this.state = BracketBulkStore.getList();
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
   }
   componentWillMount()
   {

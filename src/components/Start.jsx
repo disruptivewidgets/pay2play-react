@@ -41,9 +41,15 @@ var loading_captions = [
 
 export default class Start extends Component
 {
-  getInitialState()
+  constructor(props)
   {
-    return GameStore.getDataStore();
+    super(props);
+    this.state = GameStore.getDataStore();
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
   }
   componentWillMount()
   {

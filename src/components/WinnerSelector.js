@@ -13,13 +13,16 @@ import 'react-select/dist/react-select.css';
 
 export default class WinnerSelector extends Component
 {
-  getInitialState() {
-    return {
+  constructor(props)
+  {
+    super(props);
+    this.state = {
       options: [
         { value: 'one', label: 'One' },
         { value: 'two', label: 'Two' }
       ]
     };
+    this._onChange = this._onChange.bind(this);
   }
   componentWillMount() {
     // this.setState(GameStore.getDataStore());

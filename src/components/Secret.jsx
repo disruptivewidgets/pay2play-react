@@ -30,12 +30,19 @@ var loading_captions = [
 
 export default class Secret extends Component
 {
-  getInitialState()
+  constructor(props)
   {
-    return {
+    super(props);
+    this.state = {
       secretHash: "None",
       secret: ""
     };
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
+    this.onEvent_SecretHash = this.onEvent_SecretHash.bind(this);
   }
   componentWillMount()
   {

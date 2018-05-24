@@ -7,8 +7,11 @@ import 'moment-duration-format';
 
 export default class Rules extends Component
 {
-  getInitialState() {
-    return RuleStore.getDataStore();
+  constructor(props)
+  {
+    super(props);
+    this.state = RuleStore.getDataStore();
+    this._onChange = this._onChange.bind(this);
   }
   componentWillMount() {
     this.setState(RuleStore.getDataStore());

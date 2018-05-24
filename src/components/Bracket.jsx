@@ -171,14 +171,22 @@ var loading_captions =
 
 export default class Bracket extends Component
 {
-  getInitialState()
+  constructor(props)
   {
-    return {
+    super(props);
+    this.state = {
       playerCount: 32,
       seatsData_SideA: BracketStore.getSeats_SideA(),
       seatsData_SideB: BracketStore.getSeats_SideB(),
       userAction: ACTION_NONE
-    };
+    }
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
+    this._onFetchSeats_SideA = this._onFetchSeats_SideA.bind(this);
+    this._onFetchSeats_SideB = this._onFetchSeats_SideB.bind(this);
   }
   componentWillMount()
   {

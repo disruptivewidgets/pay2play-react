@@ -45,8 +45,6 @@ export default class GameSelector extends Component
 
     // this.props.onSelect(nextProps.selected);
   }
-  _onChange() {
-  }
   render() {
     const onChange = (value) => {
       this.props.onSelect(value);

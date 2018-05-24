@@ -5,9 +5,11 @@ import EventLogActions from '../actions/EventLogActions';
 
 export default class EventLogs extends Component
 {
-  getInitialState()
+  constructor(props)
   {
-    return EventLogStore.getData();
+    super(props);
+    this.state = EventLogStore.getData();
+    this._onChange = this._onChange.bind(this);
   }
   componentWillMount()
   {

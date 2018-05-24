@@ -30,10 +30,18 @@ var loading_captions = [
 
 export default class Invite extends Component
 {
-  getInitialState() {
-    return WagerStore.get();
+  constructor(props)
+  {
+    super(props);
+    this.state = WagerStore.get();
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
   }
-  componentWillMount() {
+  componentWillMount()
+  {
     console.log("componentWillMount");
 
     this.setState(WagerStore.get());
@@ -63,7 +71,8 @@ export default class Invite extends Component
 
     SessionHelper.listTransactions();
   }
-  componentDidMount() {
+  componentDidMount()
+  {
     WagerStore.addChangeListener(this._onChange);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
@@ -71,7 +80,8 @@ export default class Invite extends Component
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
   }
-  componentWillUnmount() {
+  componentWillUnmount()
+  {
     WagerStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
@@ -79,7 +89,8 @@ export default class Invite extends Component
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps)
+  {
     console.log("componentWillReceiveProps");
 
     this.setState({

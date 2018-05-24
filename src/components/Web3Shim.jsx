@@ -32,15 +32,20 @@ export default class Web3Shim extends Component
   //     lossCount: 0
   //   };
   // }
-  state =
+  constructor(props)
   {
-    version: '',
-    authorizedAccount: 'None',
-    blockNumber: 0,
-    tokenBalance: 0,
-    winCount: 0,
-    lossCount: 0
+    super(props);
+    this.state = {
+      version: '',
+      authorizedAccount: 'None',
+      blockNumber: 0,
+      tokenBalance: 0,
+      winCount: 0,
+      lossCount: 0
+    };
+    this._onChange = this._onChange.bind(this);
   }
+
   componentWillMount() {
     console.log("componentWillMount Web3Shim");
 

@@ -28,7 +28,7 @@ export default class Wagers extends Component
   {
     super(props);
     this.state = WagerBulkStore.getList();
-    this._onChange=this._onChange.bind(this);
+    this._onChange = this._onChange.bind(this);
   }
   componentWillMount()
   {

@@ -21,9 +21,11 @@ import _ from 'lodash';
 
 export default class Session extends Component
 {
-  getInitialState()
+  constructor(props)
   {
-    return CacheStore.getDataStore();
+    super(props);
+    this.state = CacheStore.getDataStore();
+    this._onChange = this._onChange.bind(this);
   }
   componentWillMount()
   {
