@@ -24,11 +24,12 @@ const About = () => (
 
 export default class Wagers extends Component
 {
-  state = WagerBulkStore.getList();
-  // getInitialState()
-  // {
-  //   return WagerBulkStore.getList();
-  // }
+  constructor(props)
+  {
+    super(props);
+    this.state = WagerBulkStore.getList();
+    this._onChange=this._onChange.bind(this);
+  }
   componentWillMount()
   {
     this.setState(WagerBulkStore.getList());
@@ -36,26 +37,21 @@ export default class Wagers extends Component
   }
   componentDidMount()
   {
-    WagerBulkStore.addChangeListener(this._onChange, this);
+    WagerBulkStore.addChangeListener(this._onChange);
   }
   componentWillUnmount()
   {
-    WagerBulkStore.removeChangeListener(this._onChange, this);
+    WagerBulkStore.removeChangeListener(this._onChange);
   }
   componentWillReceiveProps()
   {
   }
-  _onChange(e, a)
+  _onChange()
   {
-    console.log("target", e, a)
+    // console.log("target", e, a)
     // console.log("this.state", this.state)
     this.setState(WagerBulkStore.getList());
   }
-  // update()
-  // {
-  //
-  // }
-
   render()
   {
     return (
