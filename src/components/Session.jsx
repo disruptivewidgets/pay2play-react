@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import CacheActions from '../actions/CacheActions';
 import CacheStore from '../stores/CacheStore';
@@ -19,12 +19,13 @@ import {
 
 import _ from 'lodash';
 
-var Session = React.createClass({
-  getInitialState: function()
+export default class Session extends Component
+{
+  getInitialState()
   {
     return CacheStore.getDataStore();
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review")) {
       this.setState({
@@ -40,8 +41,8 @@ var Session = React.createClass({
     //
     CacheActions.retrieveTransactions();
 
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     CacheStore.addChangeListener(this._onChange);
     //
@@ -49,8 +50,8 @@ var Session = React.createClass({
     // Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     // Web3Store.addReceiptListener(this.onEvent_Receipt);
     // Web3Store.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     CacheStore.removeChangeListener(this._onChange);
     //
@@ -58,8 +59,8 @@ var Session = React.createClass({
     // Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     // Web3Store.removeReceiptListener(this.onEvent_Receipt);
     // Web3Store.removeErrorListener(this.onEvent_Error);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
 
     var dataStore = CacheStore.getDataStore();
@@ -86,7 +87,7 @@ var Session = React.createClass({
     // });
 
     this.setState(CacheStore.getDataStore());
-  },
+  }
   render() {
     var loaded = this.state.loaded;
 
@@ -150,7 +151,7 @@ var Session = React.createClass({
       </div>
     );
   }
-});
+};
 
 function CacheRecordItem(props) {
   const {item} = props;
@@ -178,4 +179,4 @@ function CacheRecordItem(props) {
   );
 }
 
-module.exports = Session;
+// module.exports = Session;

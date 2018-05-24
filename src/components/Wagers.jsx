@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import WagerBulkStore from '../stores/WagerBulkStore';
 import Web3Actions from '../actions/Web3Actions';
 
@@ -22,32 +22,41 @@ const About = () => (
   </div>
 )
 
-var Wagers = React.createClass({
-  getInitialState: function()
-  {
-    return WagerBulkStore.getList();
-  },
-  componentWillMount: function()
+export default class Wagers extends Component
+{
+  state = WagerBulkStore.getList();
+  // getInitialState()
+  // {
+  //   return WagerBulkStore.getList();
+  // }
+  componentWillMount()
   {
     this.setState(WagerBulkStore.getList());
     Web3Actions.retrieveWagers();
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
-    WagerBulkStore.addChangeListener(this._onChange);
-  },
-  componentWillUnmount: function()
+    WagerBulkStore.addChangeListener(this._onChange, this);
+  }
+  componentWillUnmount()
   {
-    WagerBulkStore.removeChangeListener(this._onChange);
-  },
-  componentWillReceiveProps: function()
+    WagerBulkStore.removeChangeListener(this._onChange, this);
+  }
+  componentWillReceiveProps()
   {
-  },
-  _onChange: function()
+  }
+  _onChange(e, a)
   {
+    console.log("target", e, a)
+    // console.log("this.state", this.state)
     this.setState(WagerBulkStore.getList());
-  },
-  render: function()
+  }
+  // update()
+  // {
+  //
+  // }
+
+  render()
   {
     return (
       <div>
@@ -99,7 +108,7 @@ var Wagers = React.createClass({
       </div>
     );
   }
-});
+};
 
 function WagerItem(props)
 {
@@ -283,4 +292,4 @@ function WagerItem_Mobile(props)
 }
 
 
-module.exports = Wagers;
+// module.exports = Wagers;

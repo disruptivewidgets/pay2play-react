@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import WagerStore from '../stores/WagerStore';
 
 import GameActions from '../actions/GameActions';
@@ -39,12 +39,13 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-var Start = React.createClass({
-  getInitialState: function()
+export default class Start extends Component
+{
+  getInitialState()
   {
     return GameStore.getDataStore();
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"))
     {
@@ -66,8 +67,8 @@ var Start = React.createClass({
     });
 
     GameActions.retrieveGames();
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     GameStore.addChangeListener(this._onChange);
 
@@ -75,8 +76,8 @@ var Start = React.createClass({
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     GameStore.removeChangeListener(this._onChange);
 
@@ -84,8 +85,8 @@ var Start = React.createClass({
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     var dataStore = GameStore.getDataStore();
 
@@ -111,16 +112,16 @@ var Start = React.createClass({
     });
 
     this.setState(GameStore.getDataStore());
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[2]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -128,12 +129,12 @@ var Start = React.createClass({
       loaded: true,
       processing: true
     });
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -142,11 +143,11 @@ var Start = React.createClass({
     });
 
     this.forceUpdate();
-  },
+  }
   forceUpdate()
   {
     this.setState(GameStore.getDataStore());
-  },
+  }
   handleSelect(game)
   {
     console.log("handleSelect");
@@ -156,7 +157,7 @@ var Start = React.createClass({
       referenceHash: game.value,
       selected: game
     });
-  },
+  }
   render()
   {
     const onChange = (event) =>
@@ -298,6 +299,6 @@ var Start = React.createClass({
       </div>
     );
   }
-});
+};
 
-module.exports = Start;
+// module.exports = Start;

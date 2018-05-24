@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import BracketStore from '../stores/BracketStore';
 import Web3Actions from '../actions/Web3Actions';
@@ -169,8 +169,9 @@ var loading_captions =
   "Pending Confirmation..."
 ]
 
-var Bracket = React.createClass({
-  getInitialState: function()
+export default class Bracket extends Component
+{
+  getInitialState()
   {
     return {
       playerCount: 32,
@@ -178,8 +179,8 @@ var Bracket = React.createClass({
       seatsData_SideB: BracketStore.getSeats_SideB(),
       userAction: ACTION_NONE
     };
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     var grid_SideA = fill_SideA(this.state.playerCount, data_A);
     var grid_SideB = fill_SideB(this.state.playerCount, data_B);
@@ -202,8 +203,8 @@ var Bracket = React.createClass({
     // Web3Actions.retrieveBrackets();
 
     Web3Actions.retrieveBracket(this.props.match.params.id);
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     BracketStore.addChangeListener(this._onChange);
 
@@ -214,8 +215,8 @@ var Bracket = React.createClass({
     BracketStore.addConfirmationListener(this.onEvent_Confirmation);
     BracketStore.addReceiptListener(this.onEvent_Receipt);
     BracketStore.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     BracketStore.removeChangeListener(this._onChange);
 
@@ -226,8 +227,8 @@ var Bracket = React.createClass({
     BracketStore.removeConfirmationListener(this.onEvent_Confirmation);
     BracketStore.removeReceiptListener(this.onEvent_Receipt);
     BracketStore.removeErrorListener(this.onEvent_Error);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState({
       playerCount: BracketStore.getPlayerCount(),
@@ -235,8 +236,8 @@ var Bracket = React.createClass({
       owner: BracketStore.getBracketOwner(),
       bracketAddress: BracketStore.getBracketContractAddress()
     });
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
@@ -244,8 +245,8 @@ var Bracket = React.createClass({
       // pending_Bracket: true,
       loading_caption: loading_captions[2]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -256,8 +257,8 @@ var Bracket = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
 
@@ -295,8 +296,8 @@ var Bracket = React.createClass({
       console.log("C");
       Web3Actions.retrieveBracket(bracketId);
     }, 1);
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -306,8 +307,8 @@ var Bracket = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  _onFetchSeats_SideA: function()
+  }
+  _onFetchSeats_SideA()
   {
     console.log("_onFetchSeats_SideA");
 
@@ -401,8 +402,8 @@ var Bracket = React.createClass({
         // counts_SideA: counts
       });
     }, 1000);
-  },
-  _onFetchSeats_SideB: function()
+  }
+  _onFetchSeats_SideB()
   {
     console.log("_onFetchSeats_SideB");
 
@@ -496,8 +497,8 @@ var Bracket = React.createClass({
         winner_SideB: seats[0]
       });
     }, 1000);
-  },
-  render: function()
+  }
+  render()
   {
     const {
       bracket_SideA,
@@ -810,7 +811,7 @@ var Bracket = React.createClass({
       </div>
     );
   }
-});
+};
 
 function BracketRow(props)
 {

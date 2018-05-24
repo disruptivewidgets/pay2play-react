@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import { Intent, Spinner } from "@blueprintjs/core/dist";
 
@@ -11,21 +11,22 @@ import Select from 'react-select';
 // Be sure to include styles at some point, probably during your bootstrapping
 import 'react-select/dist/react-select.css';
 
-var WinnerSelector = React.createClass({
-  getInitialState: function() {
+export default class WinnerSelector extends Component
+{
+  getInitialState() {
     return {
       options: [
         { value: 'one', label: 'One' },
         { value: 'two', label: 'Two' }
       ]
     };
-  },
-  componentWillMount: function() {
+  }
+  componentWillMount() {
     // this.setState(GameStore.getDataStore());
 
     // GameActions.retrieveGames();
-  },
-  componentWillReceiveProps: function() {
+  }
+  componentWillReceiveProps() {
     var options = _.map(this.props.players, function(player) {
       var option = {
         value: player,
@@ -37,8 +38,8 @@ var WinnerSelector = React.createClass({
     this.setState({
       options: options
     });
-  },
-  componentDidMount: function() {
+  }
+  componentDidMount() {
     console.log("players: " + this.props.players);
 
     var options = _.map(this.props.players, function(player) {
@@ -53,11 +54,11 @@ var WinnerSelector = React.createClass({
       options: options
     });
     // GameStore.addChangeListener(this._onChange);
-  },
-  componentWillUnmount: function() {
+  }
+  componentWillUnmount() {
     // GameStore.removeChangeListener(this._onChange);
-  },
-  _onChange: function() {
+  }
+  _onChange() {
     // var dataStore = GameStore.getDataStore();
     //
     // var games = _.map(dataStore.list, function(item) {
@@ -87,8 +88,8 @@ var WinnerSelector = React.createClass({
     // this.props.onSelect(games[0]);å
     //
     // this.setState(GameStore.getDataStore());
-  },
-  render: function() {
+  }
+  render() {
     const onChange = (value) => {
       console.log("Selected: " + JSON.stringify(value));
 
@@ -134,6 +135,6 @@ var WinnerSelector = React.createClass({
       </div>
     );
   }
-});
+};
 
-module.exports = WinnerSelector;
+// module.exports = WinnerSelector;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import WagerStore from '../stores/WagerStore';
 import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
@@ -33,12 +33,13 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-var Wager = React.createClass({
-  getInitialState: function()
+export default class Wager extends Component
+{
+  getInitialState()
   {
     return WagerStore.get();
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     this.setState(WagerStore.get());
 
@@ -57,8 +58,8 @@ var Wager = React.createClass({
         SessionHelper.updateTransaction(transaction.id, "status", "finished_withrawal_receipt_review");
       }
     }
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     this.setState({
       loaded: true
@@ -70,8 +71,8 @@ var Wager = React.createClass({
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     WagerStore.removeChangeListener(this._onChange);
 
@@ -79,8 +80,8 @@ var Wager = React.createClass({
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
-  },
-  componentWillReceiveProps: function(nextProps)
+  }
+  componentWillReceiveProps(nextProps)
   {
     console.log("componentWillReceiveProps");
 
@@ -110,20 +111,20 @@ var Wager = React.createClass({
     }
 
     SessionHelper.listTransactions();
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState(WagerStore.get());
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[1]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -131,12 +132,12 @@ var Wager = React.createClass({
       loaded: true,
       processing: true
     });
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -145,8 +146,8 @@ var Wager = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  render: function()
+  }
+  render()
   {
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const isWagerClosed = (this.state.wager.state === 'closed');
@@ -444,7 +445,7 @@ var Wager = React.createClass({
         </div>
     );
   }
-});
+};
 
 const HomeButton = withRouter(({ history, label, to }) => (
   <div>
@@ -453,4 +454,5 @@ const HomeButton = withRouter(({ history, label, to }) => (
     </button>
   </div>
 ));
-module.exports = Wager;
+
+// module.exports = Wager;

@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
 import EventLogStore from '../stores/EventLogStore';
 import EventLogActions from '../actions/EventLogActions';
 
-var EventLogs = React.createClass({
-  getInitialState: function()
+
+export default class EventLogs extends Component
+{
+  getInitialState()
   {
     return EventLogStore.getData();
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     console.log("componentWillReceiveProps");
 
@@ -18,18 +20,18 @@ var EventLogs = React.createClass({
     EventLogActions.pullEventLogs("NewDeposit", this.props.index);
     EventLogActions.pullEventLogs("WagerWinnerUpdated", this.props.index);
     EventLogActions.pullEventLogs("WinningsWithdrawn", this.props.index);
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     EventLogStore.addChangeListener(this._onChange);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     EventLogStore.removeChangeListener(this._onChange);
-  },
-  componentDidUpdate: function() {
-  },
-  componentWillReceiveProps: function(nextProps) {
+  }
+  componentDidUpdate() {
+  }
+  componentWillReceiveProps(nextProps) {
     console.log("componentWillReceiveProps A");
 
     console.log(nextProps);
@@ -47,13 +49,13 @@ var EventLogs = React.createClass({
     // EventLogActions.pullEventLogs("NewDeposit", nextProps.index);
     // EventLogActions.pullEventLogs("WagerWinnerUpdated", nextProps.index);
     // EventLogActions.pullEventLogs("WinningsWithdrawn", nextProps.index);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState(EventLogStore.getDataStore());
     this.setState(EventLogStore.getData());
-  },
-  render: function()
+  }
+  render()
   {
     const hasWagerStarted = (this.state.WagerStarted !== undefined);
     const hasNewDeposit = (this.state.NewDeposit !== undefined);
@@ -105,7 +107,7 @@ var EventLogs = React.createClass({
       </div>
     );
   }
-});
+};
 
 function EventLogItem(props)
 {
@@ -122,4 +124,4 @@ function EventLogItem(props)
   );
 }
 
-module.exports = EventLogs;
+// module.exports = EventLogs;

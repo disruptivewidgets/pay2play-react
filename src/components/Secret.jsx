@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import Web3Store from '../stores/Web3Store';
 import Web3Actions from '../actions/Web3Actions';
@@ -28,15 +28,16 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-var Secret = React.createClass({
-  getInitialState: function()
+export default class Secret extends Component
+{
+  getInitialState()
   {
     return {
       secretHash: "None",
       secret: ""
     };
-  },
-  componentWillMount: function()
+  }
+  componentWillMount()
   {
     console.log(window.authorizedAccount);
 
@@ -48,36 +49,35 @@ var Secret = React.createClass({
     this.setState({
       loaded: true
     });
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
-    console.log("YO" + window.authorizedAccount);
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
     Web3Store.addSecretHashListener(this.onEvent_SecretHash);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
     Web3Store.removeSecretHashListener(this.onEvent_SecretHash);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[1]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -85,12 +85,12 @@ var Secret = React.createClass({
       loaded: true,
       processing: true
     });
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -99,14 +99,14 @@ var Secret = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  onEvent_SecretHash: function() {
+  }
+  onEvent_SecretHash() {
     console.log("onEvent_SecretHash");
 
     this.setState({
       secretHash: window.secretHash
     });
-  },
+  }
   render()
   {
     const onChange = (event) =>
@@ -223,7 +223,7 @@ var Secret = React.createClass({
       </div>
     );
   }
-});
+};
 
 function CacheRecordItem(props) {
   const {item} = props;
@@ -251,4 +251,4 @@ function CacheRecordItem(props) {
   );
 }
 
-module.exports = Secret;
+// module.exports = Secret;

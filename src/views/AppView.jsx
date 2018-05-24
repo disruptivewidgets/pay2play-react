@@ -289,6 +289,8 @@ class MistSite extends React.Component {
       isSelectedNetworkSupported = true;
     }
 
+    console.log("React.version", React.version);
+
     return (
       <div>
         { hasMistBrowser || hasMetamask || hasTrustWallet ? (

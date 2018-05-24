@@ -13,8 +13,9 @@ import Select from 'react-select';
 
 import 'react-select/dist/react-select.css';
 
-var GameSelector = React.createClass({
-  componentWillMount: function() {
+export default class GameSelector extends Component
+{
+  componentWillMount() {
     console.log("componentWillMount");
 
     this.setState({
@@ -24,12 +25,12 @@ var GameSelector = React.createClass({
       ],
       selected: { value: 'one', label: 'One' }
     });
-  },
-  componentDidMount: function() {
-  },
-  componentWillUnmount: function() {
-  },
-  componentWillReceiveProps: function(nextProps) {
+  }
+  componentDidMount() {
+  }
+  componentWillUnmount() {
+  }
+  componentWillReceiveProps(nextProps) {
     console.log("componentWillReceiveProps");
 
     var selected = _.find(nextProps.data, function(game) {
@@ -43,10 +44,10 @@ var GameSelector = React.createClass({
     });
 
     // this.props.onSelect(nextProps.selected);
-  },
-  _onChange: function() {
-  },
-  render: function() {
+  }
+  _onChange() {
+  }
+  render() {
     const onChange = (value) => {
       this.props.onSelect(value);
     };
@@ -73,7 +74,7 @@ var GameSelector = React.createClass({
       </div>
     );
   }
-});
+};
 
 function GameItem(props) {
   const {item} = props;
@@ -87,7 +88,6 @@ function GameItem(props) {
     referenceHash = head + '...' + tail;
   }
 
-
   return (
     <div>
       <label>
@@ -100,5 +100,3 @@ function GameItem(props) {
     </div>
   );
 }
-
-module.exports = GameSelector;
