@@ -10,6 +10,8 @@ import SessionHelper from "../helpers/SessionUtils.js";
 
 import WinnerSelector from '../components/WinnerSelector';
 
+import Formatter from "../helpers/Formatters.js";
+
 import Helpers from "../helpers/TransactionUtils.js";
 
 import { Intent, Spinner } from "@blueprintjs/core/dist";
@@ -302,7 +304,7 @@ export default class Wager extends Component
                 <div>
                   { isWagerFinished ? (
                       <div>
-                        <div>Wager Winner: {this.state.wager.winner}</div>
+                        <div>Wager Winner: {Formatter.formatAddress(this.state.wager.winner)}</div>
                       </div>
                     ) : (
                       <div>
@@ -318,8 +320,8 @@ export default class Wager extends Component
                           {
                             isWagerSettled ? (
                               <div>
-                                <div>Wager Creator: {creator}</div>
-                                <div>Wager Winner: {this.state.wager.winner}</div>
+                                <div>Wager Creator: {Formatter.formatAddress(creator)}</div>
+                                <div>Wager Winner: {Formatter.formatAddress(this.state.wager.winner)}</div>
                               </div>
                             ) : (
                               <div>
@@ -331,7 +333,7 @@ export default class Wager extends Component
                                 ) : (
                                   <div>
                                     <div>
-                                      <div>Wager Creator: {creator}</div>
+                                      <div>Wager Creator: {Formatter.formatAddress(creator)}</div>
                                       <br />
                                     </div>
                                     <div>
@@ -412,7 +414,7 @@ export default class Wager extends Component
                 <div>
                   <div className="highlighted-red">Sorry, you did not win.</div>
                   <br />
-                  <div>Wager Winner: {this.state.wager.winner}</div>
+                  <div>Wager Winner: {Formatter.formatAddress(this.state.wager.winner)}</div>
                   <br />
                 </div>
               }

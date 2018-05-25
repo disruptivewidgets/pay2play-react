@@ -5,11 +5,25 @@ import Web3Actions from '../actions/Web3Actions';
 
 import WinnerSelector from '../components/WinnerSelector';
 
-import { Intent, Spinner } from "@blueprintjs/core/dist";
+import Formatter from "../helpers/Formatters.js";
+
+import {
+  Intent,
+  Spinner
+} from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
 
 import _ from 'lodash';
+
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
+import SwipeableBracket from './Swipeable';
 
 var data_A = [
   '0',
@@ -727,6 +741,11 @@ export default class Bracket extends Component
 
     var url = "https://" + 'ropsten' + ".etherscan.io/address/" + bracketAddress;
 
+    // let winner = this.state.winner;
+    // let head = winner.substring(0, 8);
+    // let tail = winner.substring(winner.length - 8, winner.length);
+    // winner = head + '...' + tail;
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -734,60 +753,73 @@ export default class Bracket extends Component
         {
           loaded &&
             <div>
-              <table className="bracket">
-                <tbody>
-                  <tr>
-                    <td>
-                      <table className="bracket-side-a">
-                        <tbody>
-                          {rows_SideA.map(item => (
-                            <BracketRow
-                              key={item.index}
-                              item={item.value}
-                              bracketId={bracketId}
-                              owner={owner}
-                              bracketData={bracket_SideA}
-                              bracketData_Transpose={bracket_SideA_Transpose}
-                              side="A"
-                              handleClickFor_FillSeat={handleClickFor_FillSeat}
-                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-                            />
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                    <td>
-                      <table className="bracket-side-b">
-                        <tbody>
-                          {rows_SideB.map(item => (
-                            <BracketRow
-                              key={item.index}
-                              item={item.value}
-                              bracketId={bracketId}
-                              owner={owner}
-                              bracketData={bracket_SideB}
-                              bracketData_Transpose={bracket_SideB_Transpose}
-                              side="B"
-                              handleClickFor_FillSeat={handleClickFor_FillSeat}
-                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-                            />
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+              <BrowserView device={isBrowser}>
+                <table className="bracket">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <table className="bracket-side-a">
+                          <tbody>
+                            {rows_SideA.map(item => (
+                              <BracketRow
+                                key={item.index}
+                                item={item.value}
+                                bracketId={bracketId}
+                                owner={owner}
+                                bracketData={bracket_SideA}
+                                bracketData_Transpose={bracket_SideA_Transpose}
+                                side="A"
+                                handleClickFor_FillSeat={handleClickFor_FillSeat}
+                                handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                              />
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                      <td>
+                        <table className="bracket-side-b">
+                          <tbody>
+                            {rows_SideB.map(item => (
+                              <BracketRow
+                                key={item.index}
+                                item={item.value}
+                                bracketId={bracketId}
+                                owner={owner}
+                                bracketData={bracket_SideB}
+                                bracketData_Transpose={bracket_SideB_Transpose}
+                                side="B"
+                                handleClickFor_FillSeat={handleClickFor_FillSeat}
+                                handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                              />
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </BrowserView>
+
+              <MobileView device={isMobile}>
+                <SwipeableBracket
+                  rows_SideA={rows_SideA}
+                  rows_SideB={rows_SideB}
+                  bracket_SideA_Transpose={bracket_SideA_Transpose}
+                  bracket_SideB_Transpose={bracket_SideB_Transpose}
+                />
+              </MobileView>
+
               <br />
 
               <div>
-                Bracket Winner: {this.state.winner}
+                Bracket Winner: {Formatter.formatAddress(winner)}
               </div>
               <div>
-                Bracket Moderator: <span className={style}>{this.state.owner}</span>
+                Bracket Moderator: <span className={style}>{Formatter.formatAddress(this.state.owner)}</span>
               </div>
               <div>
-                Bracket Address: <a href={url}>{this.state.bracketAddress}</a>
+                Bracket Address: <a href={url}>{Formatter.formatAddress(this.state.bracketAddress)}</a>
               </div>
               <br />
 
@@ -816,6 +848,7 @@ export default class Bracket extends Component
               <br />
             </div>
         }
+
       </div>
     );
   }
@@ -838,21 +871,23 @@ function BracketRow(props)
 
   return (
     <tr>
-      {item.map((item, index) => (
-        <BracketSlot
-          key={Math.floor(Math.random() * 1000000)}
-          item={item}
-          columnIndex={index}
-          rowLength={rowLength}
-          side={side}
-          bracketId={bracketId}
-          owner={owner}
-          bracketData={bracketData}
-          bracketData_Transpose={bracketData_Transpose}
-          handleClickFor_FillSeat={handleClickFor_FillSeat}
-          handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-        />
-      ))}
+      {
+        item.map((item, index) => (
+          <BracketSlot
+            key={Math.floor(Math.random() * 1000000)}
+            item={item}
+            columnIndex={index}
+            rowLength={rowLength}
+            side={side}
+            bracketId={bracketId}
+            owner={owner}
+            bracketData={bracketData}
+            bracketData_Transpose={bracketData_Transpose}
+            handleClickFor_FillSeat={handleClickFor_FillSeat}
+            handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+          />
+        ))
+      }
     </tr>
   );
 }

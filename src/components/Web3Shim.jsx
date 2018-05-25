@@ -6,6 +6,8 @@ import ApiUtils from '../helpers/ApiUtils';
 
 import util from 'ethereumjs-util';
 
+import Formatter from "../helpers/Formatters.js";
+
 import {
   contractAddress,
   tokenContractAddress,
@@ -226,7 +228,7 @@ export default class Web3Shim extends Component
         {
           isAuthorized ? (
             <div>
-              <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
+              <p>Authorized Account: <span className={style}>{ Formatter.formatAddress(this.state.authorizedAccount) }</span></p>
               <p>Token Balance: {this.state.tokenBalance} <a href={url}>Play</a></p>
               <p>Win Count: {this.state.winCount}</p>
               <p>Loss Count: {this.state.lossCount}</p>

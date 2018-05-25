@@ -19,6 +19,8 @@ import _ from 'lodash';
 
 import Helpers from "../helpers/TransactionUtils.js";
 
+import Formatter from "../helpers/Formatters.js";
+
 import { Intent, Spinner } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
@@ -414,11 +416,11 @@ function Player(props)
   const winner = props.winner;
   const accounts = props.accounts;
 
-  var element = <div>{player}</div>;
+  var element = <div>{Formatter.formatAddress(player)}</div>;
 
   if (accounts.length > 0) {
     if (accounts[0] == player) {
-      element = <div>{player} (You)</div>
+      element = <div>{Formatter.formatAddress(player)} (You)</div>
     }
   };
 

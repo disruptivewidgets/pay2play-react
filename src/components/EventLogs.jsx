@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import EventLogStore from '../stores/EventLogStore';
 import EventLogActions from '../actions/EventLogActions';
 
+import Formatter from "../helpers/Formatters.js";
 
 export default class EventLogs extends Component
 {
@@ -120,7 +121,7 @@ function EventLogItem(props)
   return (
     <div>
       <label>
-        {item.topic} | <a href={url}>{item.txid}</a>
+        {item.topic} : <a href={url}>{Formatter.formatTransactionHash(item.txid)}</a>
       </label>
     </div>
   );

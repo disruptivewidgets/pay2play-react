@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import RuleStore from '../stores/RuleStore';
 import GameActions from '../actions/GameActions';
 
+import Formatter from "../helpers/Formatters.js";
+
 import * as moment from 'moment';
 import 'moment-duration-format';
 
@@ -13,21 +15,26 @@ export default class Rules extends Component
     this.state = RuleStore.getDataStore();
     this._onChange = this._onChange.bind(this);
   }
-  componentWillMount() {
+  componentWillMount()
+  {
     this.setState(RuleStore.getDataStore());
 
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps)
+  {
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
   }
-  componentDidMount() {
+  componentDidMount()
+  {
     RuleStore.addChangeListener(this._onChange);
   }
-  componentWillUnmount() {
+  componentWillUnmount()
+  {
     RuleStore.removeChangeListener(this._onChange);
   }
-  _onChange() {
+  _onChange()
+  {
     this.setState(RuleStore.getDataStore());
   }
   render() {
@@ -35,7 +42,7 @@ export default class Rules extends Component
       <div>
         <div className="highlighted">Rules</div>
         <br />
-        <div>Rules Hash: {this.props.referenceHash}</div>
+        <div>Rules Hash: {Formatter.formatRulesHash(this.props.referenceHash)}</div>
         <div>Title: {this.state.rules.title}</div>
         {/* <div>Time Window: {this.state.rules.timeUntilEndString}</div> */}
       </div>
