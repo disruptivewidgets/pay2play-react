@@ -92,10 +92,15 @@ class SwipeableTextMobileStepper extends React.Component {
       classes,
       theme,
       bracket_SideA_Transpose,
-      bracket_SideB_Transpose
+      bracket_SideB_Transpose,
+      bracketId,
+      owner,
+      handleClickFor_FillSeat,
+      handleClickFor_PromoteSeat
     } = this.props;
 
     var bracket_Transpose = bracket_SideA_Transpose.concat(bracket_SideB_Transpose);
+    var number_ColumnsPerSide = bracket_Transpose.length / 2;
 
     const {
       activeStep
@@ -117,12 +122,14 @@ class SwipeableTextMobileStepper extends React.Component {
           enableMouseEvents
         >
           {
-            bracket_Transpose.map((column, index) => (
-              <Column
-                key={index}
-                column={column}
-              />
-            ))
+            bracket_Transpose.map((column, index) => {
+
+              if (number_ColumnsPerSide >= index )
+                return <Column key={index} column={column} bracketId={bracketId} owner={owner} side="A" handleClickFor_FillSeat={handleClickFor_FillSeat} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+              if (number_ColumnsPerSide < index)
+                return <Column key={index} column={column} bracketId={bracketId} owner={owner} side="B" handleClickFor_FillSeat={handleClickFor_FillSeat} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+
+            })
           }
         </SwipeableViews>
 
@@ -154,8 +161,15 @@ class SwipeableTextMobileStepper extends React.Component {
 function Column(props)
 {
   const {
-    column
+    column,
+    side,
+    bracketId,
+    owner,
+    handleClickFor_FillSeat,
+    handleClickFor_PromoteSeat
   } = props;
+
+  console.log(side);
 
   return (
     <div>
@@ -164,6 +178,11 @@ function Column(props)
           <Cell
             key={index}
             cell={cell}
+            bracketId={bracketId}
+            owner={owner}
+            side={side}
+            handleClickFor_FillSeat={handleClickFor_FillSeat}
+            handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
           />
         ))
       }
@@ -174,7 +193,12 @@ function Column(props)
 function Cell(props)
 {
   const {
-    cell
+    cell,
+    side,
+    bracketId,
+    owner,
+    handleClickFor_FillSeat,
+    handleClickFor_PromoteSeat
   } = props;
 
   let enabled = true;
@@ -194,16 +218,107 @@ function Cell(props)
 
   console.log(cell.value);
 
+  var index = 0;
+  var style = '';
+
+  var showJoinButton_SideA = true;
+  var showJoinButton_SideB = true;
+
+  var isModerator = false;
+
+  var isJoinActionProhibited = false;
+
   return (
     enabled ? (
-      <div>
-        {cell.index} : {address}
+      <div className={style}>
+        {
+          side == "A" &&
+            <div>
+              {
+                showJoinButton_SideA && !isModerator && !isJoinActionProhibited &&
+                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+              }
+              &nbsp;{address}&nbsp;
+              {
+                isModerator && !isPromoActionProhibited &&
+                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+              }
+            </div>
+        }
+
+        {
+          side == "B" &&
+            <div>
+              {
+                isModerator && !isPromoActionProhibited &&
+                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+              }
+              &nbsp;{address}&nbsp;
+              {
+                showJoinButton_SideB && !isModerator && !isJoinActionProhibited &&
+                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+              }
+            </div>
+        }
       </div>
     ) : (
       <div>
         {cell}
       </div>
     )
+  );
+}
+
+function ActionLink_FillSeat(props)
+{
+  var {
+    bracketId,
+    owner,
+    side,
+    seat,
+    handleClickFor_FillSeat
+  } = props;
+
+  function handleClick(bracketId, side, seat, e)
+  {
+    handleClickFor_FillSeat(bracketId, side, seat, e)
+  }
+
+  return (
+      <a href="#" onClick={(e) => handleClick(bracketId, side, seat, e)}>+</a>
+  );
+}
+
+function ActionLink_PromoteSeat(props)
+{
+  var {
+    bracketId,
+    owner,
+    side,
+    seat,
+    address,
+    handleClickFor_PromoteSeat
+  } = props;
+
+  function handleClick(bracketId, side, seat, address, e)
+  {
+    handleClickFor_PromoteSeat(bracketId, side, seat, address, e);
+  }
+
+  var button = ""
+
+  if (side == "A")
+  {
+    button = "-->";
+  }
+
+  if (side == "B")
+  {
+    button = "<--";
+  }
+
+  return (
+      <a href="#" onClick={(e) => handleClick(bracketId, side, seat, address, e)}>{button}</a>
   );
 }
 
