@@ -127,7 +127,7 @@ class SwipeableTextMobileStepper extends React.Component {
               // Side A
               if (index == 0)
               {
-                if (number_ColumnsPerSide >= index )
+                if (number_ColumnsPerSide - 1 >= index )
                   return <Column
                     key={index}
                     column={column}
@@ -145,7 +145,7 @@ class SwipeableTextMobileStepper extends React.Component {
               }
               else
               {
-                if (number_ColumnsPerSide >= index )
+                if (number_ColumnsPerSide - 1 >= index )
                   return <Column
                     key={index}
                     column={column}
@@ -165,7 +165,7 @@ class SwipeableTextMobileStepper extends React.Component {
               // Side B
               if (index == (number_ColumnsPerSide * 2 - 1))
               {
-                if (number_ColumnsPerSide < index)
+                if (number_ColumnsPerSide - 1 < index)
                   return <Column
                     key={index}
                     column={column}
@@ -183,7 +183,7 @@ class SwipeableTextMobileStepper extends React.Component {
               }
               else
               {
-                if (number_ColumnsPerSide < index)
+                if (number_ColumnsPerSide - 1 < index)
                   return <Column
                     key={index}
                     column={column}
@@ -334,9 +334,6 @@ function Cell(props)
 
     text = item.index + " : " + text;
     index = item.index;
-  }
-  else {
-    console.log("YO");
   }
 
   if (!item.promo)

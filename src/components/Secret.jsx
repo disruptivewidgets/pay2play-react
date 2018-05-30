@@ -206,7 +206,6 @@ export default class Secret extends Component
 
               </label>
               <br />
-              <br />
 
               { error ? (
                 <div>

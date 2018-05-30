@@ -810,17 +810,18 @@ export default class Bracket extends Component
                 />
               </MobileView> */}
 
-              <SwipeableBracket
-                rows_SideA={rows_SideA}
-                rows_SideB={rows_SideB}
-                bracket_SideA_Transpose={bracket_SideA_Transpose}
-                bracket_SideB_Transpose={bracket_SideB_Transpose}
-                bracketId={bracketId}
-                owner={owner}
-                handleClickFor_FillSeat={handleClickFor_FillSeat}
-                handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-              />
-
+              <MobileView device={isMobile}>
+                <SwipeableBracket
+                  rows_SideA={rows_SideA}
+                  rows_SideB={rows_SideB}
+                  bracket_SideA_Transpose={bracket_SideA_Transpose}
+                  bracket_SideB_Transpose={bracket_SideB_Transpose}
+                  bracketId={bracketId}
+                  owner={owner}
+                  handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                />
+              </MobileView>
               <br />
 
               <div>

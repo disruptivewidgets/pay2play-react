@@ -279,7 +279,6 @@ export default class Start extends Component
                   </MobileView>
                 </label>
                 <br />
-                <br />
 
                 { error ? (
                   <div>

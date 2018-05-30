@@ -272,7 +272,6 @@ export default class BracketIndex extends Component
                 </MobileView>
               </label>
               <br />
-              <br />
 
               {
                 error ? (
