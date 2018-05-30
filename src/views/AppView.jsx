@@ -457,9 +457,9 @@ class MistSite extends React.Component {
 
 const Home = () => (
   <div>
-    <StartButton to="/start" label="Wagers" />
-    <br />
     <StartButton to="/brackets" label="Brackets" />
+    <br />
+    <StartButton to="/start" label="Wagers" />
     <br />
   </div>
 )

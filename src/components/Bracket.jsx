@@ -1036,12 +1036,25 @@ function BracketSlot(props)
             <div>
               {
                 showJoinButton_SideA && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
               &nbsp;{text}&nbsp;
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
             </div>
         }
@@ -1051,12 +1064,25 @@ function BracketSlot(props)
             <div>
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
               &nbsp;{text}&nbsp;
               {
                 showJoinButton_SideB && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
             </div>
         }

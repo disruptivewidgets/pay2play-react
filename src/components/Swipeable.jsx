@@ -124,11 +124,81 @@ class SwipeableTextMobileStepper extends React.Component {
           {
             bracket_Transpose.map((column, index) => {
 
-              if (number_ColumnsPerSide >= index )
-                return <Column key={index} column={column} bracketId={bracketId} owner={owner} side="A" handleClickFor_FillSeat={handleClickFor_FillSeat} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
-              if (number_ColumnsPerSide < index)
-                return <Column key={index} column={column} bracketId={bracketId} owner={owner} side="B" handleClickFor_FillSeat={handleClickFor_FillSeat} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+              // Side A
+              if (index == 0)
+              {
+                if (number_ColumnsPerSide >= index )
+                  return <Column
+                    key={index}
+                    column={column}
+                    columnIndex={index}
+                    number_ColumnsPerSide={number_ColumnsPerSide}
+                    bracketId={bracketId}
+                    bracketData_Transpose={bracket_SideA_Transpose}
+                    owner={owner}
+                    side="A"
+                    isFirstColumn={true}
+                    isLastColumn={false}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
+              }
+              else
+              {
+                if (number_ColumnsPerSide >= index )
+                  return <Column
+                    key={index}
+                    column={column}
+                    columnIndex={index}
+                    number_ColumnsPerSide={number_ColumnsPerSide}
+                    bracketId={bracketId}
+                    bracketData_Transpose={bracket_SideA_Transpose}
+                    owner={owner}
+                    side="A"
+                    isFirstColumn={false}
+                    isLastColumn={false}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
+              }
 
+              // Side B
+              if (index == (number_ColumnsPerSide * 2 - 1))
+              {
+                if (number_ColumnsPerSide < index)
+                  return <Column
+                    key={index}
+                    column={column}
+                    columnIndex={index - number_ColumnsPerSide}
+                    number_ColumnsPerSide={number_ColumnsPerSide}
+                    bracketId={bracketId}
+                    bracketData_Transpose={bracket_SideB_Transpose}
+                    owner={owner}
+                    side="B"
+                    isFirstColumn={false}
+                    isLastColumn={true}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
+              }
+              else
+              {
+                if (number_ColumnsPerSide < index)
+                  return <Column
+                    key={index}
+                    column={column}
+                    columnIndex={index - number_ColumnsPerSide}
+                    number_ColumnsPerSide={number_ColumnsPerSide}
+                    bracketId={bracketId}
+                    bracketData_Transpose={bracket_SideB_Transpose}
+                    owner={owner}
+                    side="B"
+                    isFirstColumn={false}
+                    isLastColumn={false}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
+              }
             })
           }
         </SwipeableViews>
@@ -162,9 +232,14 @@ function Column(props)
 {
   const {
     column,
+    columnIndex,
+    number_ColumnsPerSide,
     side,
     bracketId,
+    bracketData_Transpose,
     owner,
+    isFirstColumn,
+    isLastColumn,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
@@ -172,15 +247,20 @@ function Column(props)
   console.log(side);
 
   return (
-    <div>
+    <div className="bracket">
       {
         column.map((cell, index) => (
           <Cell
             key={index}
-            cell={cell}
+            item={cell}
             bracketId={bracketId}
+            bracketData_Transpose={bracketData_Transpose}
             owner={owner}
             side={side}
+            number_ColumnsPerSide={number_ColumnsPerSide}
+            columnIndex={columnIndex}
+            isFirstColumn={isFirstColumn}
+            isLastColumn={isLastColumn}
             handleClickFor_FillSeat={handleClickFor_FillSeat}
             handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
           />
@@ -192,41 +272,129 @@ function Column(props)
 
 function Cell(props)
 {
-  const {
-    cell,
+  let {
+    item,
     side,
     bracketId,
+    bracketData_Transpose,
+    number_ColumnsPerSide,
     owner,
+    columnIndex,
+    isFirstColumn,
+    isLastColumn,
     handleClickFor_FillSeat,
     handleClickFor_PromoteSeat
   } = props;
 
-  let enabled = true;
-  let address = '';
+  var style = "";
 
-  if (cell == "X")
+  var text = "X";
+  var index = "";
+
+  var isPromoActionProhibited = false;
+  var isJoinActionProhibited = false;
+
+  if (typeof item === 'object')
   {
-    enabled = false;
+    var head = item.value.substring(0, 5);
+    var tail = item.value.substring(item.value.length - 5, item.value.length);
+    text = head + '...' + tail;
+
+    if (text == "0x000...00000")
+    {
+      if (side == "A")
+      {
+        style = "cell-side-a-player";
+      }
+      if (side == "B")
+      {
+        style = "cell-side-b-player";
+      }
+
+      isPromoActionProhibited = true;
+    }
+    else
+    {
+      if (side == "A")
+      {
+        style = "cell-side-a-player-highlight";
+      }
+      if (side == "B")
+      {
+        style = "cell-side-b-player-highlight";
+      }
+
+      if (item.value == window.window.authorizedAccount)
+      {
+        style = "highlight-authorized";
+      }
+
+      isJoinActionProhibited = true;
+    }
+
+    text = item.index + " : " + text;
+    index = item.index;
   }
-  else
+  else {
+    console.log("YO");
+  }
+
+  if (!item.promo)
   {
-    address = cell.value;
-    let head = address.substring(0, 8);
-    let tail = address.substring(address.length - 8, address.length);
-    address = head + '...' + tail;
+    isPromoActionProhibited = true;
   }
 
-  console.log(cell.value);
+  var showJoinButton_SideA = false
+  var showJoinButton_SideB = false
 
-  var index = 0;
-  var style = '';
+  if (side == "A")
+  {
+    if (columnIndex == 0)
+    {
+      showJoinButton_SideA = true;
 
-  var showJoinButton_SideA = true;
-  var showJoinButton_SideB = true;
+      var column = bracketData_Transpose[columnIndex];
+
+      var records = _.filter(column, {value: window.authorizedAccount});
+
+      if (records.length > 0)
+      {
+        showJoinButton_SideA = false;
+      }
+    }
+  }
+
+  if (side == "B")
+  {
+    if (columnIndex == (number_ColumnsPerSide - 1))
+    {
+      showJoinButton_SideB = true
+
+      var column = bracketData_Transpose[columnIndex];
+
+      var records = _.filter(column, {value: window.authorizedAccount});
+
+      if (records.length > 0)
+      {
+        showJoinButton_SideB = false;
+      }
+    }
+  }
+
+  var address = item.value;
+
+  var enabled = false;
+
+  if (index != "")
+  {
+    enabled = true;
+  }
 
   var isModerator = false;
-
-  var isJoinActionProhibited = false;
+  if (window.authorizedAccount == owner)
+  {
+    isModerator = true;
+  }
 
   return (
     enabled ? (
@@ -236,12 +404,25 @@ function Cell(props)
             <div>
               {
                 showJoinButton_SideA && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
-              &nbsp;{address}&nbsp;
+              &nbsp;{text}&nbsp;
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
             </div>
         }
@@ -251,19 +432,32 @@ function Cell(props)
             <div>
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
-              &nbsp;{address}&nbsp;
+              &nbsp;{text}&nbsp;
               {
                 showJoinButton_SideB && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
             </div>
         }
       </div>
     ) : (
-      <div>
-        {cell}
+      <div className={style}>
+        {text}
       </div>
     )
   );
