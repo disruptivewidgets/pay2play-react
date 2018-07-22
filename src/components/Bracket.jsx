@@ -1,15 +1,29 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import BracketStore from '../stores/BracketStore';
 import Web3Actions from '../actions/Web3Actions';
 
 import WinnerSelector from '../components/WinnerSelector';
 
-import { Intent, Spinner } from "@blueprintjs/core/dist";
+import Formatter from "../helpers/Formatters.js";
+
+import {
+  Intent,
+  Spinner
+} from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
 
 import _ from 'lodash';
+
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
+
+import SwipeableBracket from './Swipeable';
 
 var data_A = [
   '0',
@@ -169,17 +183,26 @@ var loading_captions =
   "Pending Confirmation..."
 ]
 
-var Bracket = React.createClass({
-  getInitialState: function()
+export default class Bracket extends Component
+{
+  constructor(props)
   {
-    return {
+    super(props);
+    this.state = {
       playerCount: 32,
       seatsData_SideA: BracketStore.getSeats_SideA(),
       seatsData_SideB: BracketStore.getSeats_SideB(),
       userAction: ACTION_NONE
-    };
-  },
-  componentWillMount: function()
+    }
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
+    this._onFetchSeats_SideA = this._onFetchSeats_SideA.bind(this);
+    this._onFetchSeats_SideB = this._onFetchSeats_SideB.bind(this);
+  }
+  componentWillMount()
   {
     var grid_SideA = fill_SideA(this.state.playerCount, data_A);
     var grid_SideB = fill_SideB(this.state.playerCount, data_B);
@@ -202,8 +225,8 @@ var Bracket = React.createClass({
     // Web3Actions.retrieveBrackets();
 
     Web3Actions.retrieveBracket(this.props.match.params.id);
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     BracketStore.addChangeListener(this._onChange);
 
@@ -214,8 +237,8 @@ var Bracket = React.createClass({
     BracketStore.addConfirmationListener(this.onEvent_Confirmation);
     BracketStore.addReceiptListener(this.onEvent_Receipt);
     BracketStore.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     BracketStore.removeChangeListener(this._onChange);
 
@@ -226,8 +249,8 @@ var Bracket = React.createClass({
     BracketStore.removeConfirmationListener(this.onEvent_Confirmation);
     BracketStore.removeReceiptListener(this.onEvent_Receipt);
     BracketStore.removeErrorListener(this.onEvent_Error);
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState({
       playerCount: BracketStore.getPlayerCount(),
@@ -235,8 +258,8 @@ var Bracket = React.createClass({
       owner: BracketStore.getBracketOwner(),
       bracketAddress: BracketStore.getBracketContractAddress()
     });
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
@@ -244,8 +267,8 @@ var Bracket = React.createClass({
       // pending_Bracket: true,
       loading_caption: loading_captions[2]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -256,8 +279,8 @@ var Bracket = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
 
@@ -295,8 +318,8 @@ var Bracket = React.createClass({
       console.log("C");
       Web3Actions.retrieveBracket(bracketId);
     }, 1);
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -306,8 +329,8 @@ var Bracket = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  _onFetchSeats_SideA: function()
+  }
+  _onFetchSeats_SideA()
   {
     console.log("_onFetchSeats_SideA");
 
@@ -401,8 +424,8 @@ var Bracket = React.createClass({
         // counts_SideA: counts
       });
     }, 1000);
-  },
-  _onFetchSeats_SideB: function()
+  }
+  _onFetchSeats_SideB()
   {
     console.log("_onFetchSeats_SideB");
 
@@ -496,8 +519,8 @@ var Bracket = React.createClass({
         winner_SideB: seats[0]
       });
     }, 1000);
-  },
-  render: function()
+  }
+  render()
   {
     const {
       bracket_SideA,
@@ -718,6 +741,11 @@ var Bracket = React.createClass({
 
     var url = "https://" + 'ropsten' + ".etherscan.io/address/" + bracketAddress;
 
+    // let winner = this.state.winner;
+    // let head = winner.substring(0, 8);
+    // let tail = winner.substring(winner.length - 8, winner.length);
+    // winner = head + '...' + tail;
+
     return (
       <div>
         <p className="highlighted">Bracket</p>
@@ -725,60 +753,85 @@ var Bracket = React.createClass({
         {
           loaded &&
             <div>
-              <table className="bracket">
-                <tbody>
-                  <tr>
-                    <td>
-                      <table className="bracket-side-a">
-                        <tbody>
-                          {rows_SideA.map(item => (
-                            <BracketRow
-                              key={item.index}
-                              item={item.value}
-                              bracketId={bracketId}
-                              owner={owner}
-                              bracketData={bracket_SideA}
-                              bracketData_Transpose={bracket_SideA_Transpose}
-                              side="A"
-                              handleClickFor_FillSeat={handleClickFor_FillSeat}
-                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-                            />
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                    <td>
-                      <table className="bracket-side-b">
-                        <tbody>
-                          {rows_SideB.map(item => (
-                            <BracketRow
-                              key={item.index}
-                              item={item.value}
-                              bracketId={bracketId}
-                              owner={owner}
-                              bracketData={bracket_SideB}
-                              bracketData_Transpose={bracket_SideB_Transpose}
-                              side="B"
-                              handleClickFor_FillSeat={handleClickFor_FillSeat}
-                              handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-                            />
-                          ))}
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+              <BrowserView device={isBrowser}>
+                <table className="bracket">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <table className="bracket-side-a">
+                          <tbody>
+                            {rows_SideA.map(item => (
+                              <BracketRow
+                                key={item.index}
+                                item={item.value}
+                                bracketId={bracketId}
+                                owner={owner}
+                                bracketData={bracket_SideA}
+                                bracketData_Transpose={bracket_SideA_Transpose}
+                                side="A"
+                                handleClickFor_FillSeat={handleClickFor_FillSeat}
+                                handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                              />
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                      <td>
+                        <table className="bracket-side-b">
+                          <tbody>
+                            {rows_SideB.map(item => (
+                              <BracketRow
+                                key={item.index}
+                                item={item.value}
+                                bracketId={bracketId}
+                                owner={owner}
+                                bracketData={bracket_SideB}
+                                bracketData_Transpose={bracket_SideB_Transpose}
+                                side="B"
+                                handleClickFor_FillSeat={handleClickFor_FillSeat}
+                                handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                              />
+                            ))}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </BrowserView>
+
+              {/* <MobileView device={isMobile}>
+                <SwipeableBracket
+                  rows_SideA={rows_SideA}
+                  rows_SideB={rows_SideB}
+                  bracket_SideA_Transpose={bracket_SideA_Transpose}
+                  bracket_SideB_Transpose={bracket_SideB_Transpose}
+                />
+              </MobileView> */}
+
+              <MobileView device={isMobile}>
+                <SwipeableBracket
+                  rows_SideA={rows_SideA}
+                  rows_SideB={rows_SideB}
+                  bracket_SideA_Transpose={bracket_SideA_Transpose}
+                  bracket_SideB_Transpose={bracket_SideB_Transpose}
+                  bracketId={bracketId}
+                  owner={owner}
+                  handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                />
+              </MobileView>
               <br />
 
               <div>
-                Bracket Winner: {this.state.winner}
+                Bracket Winner: {Formatter.formatAddress(winner)}
               </div>
               <div>
-                Bracket Moderator: <span className={style}>{this.state.owner}</span>
+                Bracket Moderator: <span className={style}>{Formatter.formatAddress(this.state.owner)}</span>
               </div>
               <div>
-                Bracket Address: <a href={url}>{this.state.bracketAddress}</a>
+                Bracket Address: <a href={url}>{Formatter.formatAddress(this.state.bracketAddress)}</a>
               </div>
               <br />
 
@@ -807,10 +860,11 @@ var Bracket = React.createClass({
               <br />
             </div>
         }
+
       </div>
     );
   }
-});
+};
 
 function BracketRow(props)
 {
@@ -829,21 +883,23 @@ function BracketRow(props)
 
   return (
     <tr>
-      {item.map((item, index) => (
-        <BracketSlot
-          key={Math.floor(Math.random() * 1000000)}
-          item={item}
-          columnIndex={index}
-          rowLength={rowLength}
-          side={side}
-          bracketId={bracketId}
-          owner={owner}
-          bracketData={bracketData}
-          bracketData_Transpose={bracketData_Transpose}
-          handleClickFor_FillSeat={handleClickFor_FillSeat}
-          handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
-        />
-      ))}
+      {
+        item.map((item, index) => (
+          <BracketSlot
+            key={Math.floor(Math.random() * 1000000)}
+            item={item}
+            columnIndex={index}
+            rowLength={rowLength}
+            side={side}
+            bracketId={bracketId}
+            owner={owner}
+            bracketData={bracketData}
+            bracketData_Transpose={bracketData_Transpose}
+            handleClickFor_FillSeat={handleClickFor_FillSeat}
+            handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+          />
+        ))
+      }
     </tr>
   );
 }
@@ -981,12 +1037,25 @@ function BracketSlot(props)
             <div>
               {
                 showJoinButton_SideA && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
               &nbsp;{text}&nbsp;
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
             </div>
         }
@@ -996,12 +1065,25 @@ function BracketSlot(props)
             <div>
               {
                 isModerator && !isPromoActionProhibited &&
-                  <ActionLink_PromoteSeat bracketId={bracketId} owner={owner} side={side} seat={index} address={address} handleClickFor_PromoteSeat={handleClickFor_PromoteSeat} />
+                  <ActionLink_PromoteSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    address={address}
+                    handleClickFor_PromoteSeat={handleClickFor_PromoteSeat}
+                  />
               }
               &nbsp;{text}&nbsp;
               {
                 showJoinButton_SideB && !isModerator && !isJoinActionProhibited &&
-                  <ActionLink_FillSeat bracketId={bracketId} owner={owner} side={side} seat={index} handleClickFor_FillSeat={handleClickFor_FillSeat} />
+                  <ActionLink_FillSeat
+                    bracketId={bracketId}
+                    owner={owner}
+                    side={side}
+                    seat={index}
+                    handleClickFor_FillSeat={handleClickFor_FillSeat}
+                  />
               }
             </div>
         }

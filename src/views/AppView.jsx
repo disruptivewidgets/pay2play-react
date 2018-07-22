@@ -289,6 +289,8 @@ class MistSite extends React.Component {
       isSelectedNetworkSupported = true;
     }
 
+    console.log("React.version", React.version);
+
     return (
       <div>
         { hasMistBrowser || hasMetamask || hasTrustWallet ? (
@@ -455,9 +457,9 @@ class MistSite extends React.Component {
 
 const Home = () => (
   <div>
-    <StartButton to="/start" label="Wagers" />
-    <br />
     <StartButton to="/brackets" label="Brackets" />
+    <br />
+    <StartButton to="/start" label="Wagers" />
     <br />
   </div>
 )

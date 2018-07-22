@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import {
   Link,
@@ -19,6 +19,8 @@ import _ from 'lodash';
 
 import Helpers from "../helpers/TransactionUtils.js";
 
+import Formatter from "../helpers/Formatters.js";
+
 import { Intent, Spinner } from "@blueprintjs/core/dist";
 
 import "@blueprintjs/core/dist/blueprint.css";
@@ -28,11 +30,20 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-var Invite = React.createClass({
-  getInitialState: function() {
-    return WagerStore.get();
-  },
-  componentWillMount: function() {
+export default class Invite extends Component
+{
+  constructor(props)
+  {
+    super(props);
+    this.state = WagerStore.get();
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
+  }
+  componentWillMount()
+  {
     console.log("componentWillMount");
 
     this.setState(WagerStore.get());
@@ -61,24 +72,27 @@ var Invite = React.createClass({
     }
 
     SessionHelper.listTransactions();
-  },
-  componentDidMount: function() {
+  }
+  componentDidMount()
+  {
     WagerStore.addChangeListener(this._onChange);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function() {
+  }
+  componentWillUnmount()
+  {
     WagerStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
-  },
-  componentWillReceiveProps: function(nextProps) {
+  }
+  componentWillReceiveProps(nextProps)
+  {
     console.log("componentWillReceiveProps");
 
     this.setState({
@@ -105,8 +119,8 @@ var Invite = React.createClass({
 
     SessionHelper.listTransactions();
     // this.forceUpdate();
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState(WagerStore.get());
     this.setState(Web3Store.getStore());
@@ -114,16 +128,16 @@ var Invite = React.createClass({
     this.setState({
       players: this.state.wager.players
     });
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[1]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
@@ -131,12 +145,12 @@ var Invite = React.createClass({
       loaded: true,
       processing: true
     });
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -145,8 +159,8 @@ var Invite = React.createClass({
     });
 
     this.forceUpdate();
-  },
-  render: function()
+  }
+  render()
   {
     const referenceHash = this.state.wager.referenceHash;
 
@@ -394,7 +408,7 @@ var Invite = React.createClass({
       </div>
     );
   }
-});
+};
 
 function Player(props)
 {
@@ -402,11 +416,11 @@ function Player(props)
   const winner = props.winner;
   const accounts = props.accounts;
 
-  var element = <div>{player}</div>;
+  var element = <div>{Formatter.formatAddress(player)}</div>;
 
   if (accounts.length > 0) {
     if (accounts[0] == player) {
-      element = <div>{player} (You)</div>
+      element = <div>{Formatter.formatAddress(player)} (You)</div>
     }
   };
 
@@ -424,4 +438,4 @@ const HomeButton = withRouter(({ history, label, to }) => (
     </button>
   </div>
 ));
-module.exports = Invite;
+// module.exports = Invite;

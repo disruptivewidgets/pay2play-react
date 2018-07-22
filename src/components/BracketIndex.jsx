@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import BracketBulkStore from '../stores/BracketBulkStore';
 import Web3Actions from '../actions/Web3Actions';
 
@@ -33,11 +33,19 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-var BracketIndex = React.createClass({
-  getInitialState: function() {
-    return BracketBulkStore.getList();
-  },
-  componentWillMount: function()
+export default class BracketIndex extends Component
+{
+  constructor(props)
+  {
+    super(props);
+    this.state = BracketBulkStore.getList();
+    this._onChange = this._onChange.bind(this);
+    this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
+    this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
+    this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
+    this.onEvent_Error = this.onEvent_Error.bind(this);
+  }
+  componentWillMount()
   {
     this.setState(BracketBulkStore.getList());
 
@@ -48,12 +56,12 @@ var BracketIndex = React.createClass({
     });
 
     Web3Actions.retrieveBrackets();
-  },
-  componentWillReceiveProps: function(nextProps)
+  }
+  componentWillReceiveProps(nextProps)
   {
     // GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
-  },
-  componentDidMount: function()
+  }
+  componentDidMount()
   {
     BracketBulkStore.addChangeListener(this._onChange);
 
@@ -61,8 +69,8 @@ var BracketIndex = React.createClass({
     BracketBulkStore.addConfirmationListener(this.onEvent_Confirmation);
     BracketBulkStore.addReceiptListener(this.onEvent_Receipt);
     BracketBulkStore.addErrorListener(this.onEvent_Error);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     BracketBulkStore.removeChangeListener(this._onChange);
 
@@ -70,28 +78,28 @@ var BracketIndex = React.createClass({
     BracketBulkStore.removeConfirmationListener(this.onEvent_Confirmation);
     BracketBulkStore.removeReceiptListener(this.onEvent_Receipt);
     BracketBulkStore.removeErrorListener(this.onEvent_Error);
-  },
-  onEvent_TransactionHash: function()
+  }
+  onEvent_TransactionHash()
   {
     console.log("onEvent_TransactionHash");
 
     this.setState({
       loading_caption: loading_captions[1]
     });
-  },
-  onEvent_Confirmation: function()
+  }
+  onEvent_Confirmation()
   {
     console.log("onEvent_Confirmation");
 
     this.setState({
       pending_Payment: false
     });
-  },
-  onEvent_Receipt: function()
+  }
+  onEvent_Receipt()
   {
     console.log("onEvent_Receipt");
-  },
-  onEvent_Error: function()
+  }
+  onEvent_Error()
   {
     console.log("onEvent_Error");
 
@@ -100,16 +108,16 @@ var BracketIndex = React.createClass({
     });
 
     this.forceUpdate();
-  },
+  }
   forceUpdate()
   {
     this.setState(BracketBulkStore.getList());
-  },
-  _onChange: function()
+  }
+  _onChange()
   {
     this.setState(BracketBulkStore.getList());
-  },
-  render: function()
+  }
+  render()
   {
     const {
       error,
@@ -264,7 +272,6 @@ var BracketIndex = React.createClass({
                 </MobileView>
               </label>
               <br />
-              <br />
 
               {
                 error ? (
@@ -294,7 +301,7 @@ var BracketIndex = React.createClass({
       </div>
     );
   }
-});
+};
 
 function BracketItem(props) {
   const {item} = props;
@@ -379,4 +386,4 @@ function BracketItem_Mobile(props) {
 }
 
 
-module.exports = BracketIndex;
+// module.exports = BracketIndex;

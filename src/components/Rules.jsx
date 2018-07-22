@@ -1,42 +1,53 @@
-import React from 'react';
+import React, { Component } from 'react';
 import RuleStore from '../stores/RuleStore';
 import GameActions from '../actions/GameActions';
+
+import Formatter from "../helpers/Formatters.js";
 
 import * as moment from 'moment';
 import 'moment-duration-format';
 
-var Rules = React.createClass({
-  getInitialState: function() {
-    return RuleStore.getDataStore();
-  },
-  componentWillMount: function() {
+export default class Rules extends Component
+{
+  constructor(props)
+  {
+    super(props);
+    this.state = RuleStore.getDataStore();
+    this._onChange = this._onChange.bind(this);
+  }
+  componentWillMount()
+  {
     this.setState(RuleStore.getDataStore());
 
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
-  },
-  componentWillReceiveProps: function(nextProps) {
+  }
+  componentWillReceiveProps(nextProps)
+  {
     GameActions.retrieveRules(this.props.referenceHash, this.props.startTimestamp);
-  },
-  componentDidMount: function() {
+  }
+  componentDidMount()
+  {
     RuleStore.addChangeListener(this._onChange);
-  },
-  componentWillUnmount: function() {
+  }
+  componentWillUnmount()
+  {
     RuleStore.removeChangeListener(this._onChange);
-  },
-  _onChange: function() {
+  }
+  _onChange()
+  {
     this.setState(RuleStore.getDataStore());
-  },
-  render: function() {
+  }
+  render() {
     return (
       <div>
         <div className="highlighted">Rules</div>
         <br />
-        <div>Rules Hash: {this.props.referenceHash}</div>
+        <div>Rules Hash: {Formatter.formatRulesHash(this.props.referenceHash)}</div>
         <div>Title: {this.state.rules.title}</div>
         {/* <div>Time Window: {this.state.rules.timeUntilEndString}</div> */}
       </div>
     );
   }
-});
+};
 
-module.exports = Rules;
+// module.exports = Rules;

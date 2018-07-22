@@ -18,9 +18,12 @@ import Select from 'react-select';
 import 'react-select/dist/react-select.css';
 
 var StartWagerForm = React.createClass({
-  getInitialState: function() {
-    return GameStore.getDataStore();
-  },
+  constructor(props)
+  {
+    super(props);
+    this.state = GameStore.getDataStore();
+    this._onChange = this._onChange.bind(this);
+  }
   componentWillMount: function() {
     this.setState(GameStore.getDataStore());
 

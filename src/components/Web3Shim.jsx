@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Web3 from 'web3';
 
 import interfaces from "../smart-contract/interfaces.js";
 import ApiUtils from '../helpers/ApiUtils';
 
 import util from 'ethereumjs-util';
+
+import Formatter from "../helpers/Formatters.js";
 
 import {
   contractAddress,
@@ -20,9 +22,22 @@ import {
   withRouter
 } from 'react-router-dom'
 
-var Web3Shim = React.createClass({
-  getInitialState: function() {
-    return {
+export default class Web3Shim extends Component
+{
+  // getInitialState() {
+  //   return {
+  //     version: '',
+  //     authorizedAccount: 'None',
+  //     blockNumber: 0,
+  //     tokenBalance: 0,
+  //     winCount: 0,
+  //     lossCount: 0
+  //   };
+  // }
+  constructor(props)
+  {
+    super(props);
+    this.state = {
       version: '',
       authorizedAccount: 'None',
       blockNumber: 0,
@@ -30,7 +45,9 @@ var Web3Shim = React.createClass({
       winCount: 0,
       lossCount: 0
     };
-  },
+    this._onChange = this._onChange.bind(this);
+  }
+
   componentWillMount() {
     console.log("componentWillMount Web3Shim");
 
@@ -179,17 +196,17 @@ var Web3Shim = React.createClass({
       });
 
     });
-  },
+  }
   componentDidMount()
   {
     Web3Store.addChangeListener(this._onChange);
-  },
-  componentWillUnmount: function()
+  }
+  componentWillUnmount()
   {
     Web3Store.removeChangeListener(this._onChange);
-  },
-  _onChange: function() {
-  },
+  }
+  _onChange() {
+  }
   render() {
     const isAuthorized = (window.authorizedAccount !== undefined);
 
@@ -211,7 +228,7 @@ var Web3Shim = React.createClass({
         {
           isAuthorized ? (
             <div>
-              <p>Authorized Account: <span className={style}>{ this.state.authorizedAccount }</span></p>
+              <p>Authorized Account: <span className={style}>{ Formatter.formatAddress(this.state.authorizedAccount) }</span></p>
               <p>Token Balance: {this.state.tokenBalance} <a href={url}>Play</a></p>
               <p>Win Count: {this.state.winCount}</p>
               <p>Loss Count: {this.state.lossCount}</p>
@@ -226,6 +243,6 @@ var Web3Shim = React.createClass({
       </div>
     );
   }
-});
+};
 
-module.exports = Web3Shim;
+// module.exports = Web3Shim;
