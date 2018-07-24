@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
-import WagerStore from '../stores/WagerStore';
 
+import GameSelector from '../components/GameSelector';
+
+import DiscordBotActions from '../actions/DiscordBotActions';
 import GameActions from '../actions/GameActions';
 import Web3Actions from '../actions/Web3Actions';
+
+import DiscordBotAPI from '../api/DiscordBotAPI';
 import RulesAPI from '../api/RulesAPI.js';
 
-import Web3Store from '../stores/Web3Store';
 import GameStore from '../stores/GameStore';
-import GameSelector from '../components/GameSelector';
+import DiscordBotStore from '../stores/DiscordBotStore';
+import Web3Store from '../stores/Web3Store';
+import WagerStore from '../stores/WagerStore';
 
 import TransactionHelper from "../helpers/TransactionUtils.js";
 import SessionHelper from "../helpers/SessionUtils.js";
@@ -18,6 +23,8 @@ import { Intent, Spinner } from "@blueprintjs/core/dist";
 import "@blueprintjs/core/dist/blueprint.css";
 
 var validator = require('validator');
+
+import axios from 'axios';
 
 import {
   Link,
@@ -39,20 +46,21 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-export default class Start extends Component
-{
-  constructor(props)
-  {
+export default class Start extends Component {
+  constructor(props) {
     super(props);
     this.state = GameStore.getDataStore();
+
     this._onChange = this._onChange.bind(this);
+
     this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
     this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
     this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
     this.onEvent_Error = this.onEvent_Error.bind(this);
+
+    this.onEvent_RetrievePlayers = this.onEvent_RetrievePlayers.bind(this);
   }
-  componentWillMount()
-  {
+  componentWillMount() {
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"))
     {
       this.setState({
@@ -72,28 +80,30 @@ export default class Start extends Component
       loading_caption: loading_captions[0]
     });
 
+    DiscordBotActions.retrievePlayers(0);
     GameActions.retrieveGames();
   }
-  componentDidMount()
-  {
+  componentDidMount() {
     GameStore.addChangeListener(this._onChange);
+
+    DiscordBotStore.addNotifyBuyinListener(this.onEvent_RetrievePlayers);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
   }
-  componentWillUnmount()
-  {
+  componentWillUnmount() {
     GameStore.removeChangeListener(this._onChange);
+
+    DiscordBotStore.removeChangeListener(this.onEvent_RetrievePlayers);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   }
-  _onChange()
-  {
+  _onChange(){
     var dataStore = GameStore.getDataStore();
 
     var games = _.map(dataStore.list, function(item) {
@@ -119,16 +129,14 @@ export default class Start extends Component
 
     this.setState(GameStore.getDataStore());
   }
-  onEvent_TransactionHash()
-  {
+  onEvent_TransactionHash() {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[2]
     });
   }
-  onEvent_Confirmation()
-  {
+  onEvent_Confirmation() {
     console.log("onEvent_Confirmation");
 
     this.setState({
@@ -136,12 +144,10 @@ export default class Start extends Component
       processing: true
     });
   }
-  onEvent_Receipt()
-  {
+  onEvent_Receipt() {
     console.log("onEvent_Receipt");
   }
-  onEvent_Error()
-  {
+  onEvent_Error() {
     console.log("onEvent_Error");
 
     this.setState({
@@ -150,12 +156,13 @@ export default class Start extends Component
 
     this.forceUpdate();
   }
-  forceUpdate()
-  {
+  onEvent_RetrievePlayers() {
+    console.log("onEvent_RetrievePlayers");
+  }
+  forceUpdate() {
     this.setState(GameStore.getDataStore());
   }
-  handleSelect(game)
-  {
+  handleSelect(game) {
     console.log("handleSelect");
     console.log(game);
 
@@ -164,10 +171,8 @@ export default class Start extends Component
       selected: game
     });
   }
-  render()
-  {
-    const onChange = (event) =>
-    {
+  render() {
+    const onChange = (event) => {
       // console.log(event.target.value);
 
       this.setState({
