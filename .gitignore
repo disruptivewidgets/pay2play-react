@@ -35,4 +35,6 @@ public
 # Ignore yarn files
 yarn.lock
 
+package-lock.json
+
 keys
