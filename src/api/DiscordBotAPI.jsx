@@ -12,7 +12,7 @@ module.exports = {
   },
   retrievePlayers: function(gameId) {
     console.log("retrievePlayers");
-
+    
     // DISCORD BOT API
     axios.get('http://127.0.0.1:3000/api/player_list', {
       params: {
@@ -20,9 +20,10 @@ module.exports = {
       }
     })
     .then(function (response) {
-      console.log(response);
+      // console.log(response);
+      let data = response.data.data;
 
-      DiscordBotServerActions.retrievePlayers(response);
+      DiscordBotServerActions.retrievePlayers(data);
     })
     .catch(function (error) {
       console.log(error);

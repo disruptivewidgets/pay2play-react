@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import DiscordUserSelector from '../components/DiscordUserSelector';
 import GameSelector from '../components/GameSelector';
 
 import DiscordBotActions from '../actions/DiscordBotActions';
@@ -44,12 +45,12 @@ var loading_captions = [
   "Loading Game Rules...",
   "Pending Payment...",
   "Pending Confirmation..."
-]
+];
 
 export default class Start extends Component {
   constructor(props) {
     super(props);
-    this.state = GameStore.getDataStore();
+    this.handleSelect = this.handleSelect.bind(this);
 
     this._onChange = this._onChange.bind(this);
 
@@ -73,20 +74,32 @@ export default class Start extends Component {
         { value: 'one', label: 'One' },
         { value: 'two', label: 'Two' }
       ],
-      selected: { value: 'one', label: 'One' },
+      selected_Game: { value: 'one', label: 'One' },
+      selected_DiscordUserOption: { value: 'one', label: 'One' },
+      options_DiscordUsers: [
+        { value: 'one', label: 'One' },
+        { value: 'two', label: 'Two' }
+      ],
       loaded: false,
       error: '',
       amount: '',
       loading_caption: loading_captions[0]
     });
 
+    let gameStore = GameStore.getDataStore();
+    let discordBotStore = DiscordBotStore.getStore();
+
+    this.setState(gameStore);
+
     DiscordBotActions.retrievePlayers(0);
     GameActions.retrieveGames();
   }
   componentDidMount() {
+    console.log("componentDidMount");
+
     GameStore.addChangeListener(this._onChange);
 
-    DiscordBotStore.addNotifyBuyinListener(this.onEvent_RetrievePlayers);
+    DiscordBotStore.addRetrievePlayersListener(this.onEvent_RetrievePlayers);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.addConfirmationListener(this.onEvent_Confirmation);
@@ -94,16 +107,18 @@ export default class Start extends Component {
     Web3Store.addErrorListener(this.onEvent_Error);
   }
   componentWillUnmount() {
+    console.log("componentWillUnmount");
+
     GameStore.removeChangeListener(this._onChange);
 
-    DiscordBotStore.removeChangeListener(this.onEvent_RetrievePlayers);
+    DiscordBotStore.removeRetrievePlayersListener(this.onEvent_RetrievePlayers);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
     Web3Store.removeConfirmationListener(this.onEvent_Confirmation);
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   }
-  _onChange(){
+  _onChange() {
     var dataStore = GameStore.getDataStore();
 
     var games = _.map(dataStore.list, function(item) {
@@ -120,11 +135,11 @@ export default class Start extends Component {
     });
 
     this.setState({
-        games: games,
-        value: games[0],
-        referenceHash: selected.referenceHash,
-        loaded: true,
-        selected: games[0]
+      games: games,
+      value: games[0],
+      referenceHash: selected.referenceHash,
+      loaded: true,
+      selected_Game: games[0]
     });
 
     this.setState(GameStore.getDataStore());
@@ -157,41 +172,73 @@ export default class Start extends Component {
     this.forceUpdate();
   }
   onEvent_RetrievePlayers() {
-    console.log("onEvent_RetrievePlayers");
+    let discordUsers = DiscordBotStore.getStore();
+    discordUsers = discordUsers.users;
+
+    let options = _.map(discordUsers, (discordUser) => {
+      var option = {
+        value: discordUser.ethereumAddress,
+        label: `${discordUser.discordUsername}#${discordUser.discordDiscriminator}`
+      };
+
+      return option;
+    });
+
+    let selected = _.find(discordUsers, (discordUser) => {
+      return discordUser.ethereumAddress == options[0].value;
+    });
+
+    this.setState({
+      discordUsers,
+      options_DiscordUsers: options,
+      selected_DiscordUserOption: options[0]
+    });
   }
   forceUpdate() {
     this.setState(GameStore.getDataStore());
   }
-  handleSelect(game) {
+  handleSelect(selector, value) {
     console.log("handleSelect");
-    console.log(game);
+    if (selector === 'game-selector') {
+      this.setState({
+        referenceHash: value.value,
+        selected_Game: value
+      });
+    }
 
-    this.setState({
-      referenceHash: game.value,
-      selected: game
-    });
+    if (selector === 'discord-user-selector') {
+      console.log(value);
+      this.setState({
+        selected_DiscordUserOption: value
+      });
+    }
   }
   render() {
-    const onChange = (event) => {
-      // console.log(event.target.value);
+    let {
+      error,
+      loaded,
+      processing,
 
+      discordUsers,
+      options_DiscordUsers,
+      selected_DiscordUserOption,
+
+      selected_Game
+    } = this.state;
+
+    const onChange = (event) => {
       this.setState({
         amount: event.target.value,
         error: ''
       });
     };
 
-    var error = this.state.error;
-    var loaded = this.state.loaded;
-    var processing = this.state.processing;
-
     var transaction = SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review");
 
     console.log(transaction);
 
     var queuedWagerId = -1;
-    if (transaction)
-    {
+    if (transaction) {
       queuedWagerId = transaction.wagerId;
     }
 
@@ -272,7 +319,19 @@ export default class Start extends Component {
               </div>
             ) : (
               <form onSubmit={onSubmit}>
-                <GameSelector onSelect={this.handleSelect} options={this.state.games} data={this.state.list} selected={this.state.selected} />
+                <GameSelector
+                  onSelect={this.handleSelect}
+                  data={this.state.list}
+                  options={this.state.games}
+                  selected={selected_Game}
+                />
+
+                <DiscordUserSelector
+                  onSelect={this.handleSelect}
+                  data={discordUsers}
+                  options={options_DiscordUsers}
+                  selected={selected_DiscordUserOption}
+                />
 
                 <label>
                   <BrowserView device={isBrowser}>

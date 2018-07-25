@@ -1,10 +1,5 @@
 import React, {Component} from 'react';
 
-import GameStore from '../stores/GameStore';
-import GameActions from '../actions/GameActions';
-
-import { Intent, Spinner, DatePickerFactory } from "@blueprintjs/core/dist";
-
 import "@blueprintjs/core/dist/blueprint.css";
 
 import _ from 'lodash';
@@ -13,7 +8,7 @@ import Select from 'react-select';
 
 import 'react-select/dist/react-select.css';
 
-export default class GameSelector extends Component {
+export default class DiscordUserSelector extends Component {
   componentWillMount() {
     this.setState({
       options: [
@@ -24,42 +19,43 @@ export default class GameSelector extends Component {
     });
   }
   componentWillReceiveProps(nextProps) {
-    var selected = _.find(nextProps.data, function(game) {
-      return game.referenceHash == nextProps.selected.value;
+    let { options } = this.props;
+
+    let selected = _.find(nextProps.data, (user) => {
+      return user.ethereumAddress == nextProps.selected.value;
     });
 
     this.setState({
       selected: selected,
       value: nextProps.selected,
-      options: this.props.options
+      options: options
     });
-
-    // this.props.onSelect(nextProps.selected);
   }
   render() {
+    let { options, value } = this.state;
     let { onSelect } = this.props;
 
     const onChange = (value) => {
-      onSelect('game-selector', value);
+      onSelect('discord-user-selector', value);
     };
 
     return (
       <div>
         <Select
-          addLabelText='Select Game'
-          options={this.state.options}
+          addLabelText='Select Player'
+          options={options}
           onChange={onChange}
-          value={this.state.value}
+          value={value}
           clearable={false}
           cache={false}
           searchable={false}
         />
 
         <br />
-        <GameItem
+        {/* <GameItem
           key={this.state.selected.id}
           item={this.state.selected}
-        />
+        /> */}
         <br />
       </div>
     );

@@ -24,18 +24,7 @@ import {
 
 export default class Web3Shim extends Component
 {
-  // getInitialState() {
-  //   return {
-  //     version: '',
-  //     authorizedAccount: 'None',
-  //     blockNumber: 0,
-  //     tokenBalance: 0,
-  //     winCount: 0,
-  //     lossCount: 0
-  //   };
-  // }
-  constructor(props)
-  {
+  constructor(props) {
     super(props);
     this.state = {
       version: '',

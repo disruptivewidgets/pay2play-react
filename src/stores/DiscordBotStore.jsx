@@ -2,6 +2,9 @@ import AppDispatcher from '../dispatcher/AppDispatcher';
 
 import DiscordBotActionTypes from '../constants/DiscordBotActionTypes'
 
+import DiscordUser from '../data/DiscordUser';
+import DiscordUserCounter from '../data/DiscordUserCounter';
+
 import _ from 'lodash'
 
 var ObjectAssign = require('object-assign');
@@ -14,7 +17,7 @@ const NOTIFY_BUY_IN = 'NOTIFY_BUY_IN';
 const NOTIFY_COUNTER = 'NOTIFY_COUNTER';
 
 var _store = {
-  accounts: []
+  users: []
 };
 
 var _game = {};
@@ -68,7 +71,20 @@ AppDispatcher.register(function(payload) {
       console.log("RETRIEVE_PLAYERS_RESPONSE");
       console.log(action.response);
 
-      // _store.accounts = action.response;
+      let users = _.map(action.response, function(user) {
+
+        const id = DiscordUserCounter.increment();
+
+        return new DiscordUser({
+          id,
+          discordId: user['discord_id'],
+          discordUsername: user['discord_username'],
+          discordDiscriminator: user['discord_discriminator'],
+          ethereumAddress: user['ethereum_address']
+        })
+      });
+
+      _store.users = users;
 
       DiscordBotStore.emit(RETRIEVE_PLAYERS);
       break;
