@@ -1,20 +1,16 @@
-var Web3ServerActions = require('../actions/Web3ServerActions');
-var request = require('superagent');
+import DiscordBotActions from '../actions/DiscordBotActions';
+import Web3ServerActions from '../actions/Web3ServerActions';
 
 import SessionHelper from "../helpers/SessionUtils.js";
 
-// import * as moment from 'moment';
-// import 'moment-duration-format';
-
 import interfaces from "../smart-contract/interfaces.js";
 
-var contractAddress = ""; // Ropsen Pay2Play
-var tokenContractAddress = ""; // Ropsen Pay2Play
+var wagerRegistrarContractAddress = "";
+var tokenContractAddress = "";
 var bracketRegistrarContractAddress = "";
 
-// 2018-03-27
-contractAddress = "0xe018598af2954cb1717b2dff610e13a18587b044";
-tokenContractAddress = "0xe1ebf9518fd31426baad9b36cca87b80096be8ef";
+tokenContractAddress = "0x9328de2aa55781a708fb688c9f73d2108b7af5bc";
+wagerRegistrarContractAddress = "0xfbed6661a8b46df30dbf3c6e51aa08cbf44f1583";
 bracketRegistrarContractAddress = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
 
 var fromBlock = '';
@@ -25,7 +21,7 @@ function retrieveWager(index, callback) {
   var wagers = [];
 
   var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-  contract.options.address = contractAddress; // Ropsen Pay2Play
+  contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
 
   contract.methods.getWager(index.toString()).call({}, function(error, result)
   {
@@ -61,6 +57,7 @@ function retrieveWager(index, callback) {
     callback(wager);
   });
 }
+
 // Bracket
 function retrieveBracket(index, callback) {
   var brackets = [];
@@ -112,7 +109,7 @@ module.exports = {
     console.log("retrieveWagers");
 
     var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = contractAddress;
+    contract.options.address = wagerRegistrarContractAddress;
 
     contract.methods.getWagerCount().call({}, function(error, result) {
       var index = result - 1;
@@ -131,8 +128,7 @@ module.exports = {
       eachAsync(wagerIndices, retrieveWager, sort);
     });
   },
-  retrieveWager: function(id)
-  {
+  retrieveWager: function(id) {
     console.log("C");
     function parse(wager)
     {
@@ -164,10 +160,10 @@ module.exports = {
       Web3ServerActions.getSecretHash(result);
     });
   },
-  startWager: function(referenceHash, params) {
+  startWager: function(referenceHash, address, params) {
     console.log("startWager");
 
-    window.contract.methods.createWagerAndDeposit(referenceHash).send(params)
+    window.contract.methods.createWagerAndDeposit(referenceHash, address).send(params)
     .on('transactionHash', function(hash) {
       console.log("transactionHash");
       console.log("txid: " + hash);
@@ -217,6 +213,24 @@ module.exports = {
       console.log("receipt");
       console.log(receipt)
 
+      let events = receipt['events'];
+      let event_NewDeposit = events['NewDeposit'];
+      let returnValues = event_NewDeposit['returnValues'];
+
+      let wagerIndex = returnValues['index'];
+      let wagerOwner = returnValues['owner'];
+      let wagerSponsor = returnValues['sponsor'];
+
+      console.log(wagerIndex);
+      console.log(wagerSponsor);
+      console.log(wagerOwner);
+
+      DiscordBotActions.notify(
+        'buy-in',
+        wagerIndex,
+        wagerOwner
+      );
+
       Web3ServerActions.startWager('receipt');
     })
     .on('error', function(error) {
@@ -228,9 +242,10 @@ module.exports = {
       Web3ServerActions.startWager('error');
     });
   },
-  counterWagerAndDeposit: function(wagerId, params) {
+  counterWagerAndDeposit: function(wagerId, address, params) {
+    console.log("counterWagerAndDeposit");
 
-    window.contract.methods.counterWagerAndDeposit(wagerId).send(params)
+    window.contract.methods.counterWagerAndDeposit(wagerId, address).send(params)
     .on('transactionHash', function(hash) {
       console.log("transactionHash");
       console.log("txid: " + hash);
@@ -272,6 +287,24 @@ module.exports = {
     .on('receipt', function(receipt) {
       console.log("receipt");
       console.log(receipt)
+
+      let events = receipt['events'];
+      let event_NewDeposit = events['NewDeposit'];
+      let returnValues = event_NewDeposit['returnValues'];
+
+      let wagerIndex = returnValues['index'];
+      let wagerOwner = returnValues['owner'];
+      let wagerSponsor = returnValues['sponsor'];
+
+      console.log(wagerIndex);
+      console.log(wagerSponsor);
+      console.log(wagerOwner);
+
+      DiscordBotActions.notify(
+        'counter',
+        wagerIndex,
+        wagerOwner
+      );
 
       Web3ServerActions.counterWagerAndDeposit('receipt');
     })
@@ -584,7 +617,7 @@ module.exports = {
         });
 
       });
-      
+
     });
   },
   takeSeat_SideA: function(bracketId, seat, params) {
@@ -809,7 +842,7 @@ module.exports = {
       });
     });
   },
-  contractAddress: contractAddress,
   tokenContractAddress: tokenContractAddress,
+  wagerRegistrarContractAddress: wagerRegistrarContractAddress,
   bracketRegistrarContractAddress: bracketRegistrarContractAddress
 };

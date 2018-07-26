@@ -25,23 +25,23 @@ const Actions = {
 
     Web3API.getAccounts();
   },
-  startWager(hash, params) {
+  startWager(hash, address, params) {
     console.log('startWager');
 
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.START_WAGER,
     });
 
-    Web3API.startWager(hash, params);
+    Web3API.startWager(hash, address, params);
   },
-  counterWagerAndDeposit(wagerId, params) {
+  counterWagerAndDeposit(wagerId, address, params) {
     console.log('counterWagerAndDeposit');
 
     AppDispatcher.handleViewAction({
       actionType: Web3ActionTypes.COUNTER_WAGER_AND_DEPOSIT,
     });
 
-    Web3API.counterWagerAndDeposit(wagerId, params);
+    Web3API.counterWagerAndDeposit(wagerId, address, params);
   },
   setWagerWinner(wagerId, winner, params) {
     console.log('setWagerWinner');

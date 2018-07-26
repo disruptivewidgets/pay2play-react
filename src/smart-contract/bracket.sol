@@ -6,8 +6,7 @@
 
 pragma solidity ^0.4.21;
 
-contract Registrar
-{
+contract Registrar {
   uint public registrarStartDate;
 
   address public node;
@@ -16,10 +15,9 @@ contract Registrar
   Tournament[] tournaments;
   /* mapping (address => Tournament) public tournaments; */
 
-  constructor(address _tokenNode) public
-  {
+  constructor(address _tokenNode) public {
     registrarStartDate = now;
-    node = msg.sender;
+    node = msg.sender;åå
     tokenNode = _tokenNode;
   }
 

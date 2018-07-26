@@ -33,13 +33,14 @@ module.exports = {
     });
     // DISCORD BOT API
   },
-  notify: function(type, address) {
+  notify: function(type, index, address) {
     console.log("notify");
 
     // DISCORD BOT API
     axios.get('http://127.0.0.1:3000/api/notify', {
       params: {
         type: type,
+        wager_id: index,
         ethereum_address: address
       }
     })

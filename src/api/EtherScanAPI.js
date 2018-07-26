@@ -3,7 +3,7 @@ var request = require('superagent');
 import util from 'ethereumjs-util';
 
 import EventLogServerActions from '../actions/EventLogServerActions';
-import { contractAddress } from '../api/Web3API';
+import { wagerRegistrarContractAddress } from '../api/Web3API';
 
 module.exports = {
   findItems: function(query) {
@@ -18,14 +18,14 @@ module.exports = {
   },
   pullEventLogs: function(key, index) {
     var events = {
-      "WagerStarted": "0x52b3086eb00fd2639eeb5190527da3e1c4c1400ee550073dde793315159cfe77",
-      "NewDeposit": "0xe6d83b1e0e5126a0574d0154ed77e40181534edcb74f035b158d92ed3d10a030",
+      "WagerStarted": "0x99e93bdf4e5e9e4c68adb4d59aad07663b01de88698e7e959f43a399c1df17ce",
+      "NewDeposit": "0x0f71a8c7324cbf9513d2e403af7722f651d3635066eca540f17fb66a43fd2fa0",
       "WagerWinnerUpdated": "0x8cc07436b787fa8a30ca1402a2867cf1b592be47c9f6be3709cf2dba53dc83df",
       "WinningsWithdrawn": "0x9f1f3144430cc9624860cf28da61318e428f6d15f17e420c04e8203581951a91"
     };
 
     // var registrarAddress = "0x812d7c22103a243072dfcf0f60acee1eda171a29";
-    var address = contractAddress;
+    var address = wagerRegistrarContractAddress;
 
     var topic0 = events[key];
 

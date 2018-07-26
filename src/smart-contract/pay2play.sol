@@ -8,8 +8,7 @@ pragma solidity ^0.4.21;
 
 import './ERC20.sol';
 
-contract Deposit
-{
+contract Deposit {
   address public registrar;
 
   address constant burn = 0xdead;
@@ -21,36 +20,39 @@ contract Deposit
 
   bool public active;
 
-  event BalanceTransfered(address winner);
+  event BalanceTransfered(address indexed winner);
 
-  function Deposit(address _owner) payable public
-  {
+  /* function Deposit(address _owner) payable public {
       owner = _owner;
       registrar = msg.sender;
       creationDate = now;
       active = true;
       value = msg.value;
+  } */
+
+  constructor(address _owner) payable public {
+    owner = _owner;
+    registrar = msg.sender;
+    creationDate = now;
+    active = true;
+    value = msg.value;
   }
 
-  modifier onlyRegistrar
-  {
+  modifier onlyRegistrar {
       if (msg.sender != registrar) revert();
       _;
   }
 
-  modifier onlyActive
-  {
+  modifier onlyActive {
       if (!active) revert();
       _;
   }
 
-  function setRegistrar(address _registrar) onlyRegistrar public
-  {
+  function setRegistrar(address _registrar) onlyRegistrar public {
       registrar = _registrar;
   }
 
-  function withdraw(address winner) onlyRegistrar public
-  {
+  function withdraw(address winner) onlyRegistrar public {
     winner.transfer(this.balance);
 
     value = 0;
@@ -59,15 +61,12 @@ contract Deposit
     emit BalanceTransfered(winner);
   }
 
-  function getActiveState() returns (bool)
-  {
+  function getActiveState() constant public returns (bool) {
     return active;
   }
 }
 
-contract Registrar
-{
-
+contract Registrar {
     uint public registrarStartDate;
     address public node;
     address public tokenNode;
@@ -78,9 +77,8 @@ contract Registrar
 
     enum Mode { Open, Closed, Finished, Settled }
 
-    struct wager
-    {
-        address[] depositors;
+    struct wager {
+        address[] players;
         uint createdAt;
         uint amount;
         address winner;
@@ -95,187 +93,163 @@ contract Registrar
 
     address[] moderators;
 
-    event WagerStarted(uint indexed index, uint createdAt);
-    event NewDeposit(uint indexed index, address indexed owner, uint amount);
+    event WagerStarted(uint indexed index, address indexed sponsor, uint createdAt);
+    event NewDeposit(uint indexed index, address indexed sponsor, address indexed owner, uint amount);
 
     event WagerWinnerUpdated(uint indexed index, address indexed winner);
     event WinningsWithdrawn(uint indexed index, address indexed winner, uint amount);
 
     event ModeratorListUpdated(address indexed moderator);
 
-    function Registrar(address _tokenNode) public
-    {
+    /* function Registrar(address _tokenNode) public {
         registrarStartDate = now;
         node = msg.sender;
         tokenNode = _tokenNode;
+    } */
+
+    constructor(address _tokenNode) public{
+      registrarStartDate = now;
+      node = msg.sender;
+      tokenNode = _tokenNode;
     }
 
-    modifier onlyRegistrar
-    {
+    modifier onlyRegistrar {
         if (msg.sender != node) revert();
         _;
     }
 
-    modifier onlyWinner(uint index)
-    {
-        wager w = wagers[index];
+    modifier onlyWinner(uint index) {
+        wager memory w = wagers[index];
         if (msg.sender != w.winner) revert();
         _;
     }
 
-    function state(uint index) constant public returns (Mode)
-    {
-        var wager = wagers[index];
+    function state(uint index) constant public returns (Mode) {
+        wager memory w = wagers[index];
 
-        if (wager.winner != node)
-        {
-          var deposit = deposits[wager.winner][index];
+        if (w.winner != node) {
+          Deposit deposit = deposits[w.winner][index];
 
-          if (deposit.getActiveState() != true)
-          {
+          if (deposit.getActiveState() != true) {
             return Mode.Settled;
           }
 
           return Mode.Finished;
         }
 
-        if (wager.depositors.length == 1)
-        {
+        if (w.players.length == 1) {
           return Mode.Open;
         }
 
-        if (wager.depositors.length == 2)
-        {
+        if (w.players.length == 2) {
           return Mode.Closed;
         }
     }
 
-    function isModerator(address moderator) constant public returns(bool)
-    {
-      for (uint i = 0; i < moderators.length; i++)
-      {
-        if (moderators[i] == moderator)
-        {
+    function isModerator(address moderator) constant public returns(bool) {
+      for (uint i = 0; i < moderators.length; i++) {
+        if (moderators[i] == moderator) {
           return true;
         }
       }
       return false;
     }
 
-    modifier inState(uint _index, Mode _state)
-    {
+    modifier inState(uint _index, Mode _state) {
         if(state(_index) != _state) revert();
         _;
     }
 
-    function getWager(uint index) constant public returns (Mode, uint, uint, address, address[], bytes32)
-    {
-        wager w = wagers[index];
+    function getWager(uint index) constant public returns (Mode, uint, uint, address, address[], bytes32) {
+        wager memory w = wagers[index];
 
-        address[] memory owners = new address[](w.depositors.length);
+        address[] memory owners = new address[](w.players.length);
 
-        for (uint i = 0; i < w.depositors.length; i++)
-        {
-          owners[i] = w.depositors[i];
+        for (uint i = 0; i < w.players.length; i++) {
+          owners[i] = w.players[i];
         }
 
         return (state(index), w.createdAt, w.amount, w.winner, owners, w.rulesHash);
     }
-    
-    function getWinCount(address player) constant public returns (uint)
-    {
+
+    function getWinCount(address player) constant public returns (uint) {
         return winCount[player];
     }
 
-    function getLossCount(address player) constant public returns (uint)
-    {
+    function getLossCount(address player) constant public returns (uint) {
         return lossCount[player];
     }
 
-    function getWagerCount() public constant returns (uint)
-    {
+    function getWagerCount() public constant returns (uint) {
         return wagers.length;
     }
 
-    function createWager(bytes32 rulesHash) constant public returns (uint)
-    {
+    function createWager(bytes32 rulesHash, address sponsor) constant public returns (uint) {
         uint index = wagers.length;
 
         wagers.push(wager(new address[](0), now, 0, node, rulesHash));
 
-        emit WagerStarted(index, now);
+        emit WagerStarted(index, sponsor, now);
 
         return index;
     }
 
-    function newDeposit(uint index) payable public
-    {
+    function newDeposit(uint index, address player) payable public {
         if (msg.value < minPrice) revert();
 
-        if (address(deposits[msg.sender][index]) > 0 ) revert();
+        if (address(deposits[player][index]) > 0 ) revert();
 
-        Deposit newDeposit = (new Deposit).value(msg.value)(msg.sender);
+        Deposit deposit = (new Deposit).value(msg.value)(player);
 
-        deposits[msg.sender][index] = newDeposit;
+        deposits[player][index] = deposit;
 
-        wager w = wagers[index];
+        wager storage w = wagers[index];
 
-        w.depositors.push(msg.sender);
+        w.players.push(player);
 
         w.amount = w.amount + msg.value;
 
-        emit NewDeposit(index, msg.sender, msg.value);
+        emit NewDeposit(index, msg.sender, player, msg.value);
     }
 
-    function createWagerAndDeposit(bytes32 rulesHash) payable public
-    {
-        uint index = createWager(rulesHash);
-        newDeposit(index);
+    function createWagerAndDeposit(bytes32 rulesHash, address player) payable public {
+        uint index = createWager(rulesHash, msg.sender);
+        newDeposit(index, player);
     }
 
-    function counterWagerAndDeposit(uint index) payable public
-    {
-        newDeposit(index);
+    function counterWagerAndDeposit(uint index, address player) payable public {
+        newDeposit(index, player);
     }
 
-    function setWagerWinner(uint index, address winner) onlyRegistrar public
-    {
-      wager w = wagers[index];
+    function setWagerWinner(uint index, address winner) onlyRegistrar public {
+      wager memory w = wagers[index];
 
       w.winner = winner;
 
       ERC20Interface(tokenNode).transfer(winner, 1);
 
-      for (uint i = 0; i < w.depositors.length; i++)
-      {
-        if (w.depositors[i] == winner)
-        {
+      for (uint i = 0; i < w.players.length; i++) {
+        if (w.players[i] == winner) {
           winCount[winner] += 1;
-        }
-        else
-        {
-          lossCount[w.depositors[i]] += 1;
+        } else {
+          lossCount[w.players[i]] += 1;
         }
       }
 
       emit WagerWinnerUpdated(index, winner);
     }
 
-    function withdrawWinnings(uint index) onlyWinner(index) public
-    {
-      wager w = wagers[index];
+    function withdrawWinnings(uint index) onlyWinner(index) public {
+      wager memory w = wagers[index];
 
-      for (uint i = 0; i < w.depositors.length; i++)
-      {
-        deposits[w.depositors[i]][index].withdraw(w.winner);
+      for (uint i = 0; i < w.players.length; i++) {
+        deposits[w.players[i]][index].withdraw(w.winner);
       }
       emit WinningsWithdrawn(index, w.winner, w.amount);
     }
 
-    function addModerator(address moderator) onlyRegistrar public
-    {
-      if (isModerator(moderator) != true)
-      {
+    function addModerator(address moderator) onlyRegistrar public {
+      if (isModerator(moderator) != true) {
         moderators.push(moderator);
         emit ModeratorListUpdated(moderator);
       }
@@ -283,29 +257,23 @@ contract Registrar
 
     mapping (address => bytes32) public secrets;
 
-    function setSecret(bytes32 _value) public
-    {
+    function setSecret(bytes32 _value) public {
       secrets[msg.sender] = keccak256(_value);
     }
 
-    function hashValue(bytes32 _value) pure public returns (bytes32)
-    {
+    function hashValue(bytes32 _value) pure public returns (bytes32) {
       return keccak256(_value);
     }
 
     enum Error { None, Mismatch }
 
-    function getTokenBalance(address _address, bytes32 _value) constant public returns (Error, uint)
-    {
+    function getTokenBalance(address _address, bytes32 _value) constant public returns (Error, uint) {
       bytes32 secret = hashValue(_value);
 
-      if (secrets[_address] == secret)
-      {
+      if (secrets[_address] == secret) {
         uint balance = ERC20Interface(tokenNode).balanceOf(_address);
         return (Error.None, balance);
-      }
-      else
-      {
+      } else {
         return (Error.Mismatch, 0);
       }
     }

@@ -30,11 +30,10 @@ var loading_captions = [
   "Pending Confirmation..."
 ]
 
-export default class Invite extends Component
-{
-  constructor(props)
-  {
+export default class Invite extends Component {
+  constructor(props) {
     super(props);
+
     this.state = WagerStore.get();
     this._onChange = this._onChange.bind(this);
     this.onEvent_TransactionHash = this.onEvent_TransactionHash.bind(this);
@@ -42,8 +41,7 @@ export default class Invite extends Component
     this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
     this.onEvent_Error = this.onEvent_Error.bind(this);
   }
-  componentWillMount()
-  {
+  componentWillMount() {
     console.log("componentWillMount");
 
     this.setState(WagerStore.get());
@@ -73,8 +71,7 @@ export default class Invite extends Component
 
     SessionHelper.listTransactions();
   }
-  componentDidMount()
-  {
+  componentDidMount() {
     WagerStore.addChangeListener(this._onChange);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
@@ -82,8 +79,7 @@ export default class Invite extends Component
     Web3Store.addReceiptListener(this.onEvent_Receipt);
     Web3Store.addErrorListener(this.onEvent_Error);
   }
-  componentWillUnmount()
-  {
+  componentWillUnmount() {
     WagerStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
@@ -91,8 +87,7 @@ export default class Invite extends Component
     Web3Store.removeReceiptListener(this.onEvent_Receipt);
     Web3Store.removeErrorListener(this.onEvent_Error);
   }
-  componentWillReceiveProps(nextProps)
-  {
+  componentWillReceiveProps(nextProps) {
     console.log("componentWillReceiveProps");
 
     this.setState({
@@ -120,8 +115,7 @@ export default class Invite extends Component
     SessionHelper.listTransactions();
     // this.forceUpdate();
   }
-  _onChange()
-  {
+  _onChange() {
     this.setState(WagerStore.get());
     this.setState(Web3Store.getStore());
 
@@ -129,16 +123,14 @@ export default class Invite extends Component
       players: this.state.wager.players
     });
   }
-  onEvent_TransactionHash()
-  {
+  onEvent_TransactionHash() {
     console.log("onEvent_TransactionHash");
 
     this.setState({
         loading_caption: loading_captions[1]
     });
   }
-  onEvent_Confirmation()
-  {
+  onEvent_Confirmation() {
     console.log("onEvent_Confirmation");
 
     this.setState({
@@ -146,12 +138,10 @@ export default class Invite extends Component
       processing: true
     });
   }
-  onEvent_Receipt()
-  {
+  onEvent_Receipt() {
     console.log("onEvent_Receipt");
   }
-  onEvent_Error()
-  {
+  onEvent_Error() {
     console.log("onEvent_Error");
 
     this.setState({
@@ -160,8 +150,7 @@ export default class Invite extends Component
 
     this.forceUpdate();
   }
-  render()
-  {
+  render() {
     const referenceHash = this.state.wager.referenceHash;
 
     const startTimestamp = this.state.wager.startTimestamp;
@@ -173,13 +162,11 @@ export default class Invite extends Component
 
     var showCallToAction = false;
 
-    if (hasPlayers)
-    {
+    if (hasPlayers) {
       isOwnerLoggedIn = (this.state.wager.players[0] === window.authorizedAccount);
     }
 
-    if (isOwnerLoggedIn)
-    {
+    if (isOwnerLoggedIn) {
       showCallToAction = true;
     }
 
@@ -218,7 +205,11 @@ export default class Invite extends Component
 
       console.log(params);
 
-      Web3Actions.counterWagerAndDeposit(this.props.match.params.id, params);
+      Web3Actions.counterWagerAndDeposit(
+        this.props.match.params.id,
+        window.authorizedAccount,
+        params
+      );
 
       // // NEW
       // window.component = this;
@@ -410,8 +401,7 @@ export default class Invite extends Component
   }
 };
 
-function Player(props)
-{
+function Player(props) {
   const player = props.player;
   const winner = props.winner;
   const accounts = props.accounts;

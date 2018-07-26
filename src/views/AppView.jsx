@@ -19,7 +19,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Web3 from 'web3';
-import { contractAddress } from '../api/Web3API.js';
+import { wagerRegistrarContractAddress } from '../api/Web3API.js';
 import interfaces from "../smart-contract/interfaces.js";
 
 import {
@@ -259,7 +259,7 @@ class MistSite extends React.Component {
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = contractAddress; // Ropsen Pay2Play
+    contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
       // console.log("registrarStartDate");

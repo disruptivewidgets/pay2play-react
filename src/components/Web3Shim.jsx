@@ -9,7 +9,7 @@ import util from 'ethereumjs-util';
 import Formatter from "../helpers/Formatters.js";
 
 import {
-  contractAddress,
+  wagerRegistrarContractAddress,
   tokenContractAddress,
   bracketRegistrarContractAddress
 
@@ -51,7 +51,7 @@ export default class Web3Shim extends Component
     // }
 
     console.log("Ropsen Pay2Play: ");
-    console.log("contractAddress: " + contractAddress);
+    console.log("wagerRegistrarContractAddress: " + wagerRegistrarContractAddress);
     console.log("tokenContractAddress: " + tokenContractAddress);
 
     // if (window.web3.eth.currentProvider.isConnected()) {
@@ -116,7 +116,7 @@ export default class Web3Shim extends Component
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    window.contract.options.address = contractAddress; // Ropsen Pay2Play
+    window.contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
     });

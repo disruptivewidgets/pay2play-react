@@ -159,10 +159,10 @@ export default class Start extends Component {
       selected_DiscordUserOption
     } = this.state;
 
-    DiscordBotActions.notify(
-      'buy-in',
-      selected_DiscordUserOption.value
-    );
+    // DiscordBotActions.notify(
+    //   'buy-in',
+    //   selected_DiscordUserOption.value
+    // );
 
     this.setState({
       loaded: true,
@@ -362,9 +362,9 @@ export default class Start extends Component {
 
       if (selected_DiscordUserOption) {
         console.log(selected_DiscordUserOption.value);
-        // Web3Actions.startWager(referenceHash, params);
+        Web3Actions.startWager(referenceHash, selected_DiscordUserOption.value, params);
       } else {
-        Web3Actions.startWager(referenceHash, params);
+        Web3Actions.startWager(referenceHash, selected_DiscordUserOption.value, params);
       }
     };
 
