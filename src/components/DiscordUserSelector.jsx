@@ -51,12 +51,10 @@ export default class DiscordUserSelector extends Component {
           searchable={false}
         />
 
-        <br />
         {/* <GameItem
           key={this.state.selected.id}
           item={this.state.selected}
         /> */}
-        <br />
       </div>
     );
   }

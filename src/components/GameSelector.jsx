@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import GameStore from '../stores/GameStore';
 import GameActions from '../actions/GameActions';

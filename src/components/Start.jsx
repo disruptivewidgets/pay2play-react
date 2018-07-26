@@ -83,7 +83,8 @@ export default class Start extends Component {
       loaded: false,
       error: '',
       amount: '',
-      loading_caption: loading_captions[0]
+      loading_caption: loading_captions[0],
+      hasEntryTicket: false
     });
 
     let gameStore = GameStore.getDataStore();
@@ -188,10 +189,51 @@ export default class Start extends Component {
       return discordUser.ethereumAddress == options[0].value;
     });
 
+    let option = options[0];
+
+    // EntryTicket
+    if (window.authorizedAccount === undefined) {
+
+    } else {
+      console.log(discordUsers);
+
+      let discordUser = _.find(
+        discordUsers, {
+          'ethereumAddress': window.authorizedAccount
+        }
+      );
+
+      console.log(discordUser);
+
+      if (discordUser) {
+        console.log("entry ticket found");
+
+        let discordUserIndex = _.findIndex(
+          discordUsers, {
+            'ethereumAddress': window.authorizedAccount
+          }
+        );
+
+        console.log(discordUserIndex);
+
+        option = options[discordUserIndex];
+
+        this.setState({
+          hasEntryTicket: true
+        });
+      } else {
+        console.log("entry ticket not found.");
+
+        this.setState({
+          hasEntryTicket: false
+        });
+      }
+    }
+
     this.setState({
       discordUsers,
       options_DiscordUsers: options,
-      selected_DiscordUserOption: options[0]
+      selected_DiscordUserOption: option
     });
   }
   forceUpdate() {
@@ -208,6 +250,7 @@ export default class Start extends Component {
 
     if (selector === 'discord-user-selector') {
       console.log(value);
+
       this.setState({
         selected_DiscordUserOption: value
       });
@@ -223,7 +266,9 @@ export default class Start extends Component {
       options_DiscordUsers,
       selected_DiscordUserOption,
 
-      selected_Game
+      selected_Game,
+
+      hasEntryTicket
     } = this.state;
 
     const onChange = (event) => {
@@ -244,10 +289,16 @@ export default class Start extends Component {
 
     const onSubmit = (event) => {
 
+      let {
+        amount,
+        referenceHash,
+        selected_DiscordUserOption
+      } = this.state;
+
       event.preventDefault();
 
-      console.log(this.state.amount);
-      console.log(this.state.referenceHash);
+      // console.log(this.state.amount);
+      // console.log(this.state.referenceHash);
 
       this.setState({
         loaded: false,
@@ -255,7 +306,7 @@ export default class Start extends Component {
         loading_caption: loading_captions[1]
       });
 
-      var amount = this.state.amount;
+      // var amount = this.state.amount;
 
       if (!validator.isDecimal(amount)) {
         console.log("Incorrect amount");
@@ -300,7 +351,12 @@ export default class Start extends Component {
         gasPrice: gasPrice
       };
 
-      Web3Actions.startWager(this.state.referenceHash, params);
+      if (selected_DiscordUserOption) {
+        console.log(selected_DiscordUserOption.value);
+        // Web3Actions.startWager(referenceHash, params);
+      } else {
+        Web3Actions.startWager(referenceHash, params);
+      }
     };
 
     return (
@@ -319,13 +375,7 @@ export default class Start extends Component {
               </div>
             ) : (
               <form onSubmit={onSubmit}>
-                <GameSelector
-                  onSelect={this.handleSelect}
-                  data={this.state.list}
-                  options={this.state.games}
-                  selected={selected_Game}
-                />
-
+                <div>Who are you wagering for?</div>
                 <DiscordUserSelector
                   onSelect={this.handleSelect}
                   data={discordUsers}
@@ -333,6 +383,22 @@ export default class Start extends Component {
                   selected={selected_DiscordUserOption}
                 />
 
+                {
+                  !hasEntryTicket &&
+                  <div>Looks like you don't have an entry ticket. In order to wager for yourself, you need to get one. Please head to our discord and talk to <b>butler bot</b> to obtain one.</div>
+                }
+
+                <br />
+
+                <div>What's the game?</div>
+                <GameSelector
+                  onSelect={this.handleSelect}
+                  data={this.state.list}
+                  options={this.state.games}
+                  selected={selected_Game}
+                />
+
+                <div>How much are you stacking?</div>
                 <label>
                   <BrowserView device={isBrowser}>
                     <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
