@@ -155,6 +155,15 @@ export default class Start extends Component {
   onEvent_Confirmation() {
     console.log("onEvent_Confirmation");
 
+    let {
+      selected_DiscordUserOption
+    } = this.state;
+
+    DiscordBotActions.notify(
+      'buy-in',
+      selected_DiscordUserOption.value
+    );
+
     this.setState({
       loaded: true,
       processing: true

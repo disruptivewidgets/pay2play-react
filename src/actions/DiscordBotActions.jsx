@@ -10,12 +10,12 @@ const Actions = {
 
     DiscordBotAPI.retrievePlayers(gameId);
   },
-  notify(address, type) {
+  notify(type, address) {
     AppDispatcher.handleViewAction({
       actionType: DiscordBotActionTypes.NOTIFY_BUY_IN,
     });
 
-    DiscordBotAPI.notify(address, type);
+    DiscordBotAPI.notify(type, address);
   }
 }
 

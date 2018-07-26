@@ -12,7 +12,7 @@ module.exports = {
   },
   retrievePlayers: function(gameId) {
     console.log("retrievePlayers");
-    
+
     // DISCORD BOT API
     axios.get('http://127.0.0.1:3000/api/player_list', {
       params: {
@@ -33,14 +33,14 @@ module.exports = {
     });
     // DISCORD BOT API
   },
-  notify: function(address, type) {
+  notify: function(type, address) {
     console.log("notify");
 
     // DISCORD BOT API
     axios.get('http://127.0.0.1:3000/api/notify', {
       params: {
-        ethereum_address: address,
-        type: type
+        type: type,
+        ethereum_address: address
       }
     })
     .then(function (response) {
