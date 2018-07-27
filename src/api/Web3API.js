@@ -9,8 +9,8 @@ var wagerRegistrarContractAddress = "";
 var tokenContractAddress = "";
 var bracketRegistrarContractAddress = "";
 
-tokenContractAddress = "0x9328de2aa55781a708fb688c9f73d2108b7af5bc";
-wagerRegistrarContractAddress = "0xfbed6661a8b46df30dbf3c6e51aa08cbf44f1583";
+tokenContractAddress = "0x1143124f7f5b4aa717b169d4482edff61e1d2e3e";
+wagerRegistrarContractAddress = "0xc8fa76bd0608ee03ceb8c3fd58115a6b019cc72d";
 bracketRegistrarContractAddress = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
 
 var fromBlock = '';
@@ -214,22 +214,22 @@ module.exports = {
       console.log(receipt)
 
       let events = receipt['events'];
-      let event_NewDeposit = events['NewDeposit'];
+      let event_NewDeposit = events['WagerStarted'];
       let returnValues = event_NewDeposit['returnValues'];
 
       let wagerIndex = returnValues['index'];
-      let wagerOwner = returnValues['owner'];
-      let wagerSponsor = returnValues['sponsor'];
+      let wagerPlayer = returnValues['player'];
 
       console.log(wagerIndex);
-      console.log(wagerSponsor);
-      console.log(wagerOwner);
+      console.log(wagerPlayer);
 
-      DiscordBotActions.notify(
-        'buy-in',
-        wagerIndex,
-        wagerOwner
-      );
+      if (window.authorizedAccount !== wagerPlayer) {
+        DiscordBotActions.notify(
+          'buy-in',
+          wagerIndex,
+          wagerPlayer
+        );
+      }
 
       Web3ServerActions.startWager('receipt');
     })
@@ -289,21 +289,29 @@ module.exports = {
       console.log(receipt)
 
       let events = receipt['events'];
-      let event_NewDeposit = events['NewDeposit'];
+      let event_NewDeposit = events['WagerCountered'];
       let returnValues = event_NewDeposit['returnValues'];
 
       let wagerIndex = returnValues['index'];
-      let wagerOwner = returnValues['owner'];
-      let wagerSponsor = returnValues['sponsor'];
+      let wagerPlayer = returnValues['player'];
+      let wagerOpponent = returnValues['opponent'];
 
       console.log(wagerIndex);
-      console.log(wagerSponsor);
-      console.log(wagerOwner);
+      console.log(wagerPlayer);
+      console.log(wagerOpponent);
+
+      if (window.authorizedAccount !== wagerPlayer) {
+        DiscordBotActions.notify(
+          'counter',
+          wagerIndex,
+          wagerPlayer
+        );
+      }
 
       DiscordBotActions.notify(
         'counter',
         wagerIndex,
-        wagerOwner
+        wagerOpponent
       );
 
       Web3ServerActions.counterWagerAndDeposit('receipt');
@@ -361,7 +369,7 @@ module.exports = {
     })
     .on('receipt', function(receipt) {
       console.log("receipt");
-      console.log(receipt)
+      console.log(receipt);
 
       Web3ServerActions.setWagerWinner('receipt');
     })

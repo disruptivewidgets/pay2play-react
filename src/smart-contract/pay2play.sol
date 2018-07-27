@@ -22,14 +22,6 @@ contract Deposit {
 
   event BalanceTransfered(address indexed winner);
 
-  /* function Deposit(address _owner) payable public {
-      owner = _owner;
-      registrar = msg.sender;
-      creationDate = now;
-      active = true;
-      value = msg.value;
-  } */
-
   constructor(address _owner) payable public {
     owner = _owner;
     registrar = msg.sender;
@@ -93,19 +85,15 @@ contract Registrar {
 
     address[] moderators;
 
-    event WagerStarted(uint indexed index, address indexed sponsor, uint createdAt);
     event NewDeposit(uint indexed index, address indexed sponsor, address indexed owner, uint amount);
+
+    event WagerStarted(uint indexed index, address indexed player, uint createdAt);
+    event WagerCountered(uint indexed index, address indexed player, address indexed opponent, uint createdAt);
 
     event WagerWinnerUpdated(uint indexed index, address indexed winner);
     event WinningsWithdrawn(uint indexed index, address indexed winner, uint amount);
 
     event ModeratorListUpdated(address indexed moderator);
-
-    /* function Registrar(address _tokenNode) public {
-        registrarStartDate = now;
-        node = msg.sender;
-        tokenNode = _tokenNode;
-    } */
 
     constructor(address _tokenNode) public{
       registrarStartDate = now;
@@ -184,13 +172,9 @@ contract Registrar {
         return wagers.length;
     }
 
-    function createWager(bytes32 rulesHash, address sponsor) constant public returns (uint) {
+    function createWager(bytes32 rulesHash) constant public returns (uint) {
         uint index = wagers.length;
-
         wagers.push(wager(new address[](0), now, 0, node, rulesHash));
-
-        emit WagerStarted(index, sponsor, now);
-
         return index;
     }
 
@@ -213,12 +197,18 @@ contract Registrar {
     }
 
     function createWagerAndDeposit(bytes32 rulesHash, address player) payable public {
-        uint index = createWager(rulesHash, msg.sender);
+        uint index = createWager(rulesHash);
         newDeposit(index, player);
+
+        emit WagerStarted(index, player, now);
     }
 
     function counterWagerAndDeposit(uint index, address player) payable public {
         newDeposit(index, player);
+
+        wager storage w = wagers[index];
+
+        emit WagerCountered(index, player, w.players[0], now);
     }
 
     function setWagerWinner(uint index, address winner) onlyRegistrar public {

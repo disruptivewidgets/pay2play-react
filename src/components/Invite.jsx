@@ -7,11 +7,15 @@ import {
 
 import Rules from '../components/Rules';
 import EventLogs from '../components/EventLogs';
+
+import DiscordBotStore from '../stores/DiscordBotStore';
+import EventLogStore from '../stores/EventLogStore';
 import WagerStore from '../stores/WagerStore';
 import Web3Store from '../stores/Web3Store';
-import Web3Actions from '../actions/Web3Actions';
+
+import DiscordBotActions from '../actions/DiscordBotActions';
 import GameActions from '../actions/GameActions';
-import EventLogStore from '../stores/EventLogStore';
+import Web3Actions from '../actions/Web3Actions';
 
 import SessionHelper from "../helpers/SessionUtils.js";
 
@@ -26,8 +30,8 @@ import { Intent, Spinner } from "@blueprintjs/core/dist";
 import "@blueprintjs/core/dist/blueprint.css";
 
 var loading_captions = [
-  "Pending Payment...",
-  "Pending Confirmation..."
+  "Please wait... Pending payment...",
+  "Please wait... Pending confirmation..."
 ]
 
 export default class Invite extends Component {
@@ -40,6 +44,8 @@ export default class Invite extends Component {
     this.onEvent_Confirmation = this.onEvent_Confirmation.bind(this);
     this.onEvent_Receipt = this.onEvent_Receipt.bind(this);
     this.onEvent_Error = this.onEvent_Error.bind(this);
+
+    this.onEvent_RetrievePlayers = this.onEvent_RetrievePlayers.bind(this);
   }
   componentWillMount() {
     console.log("componentWillMount");
@@ -69,9 +75,14 @@ export default class Invite extends Component {
       }
     }
 
+    DiscordBotActions.retrievePlayers(0);
     SessionHelper.listTransactions();
   }
   componentDidMount() {
+    console.log("componentDidMount");
+
+    DiscordBotStore.addRetrievePlayersListener(this.onEvent_RetrievePlayers);
+
     WagerStore.addChangeListener(this._onChange);
 
     Web3Store.addTransactionHashListener(this.onEvent_TransactionHash);
@@ -80,6 +91,10 @@ export default class Invite extends Component {
     Web3Store.addErrorListener(this.onEvent_Error);
   }
   componentWillUnmount() {
+    console.log("componentWillUnmount");
+
+    DiscordBotStore.removeRetrievePlayersListener(this.onEvent_RetrievePlayers);
+
     WagerStore.removeChangeListener(this._onChange);
 
     Web3Store.removeTransactionHashListener(this.onEvent_TransactionHash);
@@ -150,6 +165,12 @@ export default class Invite extends Component {
 
     this.forceUpdate();
   }
+  onEvent_RetrievePlayers() {
+    let discordUsers = DiscordBotStore.getStore();
+    discordUsers = discordUsers.users;
+
+    this.setState({ discordUsers });
+  }
   render() {
     const referenceHash = this.state.wager.referenceHash;
 
@@ -158,21 +179,48 @@ export default class Invite extends Component {
     const hasPlayers = (this.state.wager.players !== undefined);
     const isAuthorized = (window.authorizedAccount !== undefined);
 
-    var isOwnerLoggedIn = false;
+    let isOwnerLoggedIn = false;
 
-    var showCallToAction = false;
+    let showCallToAction = false;
+
+    let {
+      error,
+      loaded,
+      processing,
+      discordUsers
+    } = this.state;
+
+    let {
+      players
+    } = this.state.wager;
 
     if (hasPlayers) {
-      isOwnerLoggedIn = (this.state.wager.players[0] === window.authorizedAccount);
+      isOwnerLoggedIn = (players[0] === window.authorizedAccount);
     }
 
     if (isOwnerLoggedIn) {
       showCallToAction = true;
     }
 
-    var error = this.state.error;
-    var loaded = this.state.loaded;
-    var processing = this.state.processing;
+    let hasDiscordUsers = false;
+
+    if (discordUsers) {
+
+      hasDiscordUsers = true;
+
+      console.log("discordUsers", discordUsers);
+
+      players = _.map(players, function(address) {
+
+        let player = _.find(discordUsers, (discordUser) => {
+          return discordUser.ethereumAddress == address;
+        });
+
+        return player;
+      });
+
+      console.log('players', players);
+    }
 
     const onSubmit = (event) => {
 
@@ -338,14 +386,35 @@ export default class Invite extends Component {
                 <div className="highlighted">Players</div>
                 <br />
 
-                {this.state.wager.players.map(address => (
-                  <Player
-                    key={address}
-                    player={address}
-                    winner={this.state.wager.winner}
-                    accounts={this.state.accounts}
-                  />
-                ))}
+                { hasDiscordUsers ? (
+                  <div>
+                  {
+                    players.map(player => (
+                      <Player
+                        key={player.ethereumAddress}
+                        player={player.ethereumAddress}
+                        discordUsername={player.discordUsername}
+                        discordDiscriminator={player.discordDiscriminator}
+                        winner={this.state.wager.winner}
+                        accounts={this.state.accounts}
+                      />
+                    ))
+                  }
+                </div>
+                ) : (
+                  <div>
+                  {
+                    players.map(address => (
+                      <Player
+                        key={address}
+                        player={address}
+                        winner={this.state.wager.winner}
+                        accounts={this.state.accounts}
+                      />
+                    ))
+                  }
+                  </div>
+                )}
               </div>
             ) : (
               <Spinner intent={Intent.PRIMARY} />
@@ -402,17 +471,33 @@ export default class Invite extends Component {
 };
 
 function Player(props) {
-  const player = props.player;
-  const winner = props.winner;
-  const accounts = props.accounts;
+  const {
+    player,
+    winner,
+    accounts,
+    discordUsername,
+    discordDiscriminator
+  } = props;
 
-  var element = <div>{Formatter.formatAddress(player)}</div>;
+  let element = <div></div>;
 
-  if (accounts.length > 0) {
-    if (accounts[0] == player) {
-      element = <div>{Formatter.formatAddress(player)} (You)</div>
-    }
-  };
+  if (discordUsername) {
+    element = <div>{discordUsername}#{discordDiscriminator} {Formatter.formatAddress(player)}</div>;
+
+    if (accounts.length > 0) {
+      if (accounts[0] == player) {
+        element = <div>{discordUsername}#{discordDiscriminator} {Formatter.formatAddress(player)} (You)</div>
+      }
+    };
+  } else {
+    element = <div>{Formatter.formatAddress(player)}</div>;
+
+    if (accounts.length > 0) {
+      if (accounts[0] == player) {
+        element = <div>{Formatter.formatAddress(player)} (You)</div>
+      }
+    };
+  }
 
   return (
     <div>

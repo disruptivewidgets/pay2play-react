@@ -2,6 +2,8 @@ var DiscordBotServerActions = require('../actions/DiscordBotServerActions');
 
 import axios from 'axios';
 
+let DISCORD_BOT_HOST = 'http://127.0.0.1:3000';
+
 module.exports = {
   ping: function() {
     setTimeout(function() {
@@ -14,7 +16,7 @@ module.exports = {
     console.log("retrievePlayers");
 
     // DISCORD BOT API
-    axios.get('http://127.0.0.1:3000/api/player_list', {
+    axios.get(`${DISCORD_BOT_HOST}/api/player_list`, {
       params: {
         game: gameId
       }
@@ -37,7 +39,7 @@ module.exports = {
     console.log("notify");
 
     // DISCORD BOT API
-    axios.get('http://127.0.0.1:3000/api/notify', {
+    axios.get(`${DISCORD_BOT_HOST}/api/notify`, {
       params: {
         type: type,
         wager_id: index,

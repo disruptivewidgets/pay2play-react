@@ -43,8 +43,8 @@ import _ from 'lodash';
 
 var loading_captions = [
   "Loading Game Rules...",
-  "Pending Payment...",
-  "Pending Confirmation..."
+  "Please wait... Pending payment...",
+  "Please wait... Pending confirmation..."
 ];
 
 export default class Start extends Component {
@@ -199,6 +199,7 @@ export default class Start extends Component {
     });
 
     let option = options[0];
+    option.label += ' (You)';
 
     // EntryTicket
     if (window.authorizedAccount === undefined) {

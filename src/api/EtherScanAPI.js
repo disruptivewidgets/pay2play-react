@@ -19,6 +19,7 @@ module.exports = {
   pullEventLogs: function(key, index) {
     var events = {
       "WagerStarted": "0x99e93bdf4e5e9e4c68adb4d59aad07663b01de88698e7e959f43a399c1df17ce",
+      "WagerCountered": "0xd1376ccb0572145de3cc74ed98331a186633521b6f3ee2b95fc7f93469748f71",
       "NewDeposit": "0x0f71a8c7324cbf9513d2e403af7722f651d3635066eca540f17fb66a43fd2fa0",
       "WagerWinnerUpdated": "0x8cc07436b787fa8a30ca1402a2867cf1b592be47c9f6be3709cf2dba53dc83df",
       "WinningsWithdrawn": "0x9f1f3144430cc9624860cf28da61318e428f6d15f17e420c04e8203581951a91"
