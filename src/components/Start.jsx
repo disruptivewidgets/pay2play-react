@@ -194,12 +194,11 @@ export default class Start extends Component {
       return option;
     });
 
-    let selected = _.find(discordUsers, (discordUser) => {
-      return discordUser.ethereumAddress == options[0].value;
-    });
+    // let selected = _.find(discordUsers, (discordUser) => {
+    //   return discordUser.ethereumAddress == options[0].value;
+    // });
 
     let option = options[0];
-    option.label += ' (You)';
 
     // EntryTicket
     if (window.authorizedAccount === undefined) {
@@ -227,6 +226,7 @@ export default class Start extends Component {
         console.log(discordUserIndex);
 
         option = options[discordUserIndex];
+        option.label += ' (You)';
 
         this.setState({
           hasEntryTicket: true
