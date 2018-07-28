@@ -94,7 +94,7 @@ const AppView = () => (
 
         <br />
         <div>Competitive Entertainment Suite</div>
-        <div>Smart Wagers and Tournament Bracket with Ethereum Blockchain</div>
+        <div>Smart Wagers and Tournament Brackets on Ethereum Blockchain</div>
         <br />
 
         <MistSite />
@@ -329,10 +329,10 @@ class MistSite extends React.Component {
           </div>
         ) : (
           <div>
-            <div className="highlighted-red">Pay2Play requires Web3.0 compatible browser to work.</div>
-            <div>Please download <a href="https://metamask.io">MetaMask</a> before using Pay2Play.</div>
+            <div className="highlighted-red">Hey, there! Pay2Play currently only works with browsers that support Metamask extension: Opera, Chrome, Brave.</div>
+            <div>If you are already using either on of them but don't have MetaMask installed. Please visit <a href="https://metamask.io">MetaMask</a> to learn more and install it before using Pay2Play.</div>
             <br />
-            <div>For more information on how to get it setup, see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial.</a></div>
+            <div>You can also see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial</a> for more information on how to get it started.</div>
             <br />
             <div>Cheers, Pay2Play Team!</div>
             <br />

@@ -23,8 +23,7 @@ function retrieveWager(index, callback) {
   var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
   contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
 
-  contract.methods.getWager(index.toString()).call({}, function(error, result)
-  {
+  contract.methods.getWager(index.toString()).call({}, function(error, result) {
     var state = "open";
 
     var date = new Date(result[1] * 1000);
@@ -371,6 +370,24 @@ module.exports = {
       console.log("receipt");
       console.log(receipt);
 
+      let events = receipt['events'];
+      let event_NewDeposit = events['WagerWinnerUpdated'];
+      let returnValues = event_NewDeposit['returnValues'];
+
+      let wagerIndex = returnValues['index'];
+      let wagerWinner = returnValues['winner'];
+
+      console.log(wagerIndex);
+      console.log(wagerWinner);
+
+      if (window.authorizedAccount !== wagerWinner) {
+        DiscordBotActions.notify(
+          'winner',
+          wagerIndex,
+          wagerWinner
+        );
+      }
+
       Web3ServerActions.setWagerWinner('receipt');
     })
     .on('error', function(error) {
@@ -586,8 +603,7 @@ module.exports = {
     //   eachAsync(wagerIndices, retrieveWager, sort);
     // });
   },
-  retrieveBracket: function(index)
-  {
+  retrieveBracket: function(index) {
     console.log("retrieveBracket: " + index);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
