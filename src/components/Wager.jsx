@@ -323,7 +323,6 @@ export default class Wager extends Component {
       });
 
       console.log('winner', winner);
-
     }
 
     return (
