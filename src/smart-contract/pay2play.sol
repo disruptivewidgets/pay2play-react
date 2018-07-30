@@ -206,13 +206,13 @@ contract Registrar {
     function counterWagerAndDeposit(uint index, address player) payable public {
         newDeposit(index, player);
 
-        wager storage w = wagers[index];
+        wager memory w = wagers[index];
 
         emit WagerCountered(index, player, w.players[0], now);
     }
 
     function setWagerWinner(uint index, address winner) onlyRegistrar public {
-      wager memory w = wagers[index];
+      wager storage w = wagers[index];
 
       w.winner = winner;
 

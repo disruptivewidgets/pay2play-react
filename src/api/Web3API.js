@@ -9,8 +9,8 @@ var wagerRegistrarContractAddress = "";
 var tokenContractAddress = "";
 var bracketRegistrarContractAddress = "";
 
-tokenContractAddress = "0x2d21da2a11bc22d177375408131dd38d78891679";
-wagerRegistrarContractAddress = "0xe798d051856fc2a2671dbc0615f3e6058d1d4daa";
+tokenContractAddress = "0x98878cef8067d25a923a39ea27080c88663bf642";
+wagerRegistrarContractAddress = "0x4859fc2ac2442a911e6b203502ccf4ab99959e34";
 bracketRegistrarContractAddress = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
 
 var fromBlock = '';
