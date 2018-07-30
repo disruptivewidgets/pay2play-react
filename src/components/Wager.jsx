@@ -219,12 +219,6 @@ export default class Wager extends Component {
     console.log(' ===========> ', options_DiscordUsers);
     console.log(' ===========> ', selected_DiscordUserOption);
 
-    let hasDiscordUsers = false;
-
-    if (discordUsers) {
-      hasDiscordUsers = true;
-    }
-
     const isWagerOpen = (wager.state === 'open') ;
     const isWagerClosed = (wager.state === 'closed');
     const isWagerFinished = (wager.state === 'finished');
@@ -317,6 +311,21 @@ export default class Wager extends Component {
       isModerator = true;
     }
 
+    let hasDiscordUsers = false;
+
+    let winner = null;
+
+    if (discordUsers) {
+      hasDiscordUsers = true;
+
+      winner = _.find(discordUsers, (discordUser) => {
+        return discordUser.ethereumAddress == wager.winner;
+      });
+
+      console.log('winner', winner);
+
+    }
+
     return (
         <div>
           <div className="highlighted">Wager Terms</div>
@@ -366,7 +375,11 @@ export default class Wager extends Component {
                 <div>
                   { isWagerFinished ? (
                       <div>
-                        <div>Wager Winner: {Formatter.formatAddress(wager.winner)}</div>
+                        { hasDiscordUsers ? (
+                          <div>Wager Winner: {Formatter.formatDiscordUser(winner)}</div>
+                        ) : (
+                          <div>Wager Winner: {Formatter.formatAddress(wager.winner)}</div>
+                        )}
                       </div>
                     ) : (
                       <div>
