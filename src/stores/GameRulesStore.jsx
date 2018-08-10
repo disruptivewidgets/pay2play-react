@@ -1,8 +1,8 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
-import GameActionTypes from '../constants/GameActionTypes';
+import GameRulesActionTypes from '../constants/GameRulesActionTypes';
 
-import Game from '../data/Game';
-import GameCounter from '../data/GameCounter';
+import GameRule from '../data/GameRule';
+import GameRuleCounter from '../data/GameRuleCounter';
 
 import _ from 'lodash'
 
@@ -21,7 +21,7 @@ var _store = {
 
 var _game = {};
 
-var GameStore = ObjectAssign({}, EventEmitter.prototype, {
+var GameRulesStore = ObjectAssign({}, EventEmitter.prototype, {
 
   addChangeListener: function(cb) {
     this.on(CHANGE_EVENT, cb);
@@ -41,26 +41,33 @@ AppDispatcher.register(function(payload) {
   var action = payload.action;
 
   switch(action.actionType) {
-    case GameActionTypes.RETRIEVE_GAMES_RESPONSE:
+    case GameRulesActionTypes.RETRIEVE_GAME_RULES_RESPONSE:
+
+        console.log(action.response);
+
         var games = _.map(action.response, function(game) {
 
-          const id = GameCounter.increment();
+          const id = GameRuleCounter.increment();
 
-          return new Game({
+          var timeframe = moment.duration(game.rules.duration, "seconds").format("y [years], M [months], d [days], h [hours], m [minutes], s [seconds]");
+
+          return new GameRule({
             id,
             index: game.id,
-            referenceHash: game.referenceHash,
-            title: game.title
+            referenceHash: game.hash,
+            duration: game.rules.duration,
+            timeframe: timeframe,
+            title: game.rules.title,
           })
         });
 
         _store.list = games;
 
-        GameStore.emit(CHANGE_EVENT);
+        GameRulesStore.emit(CHANGE_EVENT);
         break;
     default:
       return true;
   }
 });
 
-module.exports = GameStore;
+module.exports = GameRulesStore;

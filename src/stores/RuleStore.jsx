@@ -1,5 +1,5 @@
 import AppDispatcher from '../dispatcher/AppDispatcher';
-import GameActionTypes from '../constants/GameActionTypes';
+import GameRulesActionTypes from '../constants/GameRulesActionTypes';
 
 import Rule from '../data/Rule';
 import RuleCounter from '../data/RuleCounter';
@@ -39,7 +39,7 @@ AppDispatcher.register(function(payload) {
   var action = payload.action;
 
   switch(action.actionType) {
-    case GameActionTypes.RETRIEVE_GAME_RULES_RESPONSE:
+    case GameRulesActionTypes.RETRIEVE_GAME_RULES_RESPONSE:
 
         var rules = action.response;
 

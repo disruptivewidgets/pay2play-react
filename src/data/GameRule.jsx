@@ -2,9 +2,11 @@ import Immutable from 'immutable';
 
 const Game = Immutable.Record({
   id: '',
-  index: 0,
-  referenceHash: '',
-  title: ''
+  index: '',
+  duration: 0,
+  timeframe: '',
+  title: '',
+  referenceHash: ''
 });
 
 export default Game;

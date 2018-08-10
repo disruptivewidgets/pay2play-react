@@ -58,7 +58,36 @@ export default class GameSelector extends Component {
         />
 
         <br />
+        <GameItem
+          key={this.state.selected.id}
+          item={this.state.selected}
+        />
+        <br />
       </div>
     );
   }
 };
+
+function GameItem(props) {
+  const { item } = props;
+
+  let referenceHash = item.referenceHash;
+
+  if (referenceHash) {
+    var head = referenceHash.substring(0, 5);
+    var tail = referenceHash.substring(referenceHash.length - 5, referenceHash.length);
+    referenceHash = head + '...' + tail;
+  }
+
+  return (
+    <div>
+      <label>
+        Rules Hash: {referenceHash}
+      </label>
+      <br />
+      <label>
+        Effective Timeframe: {item.timeframe}
+      </label>
+    </div>
+  );
+}

@@ -5,7 +5,7 @@ import {
   withRouter
 } from 'react-router-dom'
 
-import Rules from '../components/Rules';
+import { Rules, fetchGame } from '../components/Rules';
 import EventLogs from '../components/EventLogs';
 
 import DiscordBotStore from '../stores/DiscordBotStore';
@@ -174,6 +174,8 @@ export default class Invite extends Component {
   render() {
     const referenceHash = this.state.wager.referenceHash;
 
+    const title = fetchGame(referenceHash).title;
+
     const startTimestamp = this.state.wager.startTimestamp;
     const isWagerOpen = (this.state.wager.state === 'open') ;
     const hasPlayers = (this.state.wager.players !== undefined);
@@ -258,109 +260,6 @@ export default class Invite extends Component {
         window.authorizedAccount,
         params
       );
-
-      // // NEW
-      // window.component = this;
-      // window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params)
-      // .on('transactionHash', function(hash) {
-      //   console.log("transactionHash");
-      //   console.log("txid: " + hash);
-      //
-      //   SessionHelper.removeTransaction("wagerId", window.component.props.match.params.id);
-      //
-      //   var transaction = {
-      //     id: hash,
-      //     status: "pending_block",
-      //     type: "counter",
-      //     wagerId: this.props.match.params.id
-      //   }
-      //
-      //   SessionHelper.storeTransaction(transaction);
-      //   SessionHelper.listTransactions();
-      // })
-      // .on('confirmation', function(confirmationNumber, receipt) {
-      //   console.log(confirmationNumber);
-      //   console.log(receipt);
-      //
-      //   if (confirmationNumber == 0) {
-      //     var hash = receipt.transactionHash;
-      //
-      //     SessionHelper.updateTransaction(hash, "status", "pending_counter_receipt_review");
-      //     SessionHelper.listTransactions();
-      //
-      //     window.component.setState({
-      //       loaded: true,
-      //       processing: true
-      //     });
-      //   }
-      // })
-      // .on('receipt', function(receipt) {
-      //   console.log("receipt");
-      //   console.log(receipt)
-      // })
-      // .on('error', function(error) {
-      //   console.log("error");
-      //   console.error(error);
-      //
-      //   window.component.setState({
-      //     loaded: true
-      //   });
-      //
-      //   window.component.forceUpdate();
-      // });
-      // // OLD
-      // // window.contract.methods.counterWagerAndDeposit(this.props.match.params.id).send(params, Helpers.getTxHandler({
-      // //     onStart: (txid) => {
-      // //       console.log("onStart");
-      // //       console.log("txid: " + txid);
-      // //
-      // //       SessionHelper.removeTransaction("wagerId", this.props.match.params.id);
-      // //
-      // //       var transaction = {
-      // //         id: txid,
-      // //         status: "pending_block",
-      // //         type: "counter",
-      // //         wagerId: this.props.match.params.id
-      // //       }
-      // //
-      // //       SessionHelper.storeTransaction(transaction);
-      // //       SessionHelper.listTransactions();
-      // //     },
-      // //     onDone: () => {
-      // //       console.log("onDone");
-      // //     },
-      // //     onSuccess: (txid, receipt) => {
-      // //       console.log("onSuccess");
-      // //       console.log(txid);
-      // //       console.log(receipt);
-      // //
-      // //       var logs = receipt.logs;
-      // //
-      // //       var log = logs[0];
-      // //
-      // //       var topics = log.topics;
-      // //
-      // //       var topic = topics[1];
-      // //
-      // //       var wagerId = window.web3.utils.hexToNumber(topic);
-      // //
-      // //       SessionHelper.updateTransaction(txid, "status", "pending_counter_receipt_review");
-      // //       SessionHelper.listTransactions();
-      // //
-      // //       this.setState({
-      // //         loaded: true,
-      // //         processing: true
-      // //       });
-      // //     },
-      // //     onError: (error) => {
-      // //       console.log("onError");
-      // //
-      // //       this.setState({
-      // //         loaded: true
-      // //       });
-      // //     }
-      // //   })
-      // // );
     };
 
     return (
@@ -370,15 +269,18 @@ export default class Invite extends Component {
         { loaded ? (
           <div>
             <div>Wager Id: <Link to={`/wagers/${this.state.wager.index}`} replace>{this.state.wager.index}</Link></div>
-            <div>Start Time: {this.state.wager.date}</div>
-            <div>Amount: {this.state.wager.amount / 1000000000000000000} Eth</div>
-
             <br />
+            <h3>Game: {title}</h3>
+            <h3>Pot: {this.state.wager.amount / 1000000000000000000} Eth</h3>
+            <br />
+            <div>Start Time: {this.state.wager.date}</div>
+
+            {/* <br />
             { referenceHash ? (
               <Rules referenceHash={referenceHash} startTimestamp={startTimestamp} />
             ) : (
               <Spinner intent={Intent.PRIMARY} />
-            )}
+            )} */}
 
             <br />
             { hasPlayers ? (

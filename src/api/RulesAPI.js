@@ -1,4 +1,4 @@
-var GameServerActions = require('../actions/GameServerActions');
+var GameRulesServerActions = require('../actions/GameRulesServerActions');
 
 var request = require('superagent');
 import _ from 'lodash';
@@ -6,8 +6,7 @@ import _ from 'lodash';
 import * as moment from 'moment';
 import 'moment-duration-format';
 
-function fetch_Swarm(game, callback)
-{
+function fetch_Swarm(game, callback) {
   var url = '';
   url = "http://swrm.io/bzzr:/" + game["hash"];
   url = "http://swarm-gateways.net/bzzr:/" + game["hash"];
@@ -32,8 +31,7 @@ function fetch_Swarm(game, callback)
   });
 };
 
-function fetch_Default(game, callback)
-{
+function fetch_Default(game, callback) {
   setTimeout(function() {
 
     if (game["hash"] == "d8fe3958b201c46e3d1ca6d431a11de990457f953f349705669806e514832f1e" || game["hash"] == "1") {
@@ -180,8 +178,7 @@ function fetch_Default(game, callback)
   }, 1000);
 };
 
-function eachAsync(array, f, callback)
-{
+function eachAsync(array, f, callback) {
     var doneCounter = 0, results = [];
 
     array.forEach(function (item) {
@@ -250,7 +247,7 @@ function getGamesSwarm() {
           // console.log("display");
           // console.log(objects);
 
-          GameServerActions.receivedGames(objects);
+          GameRulesServerActions.receivedGames(objects);
         }, 1000);
       }
 
@@ -289,7 +286,7 @@ function getGameRulesSwarm(hash, wagerStartTimestamp) {
 
         result['timeUntilEndString'] = timeUntilEndString;
 
-        GameServerActions.receivedGameRules(result);
+        GameRulesServerActions.receivedGameRules(result);
       });
     }
   });
@@ -466,7 +463,7 @@ function getGamesDefault() {
         // console.log("display");
         // console.log(objects);
 
-        GameServerActions.receivedGames(objects);
+        GameRulesServerActions.receivedGames(objects);
       }, 1000);
     }
 
@@ -591,7 +588,7 @@ function getGameRulesDefault (hash, wagerStartTimestamp) {
       result['timeUntilEndString'] = timeUntilEndString;
       result['duration'] = duration;
 
-      GameServerActions.receivedGameRules(result);
+      GameRulesServerActions.receivedGameRules(result);
     });
   }, 1000);
 }

@@ -4,6 +4,7 @@ import Wagers from '../components/Wagers';
 import Web3Shim from '../components/Web3Shim';
 
 import ImgLogo from '../../images/logo.png';
+import ImgOops from '../../images/oops.png';
 
 import Start from '../components/Start';
 import Session from '../components/Session';
@@ -252,6 +253,20 @@ class MistSite extends React.Component {
       this.setState({authorizedAccount: accounts[0]});
 
       window.authorizedAccount = accounts[0];
+
+      // window.web3.currentProvider.publicConfigStore.on('update', (e) => {
+      //   console.log(e);
+      //
+      //   if (window.authorizedAccount === null) {
+      //     return;
+      //   }
+      //
+      //   if (window.authorizedAccount === e.selectedAddress) {
+      //     return;
+      //   }
+      //
+      //   location.reload();
+      // });
     });
 
     window.web3.eth.getBlockNumber((err, blockNumber) => {
@@ -317,7 +332,7 @@ class MistSite extends React.Component {
               </div>
             ) : (
               <div>
-                <div className="highlighted-red">Pay2Play is currently available on Ropsten only. Please enable Ropsten network setting in your Mist/MetaMask installation.</div>
+                <div className="highlighted-ultraviolet">Pay2Play is currently available on Ropsten only. Please enable Ropsten network setting in your Mist/MetaMask installation.</div>
                 <br />
                 <div>For more information on how to get it setup, see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial.</a></div>
                 <br />
@@ -329,8 +344,13 @@ class MistSite extends React.Component {
           </div>
         ) : (
           <div>
-            <div className="highlighted-red">Hey, there! Pay2Play currently only works with browsers that support Metamask extension: Opera, Chrome, Brave.</div>
-            <div>If you are already using either on of them but don't have MetaMask installed. Please visit <a href="https://metamask.io">MetaMask</a> to learn more and install it before using Pay2Play.</div>
+            <div className="highlighted-ultraviolet">Pay2Play currently only works with browsers that support Metamask extension: Opera, Chrome, Brave.</div>
+            <div>If you are already using either on of them but don't have MetaMask installed. <br /> Please visit <a href="https://metamask.io">MetaMask</a> to learn more and install it before using Pay2Play.</div>
+            <br />
+
+            <div className="highlighted-ultraviolet">
+              <img src={ImgOops} className="logo"  />
+            </div>
             <br />
             <div>You can also see <a href="http://pay2play.io/pdf/MetaMask%20Tutorial.pdf">our tutorial</a> for more information on how to get it started.</div>
             <br />

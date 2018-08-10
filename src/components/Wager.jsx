@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Web3Actions from '../actions/Web3Actions';
 import Invite from '../components/Invite';
-import Rules from '../components/Rules';
+import { Rules, fetchGame } from '../components/Rules';
 import EventLogs from '../components/EventLogs';
 
 import DiscordUserSelector from '../components/DiscordUserSelector';
@@ -196,12 +196,8 @@ export default class Wager extends Component {
     this.forceUpdate();
   }
   handleSelect(selector, value) {
-    console.log('YO');
 
     if (selector === 'discord-user-selector') {
-      console.log(value);
-      console.log(value.value);
-
       this.setState({
         selected_DiscordUserOption: value
       });
@@ -214,10 +210,6 @@ export default class Wager extends Component {
       selected_DiscordUserOption,
       wager
     } = this.state;
-
-    console.log(' ===========> ', discordUsers);
-    console.log(' ===========> ', options_DiscordUsers);
-    console.log(' ===========> ', selected_DiscordUserOption);
 
     const isWagerOpen = (wager.state === 'open') ;
     const isWagerClosed = (wager.state === 'closed');
@@ -284,7 +276,6 @@ export default class Wager extends Component {
           // let winner = event.target.winner.value;
 
           let winner = this.state.selected_DiscordUserOption.value;
-          console.log(winner);
 
           // const amount = window.web3.utils.toWei(0.01, 'ether');
 
@@ -300,6 +291,11 @@ export default class Wager extends Component {
     };
 
     const referenceHash = wager.referenceHash;
+
+    const title = fetchGame(referenceHash).title;
+
+    console.log('referenceHash', referenceHash);
+
     const startTimestamp = wager.startTimestamp;
 
     var loaded = this.state.loaded;
@@ -321,18 +317,23 @@ export default class Wager extends Component {
       winner = _.find(discordUsers, (discordUser) => {
         return discordUser.ethereumAddress == wager.winner;
       });
-
-      console.log('winner', winner);
     }
 
     return (
         <div>
           <div className="highlighted">Wager Terms</div>
           <br />
-          <div>Wager Id: {wager.index}</div>
-          <div>Start Time: {wager.date}</div>
-          <div>
 
+          <div>Wager Id: {wager.index}</div>
+          <br />
+
+          <h3>Game: {title}</h3>
+          <h3>Pot: {wager.amount / 1000000000000000000} Eth</h3>
+          <br />
+
+          <div>Start Time: {wager.date}</div>
+
+          <div>
             {
               isPlayer ? (
                 <div>
@@ -356,14 +357,12 @@ export default class Wager extends Component {
             }
           </div>
 
-          <div>Amount: {wager.amount / 1000000000000000000} Eth</div>
-
           <br />
-          { referenceHash ? (
+          {/* { referenceHash ? (
             <Rules referenceHash={referenceHash} startTimestamp={startTimestamp} />
           ) : (
             <Spinner intent={Intent.PRIMARY} />
-          )}
+          )} */}
 
           { isModerator ? (
             <div>
@@ -498,7 +497,7 @@ export default class Wager extends Component {
               {
                 isLoser &&
                 <div>
-                  <div className="highlighted-red">Sorry, you did not win.</div>
+                  <div className="highlighted-raspberry">Sorry, you did not win.</div>
                   <br />
                   <div>Wager Winner: {Formatter.formatAddress(wager.winner)}</div>
                   <br />

@@ -4,13 +4,18 @@ import DiscordUserSelector from '../components/DiscordUserSelector';
 import GameSelector from '../components/GameSelector';
 
 import DiscordBotActions from '../actions/DiscordBotActions';
+
 import GameActions from '../actions/GameActions';
+import GameRulesActions from '../actions/GameRulesActions';
+
 import Web3Actions from '../actions/Web3Actions';
 
 import DiscordBotAPI from '../api/DiscordBotAPI';
 import RulesAPI from '../api/RulesAPI.js';
 
 import GameStore from '../stores/GameStore';
+import GameRulesStore from '../stores/GameRulesStore';
+
 import DiscordBotStore from '../stores/DiscordBotStore';
 import Web3Store from '../stores/Web3Store';
 import WagerStore from '../stores/WagerStore';
@@ -18,6 +23,8 @@ import WagerStore from '../stores/WagerStore';
 import TransactionHelper from "../helpers/TransactionUtils.js";
 import SessionHelper from "../helpers/SessionUtils.js";
 import QueueManager from "../helpers/QueueManager.js";
+
+import { fetchGame } from '../components/Rules';
 
 import { Intent, Spinner } from "@blueprintjs/core/dist";
 
@@ -60,6 +67,8 @@ export default class Start extends Component {
     this.onEvent_Error = this.onEvent_Error.bind(this);
 
     this.onEvent_RetrievePlayers = this.onEvent_RetrievePlayers.bind(this);
+
+    this.onEvent_GameStoreChange = this.onEvent_GameStoreChange.bind(this);
   }
   componentWillMount() {
     if (SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review"))
@@ -88,17 +97,23 @@ export default class Start extends Component {
     });
 
     let gameStore = GameStore.getDataStore();
-    let discordBotStore = DiscordBotStore.getStore();
-
     this.setState(gameStore);
 
-    DiscordBotActions.retrievePlayers(0);
     GameActions.retrieveGames();
+
+    let gameRulesStore = GameRulesStore.getDataStore();
+    this.setState(gameRulesStore);
+
+    GameRulesActions.retrieveGames();
+
+    let discordBotStore = DiscordBotStore.getStore();
+
+    DiscordBotActions.retrievePlayers(0);
   }
   componentDidMount() {
-    console.log("componentDidMount");
+    GameStore.addChangeListener(this.onEvent_GameStoreChange);
 
-    GameStore.addChangeListener(this._onChange);
+    GameRulesStore.addChangeListener(this._onChange);
 
     DiscordBotStore.addRetrievePlayersListener(this.onEvent_RetrievePlayers);
 
@@ -108,9 +123,9 @@ export default class Start extends Component {
     Web3Store.addErrorListener(this.onEvent_Error);
   }
   componentWillUnmount() {
-    console.log("componentWillUnmount");
+    GameStore.removeChangeListener(this.onEvent_GameStoreChange);
 
-    GameStore.removeChangeListener(this._onChange);
+    GameRulesStore.removeChangeListener(this._onChange);
 
     DiscordBotStore.removeRetrievePlayersListener(this.onEvent_RetrievePlayers);
 
@@ -120,6 +135,32 @@ export default class Start extends Component {
     Web3Store.removeErrorListener(this.onEvent_Error);
   }
   _onChange() {
+    var dataStore = GameRulesStore.getDataStore();
+
+    var games = _.map(dataStore.list, function(item) {
+
+      var game = {
+        value: item.referenceHash,
+        label: item.title
+      };
+      return game;
+    });
+
+    var selected = _.find(dataStore.list, function(game) {
+      return game.referenceHash == games[0].value;
+    });
+
+    // this.setState({
+    //   games: games,
+    //   value: games[0],
+    //   referenceHash: selected.referenceHash,
+    //   loaded: true,
+    //   selected_Game: games[0]
+    // });
+
+    this.setState(GameRulesStore.getDataStore());
+  }
+  onEvent_GameStoreChange() {
     var dataStore = GameStore.getDataStore();
 
     var games = _.map(dataStore.list, function(item) {
@@ -131,30 +172,26 @@ export default class Start extends Component {
     });
 
     var selected = _.find(dataStore.list, function(game) {
-      console.log(game.referenceHash, games[0].value);
       return game.referenceHash == games[0].value;
     });
 
     this.setState({
       games: games,
       value: games[0],
-      referenceHash: selected.referenceHash,
       loaded: true,
+      referenceHash: selected.referenceHash,
       selected_Game: games[0]
     });
 
-    this.setState(GameStore.getDataStore());
+    this.setState(GameRulesStore.getDataStore());
+
   }
   onEvent_TransactionHash() {
-    console.log("onEvent_TransactionHash");
-
     this.setState({
         loading_caption: loading_captions[2]
     });
   }
   onEvent_Confirmation() {
-    console.log("onEvent_Confirmation");
-
     let {
       selected_DiscordUserOption
     } = this.state;
@@ -170,11 +207,8 @@ export default class Start extends Component {
     });
   }
   onEvent_Receipt() {
-    console.log("onEvent_Receipt");
   }
   onEvent_Error() {
-    console.log("onEvent_Error");
-
     this.setState({
       loaded: true
     });
@@ -204,26 +238,18 @@ export default class Start extends Component {
     if (window.authorizedAccount === undefined) {
 
     } else {
-      console.log(discordUsers);
-
       let discordUser = _.find(
         discordUsers, {
           'ethereumAddress': window.authorizedAccount
         }
       );
 
-      console.log(discordUser);
-
       if (discordUser) {
-        console.log("entry ticket found");
-
         let discordUserIndex = _.findIndex(
           discordUsers, {
             'ethereumAddress': window.authorizedAccount
           }
         );
-
-        console.log(discordUserIndex);
 
         option = options[discordUserIndex];
         option.label += ' (You)';
@@ -232,8 +258,6 @@ export default class Start extends Component {
           hasEntryTicket: true
         });
       } else {
-        console.log("entry ticket not found.");
-
         this.setState({
           hasEntryTicket: false
         });
@@ -245,22 +269,24 @@ export default class Start extends Component {
       options_DiscordUsers: options,
       selected_DiscordUserOption: option
     });
+    
+    this.forceUpdate();
   }
   forceUpdate() {
     this.setState(GameStore.getDataStore());
   }
   handleSelect(selector, value) {
-    console.log("handleSelect");
     if (selector === 'game-selector') {
       this.setState({
         referenceHash: value.value,
         selected_Game: value
       });
+
+      let id = fetchGame(value.value).id;
+      DiscordBotActions.retrievePlayers(id);
     }
 
     if (selector === 'discord-user-selector') {
-      console.log(value);
-
       this.setState({
         selected_DiscordUserOption: value
       });
@@ -281,6 +307,12 @@ export default class Start extends Component {
       hasEntryTicket
     } = this.state;
 
+    let hasDiscordUsers = false;
+
+    if (typeof discordUsers !== 'undefined' && discordUsers.length > 0) {
+      hasDiscordUsers = true;
+    }
+
     const onChange = (event) => {
       this.setState({
         amount: event.target.value,
@@ -289,8 +321,6 @@ export default class Start extends Component {
     };
 
     var transaction = SessionHelper.hasTransactionsWithStatus("pending_start_receipt_review");
-
-    console.log(transaction);
 
     var queuedWagerId = -1;
     if (transaction) {
@@ -307,9 +337,6 @@ export default class Start extends Component {
 
       event.preventDefault();
 
-      // console.log(this.state.amount);
-      // console.log(this.state.referenceHash);
-
       this.setState({
         loaded: false,
         error: '',
@@ -319,8 +346,6 @@ export default class Start extends Component {
       // var amount = this.state.amount;
 
       if (!validator.isDecimal(amount)) {
-        console.log("Incorrect amount");
-
         this.setState({
           loaded: true,
           error: 'Please enter correct amount.'
@@ -332,8 +357,6 @@ export default class Start extends Component {
       amount = Number(amount);
 
       if (amount < 0.01) {
-        console.log("Minimum bet is 0.01");
-
         this.setState({
           loaded: true,
           error: 'Please bet more than or equal to 0.01.'
@@ -362,7 +385,6 @@ export default class Start extends Component {
       };
 
       if (selected_DiscordUserOption) {
-        console.log(selected_DiscordUserOption.value);
         Web3Actions.startWager(referenceHash, selected_DiscordUserOption.value, params);
       } else {
         Web3Actions.startWager(referenceHash, selected_DiscordUserOption.value, params);
@@ -385,21 +407,6 @@ export default class Start extends Component {
               </div>
             ) : (
               <form onSubmit={onSubmit}>
-                <div>Who are you wagering for?</div>
-                <DiscordUserSelector
-                  onSelect={this.handleSelect}
-                  data={discordUsers}
-                  options={options_DiscordUsers}
-                  selected={selected_DiscordUserOption}
-                />
-
-                {
-                  !hasEntryTicket &&
-                  <div>Looks like you don't have an entry ticket. In order to wager for yourself, you need to get one. Please head to our discord and talk to <b>butler bot</b> to obtain one.</div>
-                }
-
-                <br />
-
                 <div>What's the game?</div>
                 <GameSelector
                   onSelect={this.handleSelect}
@@ -408,29 +415,60 @@ export default class Start extends Component {
                   selected={selected_Game}
                 />
 
-                <div>How much are you stacking?</div>
-                <label>
-                  <BrowserView device={isBrowser}>
-                    <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
-                  </BrowserView>
+                {
+                  hasDiscordUsers ? (
+                    <div>
+                      <div>Who are you wagering for?</div>
+                      <DiscordUserSelector
+                        onSelect={this.handleSelect}
+                        data={discordUsers}
+                        options={options_DiscordUsers}
+                        selected={selected_DiscordUserOption}
+                      />
 
-                  <MobileView device={isMobile}>
-                    <input type="text" className="mobile" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
-                  </MobileView>
-                </label>
-                <br />
+                      {
+                        !hasEntryTicket &&
+                        <div>
+                            <br />
+                            <div className="highlighted-raspberry">Looks like you don't have an entry ticket for this game. <br /> If you want to wager for your self head talk to <b>butler</b> in our <a href="https://discord.gg/XW6gtmA">discord</a> to obtain one.</div>
+                        </div>
+                      }
 
-                { error ? (
-                  <div>
-                    <div><input type="submit" value="Start Wager" /></div>
-                    <br />
-                    <div className="error">{this.state.error}</div>
-                  </div>
-                ) : (
-                  <div><input type="submit" value="Start Wager" /></div>
-                ) }
+                      <br />
 
-                <br />
+                      <div>How much are you stacking?</div>
+                      <label>
+                        <BrowserView device={isBrowser}>
+                          <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                        </BrowserView>
+
+                        <MobileView device={isMobile}>
+                          <input type="text" className="mobile" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
+                        </MobileView>
+                      </label>
+                      <br />
+
+                      { error ? (
+                        <div>
+                          <div><input type="submit" value="Start Wager" /></div>
+                          <br />
+                          <div className="error">{this.state.error}</div>
+                        </div>
+                      ) : (
+                        <div><input type="submit" value="Start Wager" /></div>
+                      ) }
+
+                      <br />
+                    </div>
+                  ) : (
+                    <div>
+                      <div>
+                        Currently, there are no players wagering in this game.
+                      </div>
+                      <br />
+                    </div>
+                  )
+                }
               </form>
             ) }
           </div>
