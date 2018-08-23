@@ -3,7 +3,7 @@ var DiscordBotServerActions = require('../actions/DiscordBotServerActions');
 import axios from 'axios';
 
 // let DISCORD_BOT_HOST = 'http://127.0.0.1:3000';
-let DISCORD_BOT_HOST = 'http://pay2play-discord-bot.cluster.playentertainment.online';
+let DISCORD_BOT_HOST = 'https://pay2play-discord-bot.cluster.playentertainment.online';
 
 module.exports = {
   ping: function() {

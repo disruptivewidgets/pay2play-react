@@ -269,7 +269,7 @@ export default class Start extends Component {
       options_DiscordUsers: options,
       selected_DiscordUserOption: option
     });
-    
+
     this.forceUpdate();
   }
   forceUpdate() {
@@ -436,7 +436,7 @@ export default class Start extends Component {
 
                       <br />
 
-                      <div>How much are you stacking?</div>
+                      <div>How much?</div>
                       <label>
                         <BrowserView device={isBrowser}>
                           <input type="text" placeholder="Enter Amount" value={this.state.amount} onChange={onChange} />
