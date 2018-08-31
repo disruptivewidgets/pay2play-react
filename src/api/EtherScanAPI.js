@@ -3,7 +3,7 @@ var request = require('superagent');
 import util from 'ethereumjs-util';
 
 import EventLogServerActions from '../actions/EventLogServerActions';
-import { wagerRegistrarContractAddress } from '../api/Web3API';
+import { CONTRACT_ADDRESS_REGISTRAR_WAGERS } from '../api/Web3API';
 
 module.exports = {
   findItems: function(query) {
@@ -26,7 +26,7 @@ module.exports = {
     };
 
     // var registrarAddress = "0x812d7c22103a243072dfcf0f60acee1eda171a29";
-    var address = wagerRegistrarContractAddress;
+    var address = CONTRACT_ADDRESS_REGISTRAR_WAGERS;
 
     var topic0 = events[key];
 

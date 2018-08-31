@@ -5,13 +5,9 @@ import SessionHelper from "../helpers/SessionUtils.js";
 
 import interfaces from "../smart-contract/interfaces.js";
 
-var wagerRegistrarContractAddress = "";
-var tokenContractAddress = "";
-var bracketRegistrarContractAddress = "";
-
-tokenContractAddress = "0x98878cef8067d25a923a39ea27080c88663bf642";
-wagerRegistrarContractAddress = "0x4859fc2ac2442a911e6b203502ccf4ab99959e34";
-bracketRegistrarContractAddress = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
+let CONTRACT_ADDRESS_TOKEN = "0x7856a5d8b3a1481938ef595e5f9b8e212b4cf26e";
+let CONTRACT_ADDRESS_REGISTRAR_WAGERS = "0x6ef6986ff87f5ac8f587360783875daa48336646";
+let CONTRACT_ADDRESS_REGISTRAR_BRACKETS = "0xe277bddefe2d70d1fbb4ba8e49166b87df14af46";
 
 var fromBlock = '';
 var toBlock = '';
@@ -21,7 +17,7 @@ function retrieveWager(index, callback) {
   var wagers = [];
 
   var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-  contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
+  contract.options.address = CONTRACT_ADDRESS_REGISTRAR_WAGERS; // Ropsen Pay2Play
 
   contract.methods.getWager(index.toString()).call({}, function(error, result) {
     var state = "open";
@@ -62,7 +58,7 @@ function retrieveBracket(index, callback) {
   var brackets = [];
 
   var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-  contract.options.address = bracketRegistrarContractAddress; // Ropsen Pay2Play
+  contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS; // Ropsen Pay2Play
 
   contract.methods.getTournament(index.toString()).call({}, function(error, result)
   {
@@ -108,7 +104,7 @@ module.exports = {
     console.log("retrieveWagers");
 
     var contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = wagerRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_WAGERS;
 
     contract.methods.getWagerCount().call({}, function(error, result) {
       var index = result - 1;
@@ -496,7 +492,7 @@ module.exports = {
     console.log("startBracket");
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.start(numberOfParticipants).send(params)
     .on('transactionHash', function(hash) {
@@ -562,7 +558,7 @@ module.exports = {
     console.log("retrieveBrackets");
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentCount().call({}, function(error, result) {
       var index = result - 1;
@@ -607,7 +603,7 @@ module.exports = {
     console.log("retrieveBracket: " + index);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(index).call({}, function(error, address) {
       console.log("getTournamentContractAddress: " + address);
@@ -648,7 +644,7 @@ module.exports = {
     console.log("takeSeat_SideA: " + seat);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
       console.log("getTournamentContractAddress: " + result);
@@ -692,7 +688,7 @@ module.exports = {
     console.log("takeSeat_SideB: " + seat);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
       console.log("getTournamentContractAddress: " + result);
@@ -736,7 +732,7 @@ module.exports = {
     console.log("promotePlayer_SideA: " + address);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
       console.log("getTournamentContractAddress: " + result);
@@ -781,7 +777,7 @@ module.exports = {
     console.log("promotePlayer_SideB: " + address);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
       console.log("getTournamentContractAddress: " + result);
@@ -826,7 +822,7 @@ module.exports = {
     console.log("setBracketWinner: " + address);
 
     var contract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    contract.options.address = bracketRegistrarContractAddress;
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS;
 
     contract.methods.getTournamentContractAddress(bracketId).call({}, function(error, result) {
       console.log("getTournamentContractAddress: " + result);
@@ -866,7 +862,7 @@ module.exports = {
       });
     });
   },
-  tokenContractAddress: tokenContractAddress,
-  wagerRegistrarContractAddress: wagerRegistrarContractAddress,
-  bracketRegistrarContractAddress: bracketRegistrarContractAddress
+  CONTRACT_ADDRESS_TOKEN: CONTRACT_ADDRESS_TOKEN,
+  CONTRACT_ADDRESS_REGISTRAR_WAGERS: CONTRACT_ADDRESS_REGISTRAR_WAGERS,
+  CONTRACT_ADDRESS_REGISTRAR_BRACKETS: CONTRACT_ADDRESS_REGISTRAR_BRACKETS
 };

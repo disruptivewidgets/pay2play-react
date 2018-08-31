@@ -69,7 +69,7 @@ export default class Wagers extends Component
                   Status
                 </td>
                 <td>
-                  Creator
+                  Owner
                 </td>
                 <td>
                   Start Timestamp

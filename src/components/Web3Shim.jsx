@@ -9,9 +9,9 @@ import util from 'ethereumjs-util';
 import Formatter from "../helpers/Formatters.js";
 
 import {
-  wagerRegistrarContractAddress,
-  tokenContractAddress,
-  bracketRegistrarContractAddress
+  CONTRACT_ADDRESS_REGISTRAR_WAGERS,
+  CONTRACT_ADDRESS_TOKEN,
+  CONTRACT_ADDRESS_REGISTRAR_BRACKETS
 
 } from '../api/Web3API';
 
@@ -51,8 +51,8 @@ export default class Web3Shim extends Component
     // }
 
     console.log("Ropsen Pay2Play: ");
-    console.log("wagerRegistrarContractAddress: " + wagerRegistrarContractAddress);
-    console.log("tokenContractAddress: " + tokenContractAddress);
+    console.log("CONTRACT_ADDRESS_REGISTRAR_WAGERS: " + CONTRACT_ADDRESS_REGISTRAR_WAGERS);
+    console.log("CONTRACT_ADDRESS_TOKEN: " + CONTRACT_ADDRESS_TOKEN);
 
     // if (window.web3.eth.currentProvider.isConnected()) {
     //   console.log("web3 connected");
@@ -116,7 +116,7 @@ export default class Web3Shim extends Component
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    window.contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
+    window.contract.options.address = CONTRACT_ADDRESS_REGISTRAR_WAGERS; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
     });
@@ -126,12 +126,12 @@ export default class Web3Shim extends Component
     });
 
     window.tokenContract = new window.web3.eth.Contract(interfaces.tokenInterface);
-    window.tokenContract.options.address = tokenContractAddress; // Ropsen Pay2Play
+    window.tokenContract.options.address = CONTRACT_ADDRESS_TOKEN; // Ropsen Pay2Play
 
     window.bracketRegistrarContract = new window.web3.eth.Contract(interfaces.bracketRegistrarInterface);
-    window.bracketRegistrarContract.options.address = bracketRegistrarContractAddress; // Ropsen Pay2Play
+    window.bracketRegistrarContract.options.address = CONTRACT_ADDRESS_REGISTRAR_BRACKETS; // Ropsen Pay2Play
 
-    console.log(bracketRegistrarContractAddress);
+    console.log(CONTRACT_ADDRESS_REGISTRAR_BRACKETS);
 
     window.bracketRegistrarContract.methods.node().call({}, function(error, result) {
       window.host_BracketRegistrar = result;
@@ -145,7 +145,7 @@ export default class Web3Shim extends Component
 
       window.authorizedAccount = accounts[0];
 
-      // window.tokenContract.options.address = tokenContractAddress; // Ropsen Pay2Play
+      // window.tokenContract.options.address = CONTRACT_ADDRESS_TOKEN; // Ropsen Pay2Play
       window.tokenContract.methods.balanceOf(window.authorizedAccount).call({}, function(error, result) {
         console.log("balanceOf");
         console.log(error, result);
@@ -205,7 +205,7 @@ export default class Web3Shim extends Component
     {
       style = "highlight-creator";
       // https://ropsten.etherscan.io/token/0x7e50651fc0229857ba21a4342124744283ba546d?a=0x360e9d72b8b74baf3fbc472963fa4879006cafc7
-      url = "https://" + 'ropsten' + ".etherscan.io/token/" + tokenContractAddress + "?a=" + window.authorizedAccount;
+      url = "https://" + 'ropsten' + ".etherscan.io/token/" + CONTRACT_ADDRESS_TOKEN + "?a=" + window.authorizedAccount;
     }
 
     return (

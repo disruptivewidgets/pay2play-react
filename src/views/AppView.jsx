@@ -20,7 +20,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import Web3 from 'web3';
-import { wagerRegistrarContractAddress } from '../api/Web3API.js';
+import { CONTRACT_ADDRESS_REGISTRAR_WAGERS } from '../api/Web3API.js';
 import interfaces from "../smart-contract/interfaces.js";
 
 import {
@@ -119,6 +119,7 @@ class MistSite extends React.Component {
       hasMetamask: false,
       hasMist: false,
       hasTrustWallet: false,
+      hasToshi: false,
       netId: -1
     });
 
@@ -172,6 +173,22 @@ class MistSite extends React.Component {
 
         this.setState({
           hasMetamask: true
+        });
+      }
+
+      if (window.web3.currentProvider.isToshi === true) {
+        console.log("Toshi detected");
+
+        window.web3.eth.net.getId().then(netId => {
+          this.setState({
+            netId: netId
+          });
+        })
+
+        this.setupWeb3();
+
+        this.setState({
+          hasToshi: true
         });
       }
 
@@ -274,7 +291,7 @@ class MistSite extends React.Component {
     });
 
     window.contract = new window.web3.eth.Contract(interfaces.registrarInterface);
-    contract.options.address = wagerRegistrarContractAddress; // Ropsen Pay2Play
+    contract.options.address = CONTRACT_ADDRESS_REGISTRAR_WAGERS; // Ropsen Pay2Play
 
     window.contract.methods.registrarStartDate().call({}, function(error, result) {
       // console.log("registrarStartDate");
@@ -294,6 +311,7 @@ class MistSite extends React.Component {
       hasMistBrowser,
       hasMetamask,
       hasTrustWallet,
+      hasToshi,
       netId
     } = this.state;
 
@@ -308,7 +326,7 @@ class MistSite extends React.Component {
 
     return (
       <div>
-        { hasMistBrowser || hasMetamask || hasTrustWallet ? (
+        { hasMistBrowser || hasMetamask || hasTrustWallet || hasToshi ? (
           <div>
 
           { isSelectedNetworkSupported ? (
