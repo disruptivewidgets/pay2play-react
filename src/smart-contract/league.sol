@@ -13,7 +13,6 @@ contract Registrar {
   address public tokenNode;
 
   League[] leagues;
-  /* mapping (address => Tournament) public tournaments; */
 
   constructor(address _tokenNode) public {
     registrarStartDate = now;
@@ -23,8 +22,7 @@ contract Registrar {
 
   event NewLeagueStarted(uint indexed index, uint numberOfParticipants);
 
-  function start(uint _numberOfParticipants) public
-  {
+  function start(uint _numberOfParticipants) public {
     League league = (new League)(_numberOfParticipants, msg.sender);
 
     leagues.push(league);
@@ -34,53 +32,25 @@ contract Registrar {
     emit NewLeagueStarted(index, _numberOfParticipants);
   }
 
-  function getLeague(uint _index) public returns (uint, uint, uint, address, address)
-  {
+  function getLeague(uint _index) public returns (uint, uint, uint, address, address) {
     League league = leagues[_index];
     return (_index, league.creationDate(), league.numberOfParticipants(), league.organizer(), league.winner());
   }
 
-  function getLeagueContractAddress(uint _index) public returns (address)
-  {
+  function getLeagueContractAddress(uint _index) public returns (address) {
     return address(leagues[_index]);
   }
 
-  function getLeagueCount() public returns (uint)
-  {
+  function getLeagueCount() public returns (uint) {
     return leagues.length;
   }
 
-  function getLeagueParticipantCount(uint _index) public returns (uint)
-  {
+  function getLeagueParticipantCount(uint _index) public returns (uint) {
     return leagues[_index].numberOfParticipants();
   }
-
-  /* // Getters
-  // Side A
-  function getSeats_SideA(uint _index) constant public returns (address[])
-  {
-    return tournaments[_index].getSeats_SideA();
-  }
-
-  function getPlayerSlot_SideA(uint _index, address _player) constant public returns (uint)
-  {
-    return tournaments[_index].getPlayerSlot_SideA(_player);
-  }
-
-  // Side B
-  function getSeats_SideB(uint _index) constant public returns (address[])
-  {
-    return tournaments[_index].getSeats_SideB();
-  }
-
-  function getPlayerSlot_SideB(uint _index, address _player) constant public returns (uint)
-  {
-    return tournaments[_index].getPlayerSlot_SideB(_player);
-  } */
 }
 
-contract League
-{
+contract League {
   bool public active;
   uint public creationDate;
   uint public numberOfParticipants;
@@ -95,19 +65,16 @@ contract League
 
   Round[] rounds;
 
-  struct Round
-  {
+  struct Round {
     Match[] matches;
   }
 
-  struct Match
-  {
+  struct Match {
     uint[2] opponents;
     uint[2] points;
   }
 
-  constructor(uint _numberOfParticipants, address _organizer) public
-  {
+  constructor(uint _numberOfParticipants, address _organizer) public {
     active = true;
     creationDate = now;
     numberOfParticipants = _numberOfParticipants;
@@ -119,64 +86,52 @@ contract League
   event PlayerExists(address player);
   event PlayerJoined(uint index);
 
-  modifier onlyOrganizer
-  {
+  modifier onlyOrganizer {
       if (msg.sender != organizer) revert();
       _;
   }
 
-  function activate() public
-  {
-    for (uint i = 0; i < numberOfParticipants; i++)
-    {
+  function activate() public {
+    for (uint i = 0; i < numberOfParticipants; i++) {
       participants.push(address(0));
     }
   }
 
-  function getNumberOfParticipants() public returns (uint256)
-  {
+  function getNumberOfParticipants() public returns (uint256) {
     return numberOfParticipants;
   }
 
-  function getParticipants() public returns (address[])
-  {
+  function getParticipants() public returns (address[]) {
       return (participants);
   }
 
-  function joinLeague() payable public
-  {
+  function joinLeague() payable public {
     uint openSlotIndex = uint(-1);
 
-    for (uint i = 0; i < numberOfParticipants; i++)
-    {
-      if (participants[i] == msg.sender)
-      {
+    for (uint i = 0; i < numberOfParticipants; i++) {
+      if (participants[i] == msg.sender) {
         emit PlayerExists(msg.sender);
         revert();
       }
 
-      if (participants[i] == address(0))
-      {
+      if (participants[i] == address(0)) {
         openSlotIndex = i;
       }
     }
 
-    if (openSlotIndex != uint(-1))
-    {
+    if (openSlotIndex != uint(-1)) {
       participants[openSlotIndex] = msg.sender;
       emit PlayerJoined(openSlotIndex);
     }
   }
 
-  function startRound() onlyOrganizer public
-  {
+  function startRound() onlyOrganizer public {
     uint matchCount = numberOfParticipants / 2 * (numberOfParticipants - 1);
 
     rounds.length += 1;
     Round storage r = rounds[rounds.length - 1];
 
-    for (uint i = 0; i < matchCount; i++)
-    {
+    for (uint i = 0; i < matchCount; i++) {
       Match memory m;
 
       m = Match({
@@ -188,19 +143,16 @@ contract League
     }
   }
 
-  function setMatchWinner(address _player, uint _points) onlyOrganizer public
-  {
+  function setMatchWinner(address _player, uint _points) onlyOrganizer public {
     winner = _player;
     // points = _points;
   }
 
-  function getRoundCount() public returns (uint256)
-  {
+  function getRoundCount() public returns (uint256) {
     return rounds.length;
   }
 
-  function getMatchCount(uint _index) public returns (uint256)
-  {
+  function getMatchCount(uint _index) public returns (uint256) {
     return rounds[_index].matches.length;
   }
 }
