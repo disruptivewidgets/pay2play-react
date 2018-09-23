@@ -32,20 +32,20 @@ contract Registrar {
     emit NewLeagueStarted(index, _numberOfParticipants);
   }
 
-  function getLeague(uint _index) public returns (uint, uint, uint, address, address) {
+  function getLeague(uint _index) constant public returns (uint, uint, uint, address, address) {
     League league = leagues[_index];
     return (_index, league.creationDate(), league.numberOfParticipants(), league.organizer(), league.winner());
   }
 
-  function getLeagueContractAddress(uint _index) public returns (address) {
+  function getLeagueContractAddress(uint _index) constant public returns (address) {
     return address(leagues[_index]);
   }
 
-  function getLeagueCount() public returns (uint) {
+  function getLeagueCount() constant public returns (uint) {
     return leagues.length;
   }
 
-  function getLeagueParticipantCount(uint _index) public returns (uint) {
+  function getLeagueParticipantCount(uint _index) constant public returns (uint) {
     return leagues[_index].numberOfParticipants();
   }
 }
@@ -97,11 +97,11 @@ contract League {
     }
   }
 
-  function getNumberOfParticipants() public returns (uint256) {
+  function getNumberOfParticipants() constant public returns (uint256) {
     return numberOfParticipants;
   }
 
-  function getParticipants() public returns (address[]) {
+  function getParticipants() constant public returns (address[]) {
       return (participants);
   }
 
@@ -126,7 +126,7 @@ contract League {
   }
 
   function startRound() onlyOrganizer public {
-    uint matchCount = numberOfParticipants / 2 * (numberOfParticipants - 1);
+    uint matchCount = numberOfParticipants * 10 / 2 * (numberOfParticipants - 1) / 10; // division by float issue
 
     rounds.length += 1;
     Round storage r = rounds[rounds.length - 1];
@@ -143,16 +143,16 @@ contract League {
     }
   }
 
-  function setMatchWinner(address _player, uint _points) onlyOrganizer public {
-    winner = _player;
-    // points = _points;
-  }
+//   function setMatchWinner(address _player, uint _points) onlyOrganizer public {
+//     winner = _player;
+//     // points = _points;
+//   }
 
-  function getRoundCount() public returns (uint256) {
+  function getRoundCount() constant public returns (uint256) {
     return rounds.length;
   }
 
-  function getMatchCount(uint _index) public returns (uint256) {
+  function getMatchCount(uint _index) constant public returns (uint256) {
     return rounds[_index].matches.length;
   }
 }
