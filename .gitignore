@@ -38,3 +38,5 @@ yarn.lock
 package-lock.json
 
 keys
+
+.idea
