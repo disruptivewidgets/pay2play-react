@@ -55,7 +55,7 @@ contract Deposit {
 
   function getActiveState() constant public returns (bool) {
     return active;
-  }
+  }f
 }
 
 contract Registrar {
