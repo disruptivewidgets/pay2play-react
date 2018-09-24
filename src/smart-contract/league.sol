@@ -4,9 +4,7 @@
  * @version 1.0.0
  */
 
-/* https://stackoverflow.com/questions/6648512/scheduling-algorithm-for-a-round-robin-tournament  */
 pragma solidity ^0.4.25;
-// pragma experimental ABIEncoderV2;
 
 contract Registrar {
   uint public registrarStartDate;
@@ -72,6 +70,15 @@ contract League {
     uint[2][] points;
   }
 
+//   struct Round {
+//     Match[] matches;
+//   }
+
+//   struct Match {
+//     uint[2] opponents;
+//     uint[2] points;
+//   }
+
   constructor(uint _numberOfParticipants, address _organizer) public {
     active = true;
     creationDate = now;
@@ -126,23 +133,84 @@ contract League {
   function startRound() onlyOrganizer public {
     uint matchCount = numberOfParticipants * 10 / 2 * (numberOfParticipants - 1) / 10; // division by float issue
 
-    uint placeholder = numberOfParticipants + 1;
-
     rounds.length += 1;
     Round storage r = rounds[rounds.length - 1];
 
     for (uint i = 0; i < matchCount; i++) {
-        r.opponents.push([placeholder, placeholder]);
+        r.opponents.push([uint(-1), uint(-1)]);
         r.points.push([uint(0), uint(0)]);
     }
 
+    // uint matchCount = numberOfParticipants * 10 / 2 * (numberOfParticipants - 1) / 10; // division by float issue
 
+    // rounds.length += 1;
+    // Round storage r = rounds[rounds.length - 1];
+
+    // for (uint i = 0; i < matchCount; i++) {
+    //   Match memory m;
+
+    //   m = Match({
+    //     opponents: [uint(-1), uint(-1)],
+    //     points: [uint(0), uint(0)]
+    //   });
+
+    //   r.matches.push(m);
+    // }
   }
 
-//   function setMatchWinner(address _player, uint _points) onlyOrganizer public {
-//     winner = _player;
-//     // points = _points;
-//   }
+  function calculate() constant public returns (uint[2][]) {
+      uint[] memory temp;
+
+      uint n = 2;
+      uint i = 0;
+
+      for (n = 2; n <= numberOfParticipants; n++) {
+          temp[n - 2] = n;
+      }
+
+      uint[] memory buffer;
+
+      uint[] memory table;
+
+      uint[][] memory tables;
+
+      for (n = 0; n < numberOfParticipants - 1; n++) {
+          for (i = 0; i <= temp.length - 1; i++) {
+              buffer[(i + n) % temp.length] = temp[i];
+          }
+
+          table[0] = 1;
+
+          for (i = 1; i < numberOfParticipants; i++) {
+              table[i] = buffer[i - 1];
+          }
+
+          tables[n] = table;
+      }
+
+      uint size = 0;
+
+      if (numberOfParticipants % 2 == 0) {
+        size = numberOfParticipants / 2;
+      } else {
+        size = (numberOfParticipants + 1) / 2;
+      }
+
+      uint[2][] memory schedule;
+
+      for (n = 0; n < tables.length; n++) {
+          table = tables[n];
+
+          for (i = 0; i < size; i++) {
+            uint[2] memory opponents;
+            opponents[0] = table[i];
+            opponents[1] = table[(numberOfParticipants - 1) - i];
+            schedule[n * size + i] = opponents;
+          }
+      }
+
+      return (schedule);
+  }
 
   function getMatches(uint _roundIndex) constant public returns (uint[2][], uint[2][] ) {
     return (rounds[_roundIndex].opponents, rounds[_roundIndex].points);

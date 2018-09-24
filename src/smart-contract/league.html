@@ -1,0 +1,62 @@
+<script>
+console.log("+++++++++++++++");
+var size = 0;
+
+if (numberOfParticipants % 2 == 0  ) {
+  // even
+} else {
+  // odd
+  numberOfParticipants += 1;
+}
+
+size = numberOfParticipants / 2;
+
+var array = [];
+
+for (n = 2; n <= numberOfParticipants; n++)
+{
+  array.push(n);
+}
+
+var newArray = [0,0,0,0,0,0,0];
+
+var matches = [];
+
+for (n = 0; n < numberOfParticipants - 1; n++)
+{
+  for (var x = 0; x <= array.length - 1; x++)
+  {
+    newArray[(x + n) % array.length ] = array[x];
+  }
+  var match = [];
+  match[0] = 1;
+
+  for (var i = 1; i < numberOfParticipants; i++)
+  {
+    match[i] = newArray[i - 1];
+  }
+  console.log(match);
+
+  matches.push(match);
+}
+
+console.log("schedule created");
+console.log(matches);
+
+for (n = 0; n < matches.length; n++) {
+  match = matches[n];
+
+  console.log(match);
+
+  for (i = 0; i < size; i++) {
+    var opponents = [];
+    opponents[0] = match[i];
+    opponents[1] = match[(numberOfParticipants - 1) - i]
+    console.log(opponents);
+  }
+  console.log("=");
+}
+
+console.log('+++++++++++++++++');
+
+</script>
