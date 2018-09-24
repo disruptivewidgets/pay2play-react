@@ -4,7 +4,9 @@
  * @version 1.0.0
  */
 
+/* https://stackoverflow.com/questions/6648512/scheduling-algorithm-for-a-round-robin-tournament  */
 pragma solidity ^0.4.25;
+// pragma experimental ABIEncoderV2;
 
 contract Registrar {
   uint public registrarStartDate;
@@ -66,12 +68,8 @@ contract League {
   Round[] rounds;
 
   struct Round {
-    Match[] matches;
-  }
-
-  struct Match {
-    uint[2] opponents;
-    uint[2] points;
+    uint[2][] opponents;
+    uint[2][] points;
   }
 
   constructor(uint _numberOfParticipants, address _organizer) public {
@@ -128,19 +126,17 @@ contract League {
   function startRound() onlyOrganizer public {
     uint matchCount = numberOfParticipants * 10 / 2 * (numberOfParticipants - 1) / 10; // division by float issue
 
+    uint placeholder = numberOfParticipants + 1;
+
     rounds.length += 1;
     Round storage r = rounds[rounds.length - 1];
 
     for (uint i = 0; i < matchCount; i++) {
-      Match memory m;
-
-      m = Match({
-        opponents: [uint(-1), uint(-1)],
-        points: [uint(0), uint(0)]
-      });
-
-      r.matches.push(m);
+        r.opponents.push([placeholder, placeholder]);
+        r.points.push([uint(0), uint(0)]);
     }
+
+
   }
 
 //   function setMatchWinner(address _player, uint _points) onlyOrganizer public {
@@ -148,11 +144,19 @@ contract League {
 //     // points = _points;
 //   }
 
+  function getMatches(uint _roundIndex) constant public returns (uint[2][], uint[2][] ) {
+    return (rounds[_roundIndex].opponents, rounds[_roundIndex].points);
+  }
+
+  function getMatch(uint _roundIndex, uint _matchIndex) constant public returns (uint[2], uint[2]) {
+    return (rounds[_roundIndex].opponents[_matchIndex], rounds[_roundIndex].points[_matchIndex]);
+  }
+
   function getRoundCount() constant public returns (uint256) {
     return rounds.length;
   }
 
-  function getMatchCount(uint _index) constant public returns (uint256) {
-    return rounds[_index].matches.length;
+  function getMatchCount(uint _roundIndex) constant public returns (uint256) {
+    return rounds[_roundIndex].opponents.length;
   }
 }
