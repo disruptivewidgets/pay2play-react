@@ -68,6 +68,7 @@ contract League {
   struct Round {
     uint[2][] opponents;
     uint[2][] points;
+    uint[] losers;
   }
 
   constructor(uint _numberOfParticipants, address _organizer) public {
@@ -82,7 +83,7 @@ contract League {
   event PlayerExists(address player);
   event PlayerJoined(uint index);
   event MatchClosed(uint roundIndex, uint matchIndex);
-  event RoundClosed(uint roundIndex);
+  event RoundClosed(uint roundIndex, uint[] losers);
 
   modifier onlyOrganizer {
       if (msg.sender != organizer) revert();
@@ -192,54 +193,29 @@ contract League {
   }
 
   function closeRound(uint _roundIndex) onlyOrganizer payable public {
-    /* rounds[_roundIndex].points[_matchIndex][0] = _points_SideA;
-    rounds[_roundIndex].points[_matchIndex][1] = _points_SideB; */
-
-    // filter out loser
-
     uint matchCount = rounds[_roundIndex].opponents.length;
     uint i = 0;
 
-    uint[] memory winners = new uint[](numberOfParticipants);
+    uint[] memory scores = new uint[](numberOfParticipants);
 
     for (i = 0; i < matchCount; i++) {
         if (rounds[_roundIndex].points[i][0] > rounds[_roundIndex].points[i][1]) {
-            // winners.push(0);
-            winners[rounds[_roundIndex].points[i][0] - 1] += 1;
+            scores[rounds[_roundIndex].opponents[i][0] - 1] += rounds[_roundIndex].points[i][0];
         }
 
         if (rounds[_roundIndex].points[i][0] < rounds[_roundIndex].points[i][1]) {
-            winners[rounds[_roundIndex].points[i][1] - 1] += 1;
-        }
-    }
-
-    emit RoundClosed(_roundIndex);
-  }
-
-  function getRoundWinners(uint _roundIndex) constant public returns (uint[]) {
-    uint matchCount = rounds[_roundIndex].opponents.length;
-    uint i = 0;
-
-    uint[] memory winners = new uint[](numberOfParticipants);
-
-    for (i = 0; i < matchCount; i++) {
-        if (rounds[_roundIndex].points[i][0] > rounds[_roundIndex].points[i][1]) {
-            winners[rounds[_roundIndex].opponents[i][0] - 1] += rounds[_roundIndex].points[i][0];
-        }
-
-        if (rounds[_roundIndex].points[i][0] < rounds[_roundIndex].points[i][1]) {
-            winners[rounds[_roundIndex].opponents[i][1] - 1] += rounds[_roundIndex].points[i][1];
+            scores[rounds[_roundIndex].opponents[i][1] - 1] += rounds[_roundIndex].points[i][1];
         }
     }
 
     // min
     uint index = 0;
 
-    uint min = winners[0];
+    uint min = scores[0];
 
-    for (i = 1; i < winners.length; i++) {
-        if (winners[i] < min) {
-            min = winners[i];
+    for (i = 1; i < scores.length; i++) {
+        if (scores[i] < min) {
+            min = scores[i];
             index = i;
         }
     }
@@ -248,27 +224,25 @@ contract League {
     index = 0;
 
     uint counter = 1;
-    uint max = winners[0];
+    uint max = scores[0];
 
-    for(counter; counter < winners.length; counter++) {
-        if(winners[index] < winners[counter]) {
+    for(counter; counter < scores.length; counter++) {
+        if(scores[index] < scores[counter]) {
             index = counter;
-            max = winners[index];
+            max = scores[index];
         }
     }
 
-    //
     if (max == min) {
-        // redo needed
+    } else {
+        for (i = 0; i < scores.length; i++) {
+          if (scores[i] == min) {
+            rounds[_roundIndex].losers.push(i);
+          }
+        }
     }
 
-    if (max > min) {
-        // has no min repeat
-
-        // has min repeat
-    }
-
-    return (winners);
+    emit RoundClosed(_roundIndex, rounds[_roundIndex].losers);
   }
 
   function getRoundOpponents(uint _roundIndex) constant public returns (uint[2][]) {
@@ -277,6 +251,10 @@ contract League {
 
   function getRoundPoints(uint _roundIndex) constant public returns (uint[2][]) {
     return (rounds[_roundIndex].points);
+  }
+
+  function getRoundLosers(uint _roundIndex) constant public returns (uint[]) {
+    return (rounds[_roundIndex].losers);
   }
 
   function getMatches(uint _roundIndex) constant public returns (uint[2][], uint[2][]) {
