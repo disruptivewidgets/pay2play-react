@@ -81,6 +81,8 @@ contract League {
 
   event PlayerExists(address player);
   event PlayerJoined(uint index);
+  event MatchClosed(uint roundIndex, uint matchIndex);
+  event RoundClosed(uint roundIndex);
 
   modifier onlyOrganizer {
       if (msg.sender != organizer) revert();
@@ -135,7 +137,7 @@ contract League {
     }
   }
 
-  function calculate(uint _roundIndex) onlyOrganizer payable public {
+  function schedule(uint _roundIndex) onlyOrganizer payable public {
       uint[] memory temp = new uint[](numberOfParticipants - 2 + 1);
 
       uint n = 2;
@@ -180,6 +182,93 @@ contract League {
             rounds[_roundIndex].opponents[n * size + i][1] = table[(numberOfParticipants - 1) - i];
           }
       }
+  }
+
+  function closeMatch(uint _roundIndex, uint _matchIndex, uint _points_SideA, uint _points_SideB) onlyOrganizer payable public {
+    rounds[_roundIndex].points[_matchIndex][0] = _points_SideA;
+    rounds[_roundIndex].points[_matchIndex][1] = _points_SideB;
+
+    emit MatchClosed(_roundIndex, _matchIndex);
+  }
+
+  function closeRound(uint _roundIndex) onlyOrganizer payable public {
+    /* rounds[_roundIndex].points[_matchIndex][0] = _points_SideA;
+    rounds[_roundIndex].points[_matchIndex][1] = _points_SideB; */
+
+    // filter out loser
+
+    uint matchCount = rounds[_roundIndex].opponents.length;
+    uint i = 0;
+
+    uint[] memory winners = new uint[](numberOfParticipants);
+
+    for (i = 0; i < matchCount; i++) {
+        if (rounds[_roundIndex].points[i][0] > rounds[_roundIndex].points[i][1]) {
+            // winners.push(0);
+            winners[rounds[_roundIndex].points[i][0] - 1] += 1;
+        }
+
+        if (rounds[_roundIndex].points[i][0] < rounds[_roundIndex].points[i][1]) {
+            winners[rounds[_roundIndex].points[i][1] - 1] += 1;
+        }
+    }
+
+    emit RoundClosed(_roundIndex);
+  }
+
+  function getRoundWinners(uint _roundIndex) constant public returns (uint[]) {
+    uint matchCount = rounds[_roundIndex].opponents.length;
+    uint i = 0;
+
+    uint[] memory winners = new uint[](numberOfParticipants);
+
+    for (i = 0; i < matchCount; i++) {
+        if (rounds[_roundIndex].points[i][0] > rounds[_roundIndex].points[i][1]) {
+            winners[rounds[_roundIndex].opponents[i][0] - 1] += rounds[_roundIndex].points[i][0];
+        }
+
+        if (rounds[_roundIndex].points[i][0] < rounds[_roundIndex].points[i][1]) {
+            winners[rounds[_roundIndex].opponents[i][1] - 1] += rounds[_roundIndex].points[i][1];
+        }
+    }
+
+    // min
+    uint index = 0;
+
+    uint min = winners[0];
+
+    for (i = 1; i < winners.length; i++) {
+        if (winners[i] < min) {
+            min = winners[i];
+            index = i;
+        }
+    }
+
+    // max
+    index = 0;
+
+    uint counter = 1;
+    uint max = winners[0];
+
+    for(counter; counter < winners.length; counter++) {
+        if(winners[index] < winners[counter]) {
+            index = counter;
+            max = winners[index];
+        }
+    }
+
+    //
+    if (max == min) {
+        // redo needed
+    }
+
+    if (max > min) {
+        // has no min repeat
+
+        // has min repeat
+    }
+
+    return (winners);
   }
 
   function getRoundOpponents(uint _roundIndex) constant public returns (uint[2][]) {

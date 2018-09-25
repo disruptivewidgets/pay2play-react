@@ -117,4 +117,94 @@ for (n = 0; n < tables.length; n++) {
 }
 console.log('NEW');
 
+console.log('winners');
+
+// 1 vs 4
+// 2 vs 3
+// 1 vs 3
+// 4 vs 2
+// 1 vs 2
+// 3 vs 4
+
+var round = {
+  opponents: [
+    [1, 4],
+    [2, 3],
+    [1, 3],
+    [4, 2],
+    [1, 2],
+    [3, 4]
+  ],
+  points: [
+    [1, 0],
+    [1, 0],
+    [0, 1],
+    [0, 1],
+    [1, 0],
+    [1, 0]
+  ]
+}
+
+
+
+var matchCount = round.opponents.length;
+var i = 0;
+
+console.log(matchCount);
+
+// uint[] memory winners = new uint[](numberOfParticipants);
+
+var winners = [0, 0, 0, 0];
+
+for (i = 0; i < matchCount; i++) {
+    if (round.points[i][0] > round.points[i][1]) {
+        winners[round.opponents[i][0] - 1] += round.points[i][0];
+    }
+
+    if (round.points[i][0] < round.points[i][1]) {
+        winners[round.opponents[i][1] - 1] += round.points[i][1];
+    }
+}
+
+console.log(winners);
+// min
+var index = 0;
+
+var min = winners[0];
+
+for (i = 1; i < winners.length; i++) {
+    if (winners[i] < min) {
+        min = winners[i];
+        index = i;
+    }
+}
+
+console.log("min index ", index + 1);
+
+// max
+index = 0;
+
+var counter = 1;
+var max = winners[0];
+
+for(counter; counter < winners.length; counter++) {
+    if(winners[index] < winners[counter]) {
+        index = counter;
+        max = winners[index];
+    }
+}
+
+console.log("max index ", index + 1);
+
+console.log(min, max);
+//
+if (max == min) {
+    // redo needed
+}
+
+if (max > min) {
+    // has no min repeat
+
+    // has min repeat
+}
 </script>
