@@ -34,7 +34,7 @@ contract Registrar {
 
   function getLeague(uint _index) constant public returns (uint, uint, uint, address, address) {
     League league = leagues[_index];
-    return (_index, league.creationDate(), league.numberOfMembers(), league.organizer(), league.winner());
+    return (_index, league.creationDate(), league.numberOfParticipants(), league.organizer(), league.winner());
   }
 
   function getLeagueContractAddress(uint _index) constant public returns (address) {
@@ -46,14 +46,14 @@ contract Registrar {
   }
 
   function getLeagueParticipantCount(uint _index) constant public returns (uint) {
-    return leagues[_index].numberOfMembers();
+    return leagues[_index].numberOfParticipants();
   }
 }
 
 contract League {
   bool public active;
   uint public creationDate;
-  uint public numberOfMembers;
+  uint public numberOfParticipants;
 
   uint constant minPrice = 0.01 ether;
 
@@ -61,21 +61,20 @@ contract League {
   address public winner;
   address public organizer;
 
-  address[] members;
+  address[] participants;
 
   Round[] rounds;
 
   struct Round {
-    address[] participants;
     uint[2][] opponents;
     uint[2][] points;
     uint[] losers;
   }
 
-  constructor(uint _numberOfMembers, address _organizer) public {
+  constructor(uint _numberOfParticipants, address _organizer) public {
     active = true;
     creationDate = now;
-    numberOfMembers = _numberOfMembers;
+    numberOfParticipants = _numberOfParticipants;
     organizer = _organizer;
 
     activate();
@@ -92,66 +91,46 @@ contract League {
   }
 
   function activate() public {
-    for (uint i = 0; i < numberOfMembers; i++) {
-      members.push(address(0));
+    for (uint i = 0; i < numberOfParticipants; i++) {
+      participants.push(address(0));
     }
   }
 
-  function getNumberOfMembers() constant public returns (uint256) {
-    return numberOfMembers;
+  function getNumberOfParticipants() constant public returns (uint256) {
+    return numberOfParticipants;
   }
 
-  function getMembers() constant public returns (address[]) {
-      return (members);
+  function getParticipants() constant public returns (address[]) {
+      return (participants);
   }
 
   function joinLeague() payable public {
     uint openSlotIndex = uint(-1);
 
-    for (uint i = 0; i < numberOfMembers; i++) {
-      if (members[i] == msg.sender) {
+    for (uint i = 0; i < numberOfParticipants; i++) {
+      if (participants[i] == msg.sender) {
         emit PlayerExists(msg.sender);
         revert();
       }
 
-      if (members[i] == address(0)) {
+      if (participants[i] == address(0)) {
         openSlotIndex = i;
       }
     }
 
     if (openSlotIndex != uint(-1)) {
-      members[openSlotIndex] = msg.sender;
+      participants[openSlotIndex] = msg.sender;
       emit PlayerJoined(openSlotIndex);
     }
   }
 
-  function startLeague() onlyOrganizer payable public {
-    startRound(members);
-  }
+  function startRound() onlyOrganizer payable public {
+    uint matchCount = numberOfParticipants * 10 / 2 * (numberOfParticipants - 1) / 10; // division by float issue
 
-  function calculateMatchCount(uint _length) constant public returns (uint) {
-    uint matchCount = 0;
-
-    if (_length % 2 == 0) {
-    } else {
-        _length += 1;
-    }
-
-    matchCount = _length * 10 / 2 * (_length - 1) / 10; // division by float issue
-
-    return (matchCount);
-  }
-
-  function startRound(address[] participants) onlyOrganizer payable public {
     rounds.length += 1;
     Round storage r = rounds[rounds.length - 1];
-    r.participants = participants;
 
-    uint placeholder = participants.length + 1;
-
-    uint matchCount = calculateMatchCount(participants.length);
-
-    //participants.length * 10 / 2 * (participants.length - 1) / 10; // division by float issue
+    uint placeholder = numberOfParticipants + 1;
 
     for (uint i = 0; i < matchCount; i++) {
         r.opponents.push([placeholder, placeholder]);
@@ -160,66 +139,32 @@ contract League {
   }
 
   function nextRound() onlyOrganizer payable public {
-
-    // uint participantCount = rounds[roundCount - 1].participants.length - rounds[roundCount - 1].losers.length;
-    uint i = 0;
-    uint j = 0;
-
-    bool isLoser = false;
-
-    // address[] memory participants = new address[](participantCount);
-
-    rounds.length += 1;
-    Round storage r = rounds[rounds.length - 1];
-    // r.participants = participants;
-
-    uint roundCount = rounds.length;
-    for (i = 0; i < rounds[roundCount - 1].participants.length; i++) {
-        isLoser = false;
-        for (j = 0; j < rounds[roundCount - 1].losers.length; j++) {
-            if (rounds[roundCount - 1].losers[j] == i) {
-                isLoser = true;
-            }
-        }
-
-        if (isLoser == false) {
-            r.participants.push(rounds[roundCount - 1].participants[i]);
-        }
-    }
-
-    uint placeholder = r.participants.length + 1;
-
-    uint matchCount = calculateMatchCount(r.participants.length);
-
-    for (i = 0; i < matchCount; i++) {
-        r.opponents.push([placeholder, placeholder]);
-        r.points.push([uint(0), uint(0)]);
-    }
+    uint roundCount = rounds[_roundIndex].opponents.length;
   }
 
   function schedule(uint _roundIndex) onlyOrganizer payable public {
-      uint[] memory temp = new uint[](rounds[_roundIndex].participants.length - 2 + 1);
+      uint[] memory temp = new uint[](numberOfParticipants - 2 + 1);
 
       uint n = 2;
       uint i = 0;
 
-      for (n = 2; n <= rounds[_roundIndex].participants.length; n++) {
+      for (n = 2; n <= numberOfParticipants; n++) {
           temp[n - 2] = n;
       }
 
       uint[] memory buffer = new uint[](temp.length);
 
-      uint[][] memory tables = new uint[][](rounds[_roundIndex].participants.length - 1);
+      uint[][] memory tables = new uint[][](numberOfParticipants - 1);
 
-      for (n = 0; n < rounds[_roundIndex].participants.length - 1; n++) {
+      for (n = 0; n < numberOfParticipants - 1; n++) {
           for (i = 0; i <= temp.length - 1; i++) {
               buffer[(i + n) % temp.length] = temp[i];
           }
 
-          uint[] memory table = new uint[](rounds[_roundIndex].participants.length);
+          uint[] memory table = new uint[](numberOfParticipants);
           table[0] = 1;
 
-          for (i = 1; i < rounds[_roundIndex].participants.length; i++) {
+          for (i = 1; i < numberOfParticipants; i++) {
               table[i] = buffer[i - 1];
           }
 
@@ -228,10 +173,10 @@ contract League {
 
       uint size = 0;
 
-      if (rounds[_roundIndex].participants.length % 2 == 0) {
-        size = rounds[_roundIndex].participants.length / 2;
+      if (numberOfParticipants % 2 == 0) {
+        size = numberOfParticipants / 2;
       } else {
-        size = (rounds[_roundIndex].participants.length + 1) / 2;
+        size = (numberOfParticipants + 1) / 2;
       }
 
       for (n = 0; n < tables.length; n++) {
@@ -239,7 +184,7 @@ contract League {
 
           for (i = 0; i < size; i++) {
             rounds[_roundIndex].opponents[n * size + i][0] = table[i];
-            rounds[_roundIndex].opponents[n * size + i][1] = table[(rounds[_roundIndex].participants.length - 1) - i];
+            rounds[_roundIndex].opponents[n * size + i][1] = table[(numberOfParticipants - 1) - i];
           }
       }
   }
@@ -255,7 +200,7 @@ contract League {
     uint matchCount = rounds[_roundIndex].opponents.length;
     uint i = 0;
 
-    uint[] memory scores = new uint[](rounds[_roundIndex].participants.length);
+    uint[] memory scores = new uint[](numberOfParticipants);
 
     for (i = 0; i < matchCount; i++) {
         if (rounds[_roundIndex].points[i][0] > rounds[_roundIndex].points[i][1]) {
